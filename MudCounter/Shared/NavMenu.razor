@@ -1,0 +1,9 @@
+﻿@inherits FluxorComponent
+@inject IState<CounterState> _state;
+
+
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter (@_state.Value.CurrentCount)</MudNavLink>
+    <MudNavLink Href="fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Fetch data</MudNavLink>
+</MudNavMenu>
