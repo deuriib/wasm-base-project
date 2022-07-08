@@ -1,1 +1,1 @@
-# MudCounter
+# Blazor Web Assembly Base Project
