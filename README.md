@@ -16,11 +16,9 @@ Base Project created with Blazor WebAssembly using MudBlazor.Templates connected
 - Cross platform
 
 
-## Environment Variables
+## Demo
 
-To run this project, you will need to add the following environment variables to your .env file
-
-`API_URL`
+[wasm-base-project](https://deuriib.github.io/wasm-base-project/)
 
 
 ## Run Locally
