@@ -10,8 +10,7 @@ namespace WasmBaseProjectApp.Store.Employees
         protected override EmployeesState GetInitialState()
             => new EmployeesState(
                 IsLoading: true,
-                Employees: Array.Empty<Employee>(),
-                ErrorMessage: string.Empty
+                Employees: Array.Empty<Employee>()
             );
     }
 }
