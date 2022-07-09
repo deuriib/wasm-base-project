@@ -75,7 +75,7 @@
       "System.Text.Json.dll": "sha256-yFEvH8M4YkH4h7GhPp5l9ZD4z7I9sWzCmbE7DjervSQ=",
       "System.Text.RegularExpressions.dll": "sha256-W3ar+IGx2UjrvlIWWwKsanHQqf+L5SC2+ITaTUFOLJw=",
       "System.Threading.dll": "sha256-DqXjU1bP54GOAOCaRpDkAvus\/cB3hWZgAGnXj5kbFj4=",
-      "WasmBaseProjectApp.dll": "sha256-o9til6hJky8zLvVOxiD+jlXJFVwcZ2TfdoIMweb1Ips="
+      "WasmBaseProjectApp.dll": "sha256-\/zIzNJmusRMNSaPcAgOHyrpI6+aQuScM7XwdqyvBKXw="
     },
     "extensions": null,
     "lazyAssembly": null,
