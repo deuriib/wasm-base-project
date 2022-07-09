@@ -4,6 +4,11 @@
 Base Project created with Blazor WebAssembly using MudBlazor.Templates connected to the Base API project created by [@EricBello](https://github.com/EricBello)
 
 
+## Badges
+
+
+[![Deploy to GitHub Pages](https://github.com/deuriib/wasm-base-project/actions/workflows/main.yml/badge.svg)](https://github.com/deuriib/wasm-base-project/actions/workflows/main.yml)
+
 ## Features
 
 - Light/dark mode toggle
