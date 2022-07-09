@@ -4,6 +4,11 @@
 Base Project created with Blazor WebAssembly using MudBlazor.Templates connected to the Base API project created by [@EricBello](https://github.com/EricBello)
 
 
+## Badges
+
+
+[![Deploy to GitHub Pages](https://github.com/deuriib/wasm-base-project/actions/workflows/main.yml/badge.svg)](https://github.com/deuriib/wasm-base-project/actions/workflows/main.yml)
+
 ## Features
 
 - Light/dark mode toggle
@@ -11,11 +16,9 @@ Base Project created with Blazor WebAssembly using MudBlazor.Templates connected
 - Cross platform
 
 
-## Environment Variables
+## Demo
 
-To run this project, you will need to add the following environment variables to your .env file
-
-`API_URL`
+[wasm-base-project](https://deuriib.github.io/wasm-base-project/)
 
 
 ## Run Locally
