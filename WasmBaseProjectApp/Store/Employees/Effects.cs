@@ -18,6 +18,8 @@ namespace WasmBaseProjectApp.Store.Employees
             try
             {
                 var employees = await _service.GetEmployeesAsync();
+                await Task.Delay(TimeSpan.FromSeconds(10));
+
                 dispatcher.Dispatch(new GetEmployeesSuccessAction(employees));
             }
             catch (Exception ex)

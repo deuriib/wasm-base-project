@@ -1,0 +1,81 @@
+﻿@page "/employees"
+@inherits FluxorComponent
+@inject IState<EmployeesState> State
+@inject IDispatcher Dispatcher
+@inject ISnackbar Snackbar
+
+<PageTitle>Employees</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
+
+<MudPaper Class="pa-8 d-flex align-center justify-center flex-grow-1" MinHeight="420px">
+    @if (State.Value.IsLoading)
+    {
+        <Loading />
+    }
+
+    @if (State.Value.Employees.Any())
+    {
+        <MudContainer Class="flex-grow-1">
+            <MudTable Items="State.Value.Employees" Filter="new Func<Employee,bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">List of employees</MudText>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Full Name</MudTh>
+                    <MudTh>BirthDate</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                    <MudTd DataLabel="Full Name">@context.Name @context.LasName</MudTd>
+                    <MudTd DataLabel="BirthDate">@context.DayOfBirth/@context.MonthOfBirth/@context.YearOfBirth</MudTd>
+                    <MudTd DataLabel="Status"><MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton></MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[] { 10, 15, 20, 40, 50 }"/>
+                </PagerContent>
+            </MudTable>
+        </MudContainer>
+    }
+</MudPaper>
+
+
+@code {
+    private string searchString1 = "";
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new GetEmployeesAction());
+
+        SubscribeToAction<GetEmployeesSuccessAction>(action =>
+        {
+            Snackbar.Add("Employees loaded", Severity.Success);
+        });
+
+        SubscribeToAction<GetEmployeesFailedAction>(action =>
+        {
+            Snackbar.Add($"Employees failed, ${action.ErrorMessage}", Severity.Error);
+        });
+
+        base.OnInitialized();
+    }
+
+    private bool FilterFunc1(Employee employee) => FilterFunc(employee, searchString1);
+
+    private bool FilterFunc(Employee employee, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (employee.LasName!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (employee.Name!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (employee.Address!.Contains(searchString))
+            return true;
+        return false;
+    }
+
+}

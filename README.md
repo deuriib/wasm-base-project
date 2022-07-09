@@ -6,8 +6,8 @@ Base Project created with Blazor WebAssembly using MudBlazor.Templates connected
 
 ## Badges
 
-
 [![Deploy to GitHub Pages](https://github.com/deuriib/wasm-base-project/actions/workflows/main.yml/badge.svg)](https://github.com/deuriib/wasm-base-project/actions/workflows/main.yml)
+
 
 ## Features
 
