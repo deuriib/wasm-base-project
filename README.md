@@ -1,7 +1,7 @@
 
 # Blazor Web Assembly Base Project
 
-Base Project created with Blazor WebAssembly using MudBlazor.Templates connected to the Base API project created by [@EricBello](https://github.com/EricBello)
+Base Project created with Blazor WebAssembly using MudBlazor.Templates connected Supabase API project
 
 
 ## Badges
