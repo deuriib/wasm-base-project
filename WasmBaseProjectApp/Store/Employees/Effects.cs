@@ -17,14 +17,44 @@ namespace WasmBaseProjectApp.Store.Employees
         {
             try
             {
-                var employees = await _service.GetEmployeesAsync();
-                await Task.Delay(TimeSpan.FromSeconds(10));
+                var employees = await _service.GetAllAsync();
 
                 dispatcher.Dispatch(new GetEmployeesSuccessAction(employees));
             }
             catch (Exception ex)
             {
-                dispatcher.Dispatch(new GetEmployeesFailedAction(ex.Message));
+                dispatcher.Dispatch(new GetEmployeesFailedAction(ex.GetBaseException().Message));
+            }
+        }
+        
+        [EffectMethod]
+        public async Task HandleAsync(UpdateEmployeeStatusAction action, IDispatcher dispatcher)
+        {
+            try
+            {
+                bool newStatus = !action.CurrentStatus;
+                await _service.UpdateStatusAsync(action.Id, newStatus);
+
+                dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id));
+            }
+            catch (Exception ex)
+            {
+                dispatcher.Dispatch(new UpdateEmployeeStatusFailedAction(ex.GetBaseException().Message));
+            }
+        }
+        
+        [EffectMethod]
+        public async Task HandleAsync(DeleteEmployeeAction action, IDispatcher dispatcher)
+        {
+            try
+            {
+                await _service.DeleteAsync(action.Id);
+
+                dispatcher.Dispatch(new DeleteEmployeeSuccessAction(action.Id));
+            }
+            catch (Exception ex)
+            {
+                dispatcher.Dispatch(new DeleteEmployeeFailedAction(ex.GetBaseException().Message));
             }
         }
     }

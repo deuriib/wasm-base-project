@@ -1,0 +1,30 @@
+﻿@inherits FluxorLayout
+@inject IDispatcher Dispatcher
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h5">Are you sure you want to delete @Employee?.Name @Employee?.LastName employee?</MudText>
+        <MudText Typo="Typo.body2">This will remove the employee data permanently</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Filled.Delete" OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled">Delete</MudButton>
+        <MudButton StartIcon="@Icons.Filled.Cancel" OnClick="Cancel" Color="Color.Error" Variant="Variant.Outlined">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+    
+    [Parameter]
+    public Employee? Employee { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false, NoHeader = true, FullWidth = true});
+        await base.OnInitializedAsync();
+    }
+    
+    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog?.Cancel();
+}

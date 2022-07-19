@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -20,7 +21,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddHttpClient<EmployeeService>(config =>
 {
-    config.BaseAddress = new Uri("https://localhost:5001");
+    var apiBaseUri = builder.Configuration.GetValue<string>("ApiSettings:BaseUri");
+    var apiKey = builder.Configuration.GetValue<string>("ApiSettings:Key");
+    config.BaseAddress = new Uri(apiBaseUri);
+    config.DefaultRequestHeaders.Add("apikey", apiKey);
+    config.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 });
 
 builder.Services.AddMudServices(config =>

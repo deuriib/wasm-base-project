@@ -1,6 +1,5 @@
 ﻿@inherits FluxorComponent
 
-
 <MudDialog>
     <DialogContent>
         <MudText Typo="Typo.h5">Are you sure you want to clear the cache?</MudText>
@@ -18,10 +17,10 @@
     [CascadingParameter]
     MudDialogInstance? MudDialog { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
         MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false, NoHeader = true });
+        await base.OnInitializedAsync();
     }
 
     void Submit() => MudDialog?.Close(DialogResult.Ok(true));

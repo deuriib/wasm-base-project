@@ -7,7 +7,7 @@ namespace WasmBaseProjectApp.Store.Employees
     {
         [ReducerMethod]
         public static EmployeesState Reduce(EmployeesState state, GetEmployeesAction action)
-            => state with { IsLoading = true, Employees = Array.Empty<Employee>() };
+            => state with { IsLoading = true, Employees = null};
 
         [ReducerMethod]
         public static EmployeesState Reduce(EmployeesState state, GetEmployeesSuccessAction action)
@@ -15,6 +15,30 @@ namespace WasmBaseProjectApp.Store.Employees
 
         [ReducerMethod]
         public static EmployeesState Reduce(EmployeesState state, GetEmployeesFailedAction action)
-           => state with { IsLoading = false, Employees = Array.Empty<Employee>() };
+           => state with { IsLoading = false, Employees = null, ErrorMessage = action.ErrorMessage};
+
+        [ReducerMethod]
+        public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeStatusAction action)
+            => state with { };
+
+        [ReducerMethod]
+        public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeStatusSuccessAction action)
+            => state with { };
+
+        [ReducerMethod]
+        public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeStatusFailedAction action)
+            => state with { ErrorMessage = action.ErrorMessage};
+        
+        [ReducerMethod]
+        public static EmployeesState Reduce(EmployeesState state, DeleteEmployeeAction action)
+            => state with { };
+
+        [ReducerMethod]
+        public static EmployeesState Reduce(EmployeesState state, DeleteEmployeeSuccessAction action)
+            => state with { };
+
+        [ReducerMethod]
+        public static EmployeesState Reduce(EmployeesState state, DeleteEmployeeFailedAction action)
+            => state with { ErrorMessage = action.ErrorMessage};
     }
 }

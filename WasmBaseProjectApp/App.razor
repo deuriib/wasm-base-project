@@ -1,13 +1,33 @@
-<Fluxor.Blazor.Web.StoreInitializer />
+@inject NavigationManager NavigationManager
+
+<Fluxor.Blazor.Web.StoreInitializer/>
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <div class="d-flex align-center justify-center flex-column">
+                <MudContainer Class="d-flex">
+                    <MudText Typo="Typo.h1" Color="Color.Error">404</MudText>
+                </MudContainer>
+                <MudContainer Class="d-flex">
+                    <MudText Typo="Typo.h2">Page not found</MudText>
+                </MudContainer>
+                <MudContainer Class="d-flex my-4">
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Filled.ArrowBack" OnClick="GoHome" IconColor="Color.Secondary" Size="Size.Large">Go home page</MudButton>
+                </MudContainer>
+            </div>
         </LayoutView>
     </NotFound>
 </Router>
+
+@code
+{
+    private void GoHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
