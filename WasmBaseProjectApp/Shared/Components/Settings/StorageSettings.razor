@@ -1,6 +1,10 @@
 ﻿@using WasmBaseProjectApp.Shared.Components.Settings.Dialogs
 @inherits FluxorComponent
 
+@inject IDispatcher Dispatcher
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
 <MudList Clickable>
     <MudListSubheader>
         Storage
@@ -12,28 +16,20 @@
 </MudList>
 
 @code {
-    [Inject]
-    private IDispatcher? Dispatcher { get; set; }
-
-    [Inject]
-    private ISnackbar? Snackbar { get; set; }
-
-    [Inject]
-    private IDialogService? DialogService { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        SubscribeToAction<ClearStorageAction>(result => { Snackbar?.Add(message: "All settings were reset", severity: Severity.Warning); });
+        SubscribeToAction<ClearStorageAction>(result => { Snackbar.Add(message: "All settings were reset", severity: Severity.Warning); });
     }
 
     private async Task OpenDialog()
     {
-        var dialog = DialogService?.Show<ClearCacheDialog>("Clear Cache");
-        var result = await dialog?.Result!;
+        var dialog = DialogService.Show<ClearCacheDialog>("Clear Cache");
+        var result = await dialog.Result!;
         if (!result.Cancelled)
         {
-            Dispatcher?.Dispatch(new ClearStorageAction());
+            Dispatcher.Dispatch(new ClearStorageAction());
         }
     }
 }

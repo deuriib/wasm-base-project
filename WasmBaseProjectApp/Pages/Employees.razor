@@ -3,75 +3,113 @@
 @inject IState<EmployeesState> State
 @inject IDispatcher Dispatcher
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Employees</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
 
-<MudPaper Class="pa-8 d-flex align-center justify-center flex-grow-1" MinHeight="420px">
-    @if (State.Value.IsLoading)
-    {
-        <Loading />
-    }
+@if (State.Value.IsLoading)
+{
+    <Loading/>
+}
 
-    @if (State.Value.Employees.Any())
-    {
-        <MudContainer Class="flex-grow-1">
-            <MudTable Items="State.Value.Employees" Filter="new Func<Employee,bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
-                <ToolBarContent>
-                    <MudText Typo="Typo.h6">List of employees</MudText>
-                    <MudSpacer />
-                    <MudTextField @bind-Value="searchString1" Immediate Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                </ToolBarContent>
-                <HeaderContent>
-                    <MudTh>Id</MudTh>
-                    <MudTh>Full Name</MudTh>
-                    <MudTh>BirthDate</MudTh>
-                    <MudTh>Status</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Id">@context.Id</MudTd>
-                    <MudTd DataLabel="Full Name">@context.Name @context.LasName</MudTd>
-                    <MudTd DataLabel="BirthDate">@context.DayOfBirth/@context.MonthOfBirth/@context.YearOfBirth</MudTd>
-                    <MudTd DataLabel="Status"><MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton></MudTd>
-                </RowTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new int[] { 10, 15, 20, 40, 50 }"/>
-                </PagerContent>
-            </MudTable>
-        </MudContainer>
-    }
+
+@if (State.Value.Employees is not null)
+{
+    <MudPaper Class="pa-8 d-flex align-center justify-center flex-grow-1" MinHeight="420px">
+    <MudContainer Class="flex-grow-1">
+        <MudTable Items="State.Value.Employees" Filter="new Func<Employee, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">List of employees</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_filterString" Immediate Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Id</MudTh>
+                <MudTh>Full Name</MudTh>
+                <MudTh>BirthDate</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Options</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Full Name">@context.Name @context.LastName</MudTd>
+                <MudTd DataLabel="BirthDate">@context.DayOfBirth/@context.MonthOfBirth/@context.YearOfBirth</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton>
+                </MudTd>
+                <MudTd DataLabel="Options">
+                    <MudButtonGroup OverrideStyles="false">
+                        <MudIconButton Color="Color.Primary" Icon="@(context.Status ? Icons.Filled.PersonOff : Icons.Filled.Person)" Title="@(context.Status ? "Deactivate" : "Activate")" OnClick="() => UpdateEmployeeStatus(context.Id, context.Status)"></MudIconButton>
+                        <MudIconButton Color="Color.Primary" Icon="@Icons.Filled.Edit" Title="Edit employee" OnClick="() => ShowEditDialog(context)"></MudIconButton>
+                        <MudButton StartIcon="@Icons.Filled.Delete" Color="Color.Error" OnClick="() => ShowDeleteDialog(context)">Remove</MudButton>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 15, 20, 40, 50 }"/>
+            </PagerContent>
+        </MudTable>
+    </MudContainer>
 </MudPaper>
-
+}
 
 @code {
-    private string searchString1 = "";
+    private string _filterString = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new GetEmployeesAction());
 
-        SubscribeToAction<GetEmployeesSuccessAction>(action =>
+        SubscribeToAction<GetEmployeesSuccessAction>(action => { Snackbar.Add("Employees loaded", Severity.Success); });
+        SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action =>
         {
-            Snackbar.Add("Employees loaded", Severity.Success);
+            Snackbar.Add($"Employee Id:{action.Id}  status updated", Severity.Success);
+            Dispatcher.Dispatch(new GetEmployeesAction());
+        });
+        SubscribeToAction<DeleteEmployeeSuccessAction>(action =>
+        {
+            Snackbar.Add($"Employee Id:{action.Id} deleted", Severity.Warning);
+            Dispatcher.Dispatch(new GetEmployeesAction());
         });
 
-        SubscribeToAction<GetEmployeesFailedAction>(action =>
-        {
-            Snackbar.Add($"Employees failed, ${action.ErrorMessage}", Severity.Error);
-        });
+        SubscribeToAction<GetEmployeesFailedAction>(action => { Snackbar.Add($"Failed loading employees: reason, ${action.ErrorMessage}", Severity.Error); });
+        SubscribeToAction<UpdateEmployeeStatusFailedAction>(action => { Snackbar.Add($"Failed update status, reason:, ${action.ErrorMessage}", Severity.Error); });
 
-        base.OnInitialized();
+        await base.OnInitializedAsync();
     }
 
-    private bool FilterFunc1(Employee employee) => FilterFunc(employee, searchString1);
-
-    private bool FilterFunc(Employee employee, string searchString)
+    private void UpdateEmployeeStatus(int id, bool status)
     {
-        if (string.IsNullOrWhiteSpace(searchString))
+        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id, status));
+    }
+
+    private void ShowEditDialog(Employee employee)
+    {
+        DialogService.Show<EditEmployeeDialog>("Edit Employee", new DialogParameters { { "Employee", employee } },
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+    }
+
+    private async Task ShowDeleteDialog(Employee employee)
+    {
+        var dialog = DialogService.Show<DeleteEmployeeDialog>("Delete Employee", new DialogParameters { { "Employee", employee } },
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Dispatcher.Dispatch(new DeleteEmployeeAction(employee.Id));
+        }
+    }
+
+    private bool FilterFunc1(Employee employee) => FilterFunc(employee, _filterString);
+
+    private bool FilterFunc(Employee employee, string filter)
+    {
+        if (string.IsNullOrWhiteSpace(filter))
             return true;
-        if (employee.LasName!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (employee.LastName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (employee.Name!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (employee.Name!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }

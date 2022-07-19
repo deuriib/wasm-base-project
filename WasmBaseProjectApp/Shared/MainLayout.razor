@@ -19,12 +19,12 @@
             <MudIconButton Icon="@Icons.Material.Filled.Settings" Title="Settings" aria-label="settings" Color="Color.Inherit" OnClick="SettingsDrawerToggle" />
         </MudTooltip>
     </MudAppBar>
-    <MudDrawer @bind-Open="isOpenDrawer" ClipMode="DrawerClipMode.Always" PreserveOpenState Breakpoint="Breakpoint.Md" Elevation="1" Variant="@DrawerVariant.Mini">
+    <MudDrawer @bind-Open="_isOpenDrawer" ClipMode="DrawerClipMode.Always" PreserveOpenState Breakpoint="Breakpoint.Md" Elevation="1" Variant="@DrawerVariant.Mini">
         <MudDivider />
         <NavMenu />
     </MudDrawer>
 
-    <MudDrawer @bind-Open="@isOpenSettingDrawer" Anchor="Anchor.Right" ClipMode="DrawerClipMode.Never" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawer @bind-Open="@_isOpenSettingsDrawer" Width="300px" Anchor="Anchor.Right" ClipMode="DrawerClipMode.Never" Elevation="1" Variant="@DrawerVariant.Temporary">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">Settings</MudText>
         </MudDrawerHeader>
@@ -41,20 +41,20 @@
 
 @code {
 
-    bool isOpenDrawer = false;
-    bool isOpenSettingDrawer = false;
+    bool _isOpenDrawer = false;
+    bool _isOpenSettingsDrawer = false;
 
     private void DrawerToggle()
     {
-        isOpenDrawer = !isOpenDrawer;
+        _isOpenDrawer = !_isOpenDrawer;
     }
 
     private void SettingsDrawerToggle()
     {
-        isOpenSettingDrawer = !isOpenSettingDrawer;
+        _isOpenSettingsDrawer = !_isOpenSettingsDrawer;
     }
 
-    private MudTheme CurrentTheme => new MudTheme()
+    private static MudTheme CurrentTheme => new()
         {
             Palette = new Palette()
             {

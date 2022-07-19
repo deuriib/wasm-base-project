@@ -1,77 +1,67 @@
 ﻿using System.Net.Http.Json;
 using Bogus;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
-namespace WasmBaseProjectApp.Services
+namespace WasmBaseProjectApp.Services;
+
+public class EmployeeService
 {
+    private readonly HttpClient _httpClient;
 
-    public class EmployeeService
+    public EmployeeService(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
-        public EmployeeService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-            Randomizer.Seed = new Random(100);
-        }
-
-        public async Task<Employee[]> GetEmployeesAsync()
-        {
-            //var employees = await _httpClient.GetFromJsonAsync<Employee[]>("api/employees");
-            var employees = await GenerateFakeEmployees();
-            return employees;
-        }
-
-        public async Task<Employee> GetEmployeeAsync(int id)
-        {
-            //var employee = await _httpClient.GetFromJsonAsync<Employee>($"api/employees/{id}");
-            var employees = await GenerateFakeEmployees();
-                var employee = employees.SingleOrDefault(e => e.Id.Equals(id));
-            return employee ?? new ();
-        }
-
-        public async Task AddEmployeeAsync(Employee request)
-        {
-            await _httpClient.PostAsJsonAsync("api/employees", request);
-        }
-
-        public async Task UpdateEmployeeAsync(int id, Employee request)
-        {
-            await _httpClient.PostAsJsonAsync($"api/employees/{id}", request);
-        }
-
-        private Task<Employee[]> GenerateFakeEmployees()
-        {
-            var employeeId = 1;
-            var fakeEmployees = new Faker<Employee>()
-                .StrictMode(true)
-                .RuleFor(e => e.Id, f => employeeId++)
-                .RuleFor(e => e.Name, f => f.Person.FirstName)
-                .RuleFor(e => e.LasName, f => f.Person.LastName)
-                .RuleFor(e => e.Address, f => $"{f.Person.Address.City}{f.Person.Address.State}")
-                .RuleFor(e => e.Status, f => f.Random.Bool())
-                .RuleFor(e => e.Note, f => f.Random.String())
-                .RuleFor(e => e.YearOfBirth, f => f.Person.DateOfBirth.Year)
-                .RuleFor(e => e.DayOfBirth, f => f.Person.DateOfBirth.Day)
-                .RuleFor(e => e.MonthOfBirth, f => f.Person.DateOfBirth.Month)
-                .RuleFor(e => e.CreateDate, f => f.Date.Past());
-
-            return Task.FromResult(fakeEmployees.Generate(50).ToArray());
-        }
+        _httpClient = httpClient;
     }
 
-
-    public class Employee
+    public async Task<Employee[]?> GetAllAsync()
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? LasName { get; set; }
-        public string? Address { get; set; }
-        public bool Status { get; set; }
-        public string? Note { get; set; }
-        public int YearOfBirth { get; set; }
-        public int DayOfBirth { get; set; }
-        public int MonthOfBirth { get; set; }
-        public DateTime CreateDate { get; set; }
+        return await _httpClient.GetFromJsonAsync<Employee[]>("/rest/v1/employees?select=*");
+    }
+
+    public async Task AddOneAsync(Employee request)
+    {
+        await _httpClient.PostAsJsonAsync("api/employees", request);
+    }
+
+    public async Task UpdateAsync(int id, Employee request)
+    {
+        await _httpClient.PostAsJsonAsync($"api/employees/{id}", request);
+    }
+
+    public async Task UpdateStatusAsync(int id, bool newStatus)
+    {
+        var content = new StringContent(JsonConvert.SerializeObject(new { status = newStatus }));
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        var response = await _httpClient.PatchAsync($"/rest/v1/employees?id=eq.{id}", content
+        );
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        await _httpClient.DeleteAsync($"/rest/v1/employees?id=eq.{id}");
     }
 }
 
+public class Employee
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+
+    [JsonPropertyName("last_name")] public string? LastName { get; set; }
+    public string? Address { get; set; }
+    public bool Status { get; set; }
+    public string? Note { get; set; }
+
+    [JsonPropertyName("year_of_birth")] public int YearOfBirth { get; set; }
+
+    [JsonPropertyName("day_of_birth")] public int DayOfBirth { get; set; }
+
+    [JsonProperty("month_of_birth")] public int MonthOfBirth { get; set; }
+
+    [JsonProperty("created_at")] public DateTime CreateDate { get; set; }
+}
