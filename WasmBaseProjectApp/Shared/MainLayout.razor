@@ -1,8 +1,8 @@
 ﻿@inherits FluxorLayout
-@inject IState<AppState> _appState
-@inject IState<ThemeState> _themeState
+@inject IState<AppState> AppState
+@inject IState<ThemeState> ThemeState
 
-<MudThemeProvider IsDarkMode="_themeState.Value.isDarkMode" Theme="CurrentTheme" />
+<MudThemeProvider IsDarkMode="ThemeState.Value.isDarkMode" Theme="CurrentTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -10,7 +10,7 @@
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 
-        <MudText Typo="Typo.h6">@_appState.Value.appName</MudText>
+        <MudText Typo="Typo.h6">@AppState.Value.appName</MudText>
 
         <MudSpacer />
         <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
