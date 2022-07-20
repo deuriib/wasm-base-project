@@ -2,27 +2,10 @@
 
 namespace WasmBaseProjectApp.Store.Employees
 {
-    public class GetEmployeesAction
-    { }
+    public record GetEmployeesAction();
 
-    public class GetEmployeesSuccessAction
-    {
-        public Employee[] Employees { get; }
+    public record GetEmployeesSuccessAction(EmployeeListDto[] Employees);
 
-        public GetEmployeesSuccessAction(Employee[] employees)
-        {
-            Employees = employees;
-        }
-    }
-
-    public class GetEmployeesFailedAction
-    {
-        public string ErrorMessage { get; }
-
-        public GetEmployeesFailedAction(string errorMessage)
-        {
-            ErrorMessage = errorMessage;
-        }
-    }
+    public record GetEmployeesFailedAction(string ErrorMessage);
 
 }

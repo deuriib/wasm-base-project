@@ -2,4 +2,4 @@
 
 namespace WasmBaseProjectApp.Store.Employees;
 
-public record EmployeesState(bool IsLoading,string? ErrorMessage, Employee[]? Employees);
+public record EmployeesState(bool IsLoading,EmployeeListDto[]? Employees, EmployeeDto? SelectedEmployee);

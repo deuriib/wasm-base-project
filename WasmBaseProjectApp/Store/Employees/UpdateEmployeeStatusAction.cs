@@ -1,33 +1,7 @@
 ﻿namespace WasmBaseProjectApp.Store.Employees;
 
-public class UpdateEmployeeStatusAction
-{
-    public UpdateEmployeeStatusAction(int id, bool currentStatus)
-    {
-        Id = id;
-        CurrentStatus = currentStatus;
-    }
+public record UpdateEmployeeStatusAction(int Id, bool CurrentStatus);
 
-    public int Id { get; }
-    public bool CurrentStatus { get; }
-}
+public record UpdateEmployeeStatusSuccessAction(int Id);
 
-public class UpdateEmployeeStatusSuccessAction
-{
-    public UpdateEmployeeStatusSuccessAction(int id)
-    {
-        Id = id;
-    }
-
-    public int Id { get;  } 
-}
-
-public class UpdateEmployeeStatusFailedAction
-{
-    public UpdateEmployeeStatusFailedAction(string? errorMessage)
-    {
-        ErrorMessage = errorMessage;
-    }
-
-    public string? ErrorMessage { get; }
-}
+public record UpdateEmployeeStatusFailedAction(string? ErrorMessage);

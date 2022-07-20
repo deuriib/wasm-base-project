@@ -19,7 +19,7 @@ namespace WasmBaseProjectApp.Store.Employees
             {
                 var employees = await _service.GetAllAsync();
 
-                dispatcher.Dispatch(new GetEmployeesSuccessAction(employees));
+                dispatcher.Dispatch(new GetEmployeesSuccessAction(employees!));
             }
             catch (Exception ex)
             {
@@ -55,6 +55,36 @@ namespace WasmBaseProjectApp.Store.Employees
             catch (Exception ex)
             {
                 dispatcher.Dispatch(new DeleteEmployeeFailedAction(ex.GetBaseException().Message));
+            }
+        }
+
+        [EffectMethod]
+        public async Task HandleAsync(CreateEmployeeAction action, IDispatcher dispatcher)
+        {
+            try
+            {
+                 await _service.AddOneAsync(action.Dto);
+
+                dispatcher.Dispatch(new CreateEmployeeSuccessAction());
+            }
+            catch (Exception ex)
+            {
+                dispatcher.Dispatch(new CreateEmployeeFailedAction(ex.GetBaseException().Message));
+            }
+        }
+
+        [EffectMethod]
+        public async Task HandleAsync(GetOneEmployeeAction action, IDispatcher dispatcher)
+        {
+            try
+            {
+                var employee = await _service.GetOneAsync(action.Id);
+
+                dispatcher.Dispatch(new GetOneEmployeeSuccessAction(employee));
+            }
+            catch (Exception ex)
+            {
+                dispatcher.Dispatch(new GetOneEmployeeFailedAction(ex.GetBaseException().Message));
             }
         }
     }

@@ -1,9 +1,11 @@
 ﻿@inherits FluxorLayout
+@inject ISnackbar Snackbar
 @inject IDispatcher Dispatcher
+@inject IState<EmployeesState> State
 
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.subtitle1">@Employee?.Name</MudText>
+        <MudText Typo="Typo.subtitle1">ID: @State.Value.SelectedEmployee?.Id with @State.Value.SelectedEmployee?.FirstName @State.Value.SelectedEmployee?.LastName</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton StartIcon="@Icons.Filled.Save" OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled">Save</MudButton>
@@ -17,10 +19,16 @@
     MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public Employee? Employee { get; set; }
+    public int? EmployeeId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        SubscribeToAction<GetOneEmployeeFailedAction>(action =>
+        {
+            Snackbar.Add($"GetOneEmployeeFailed: {action.ErrorMessage}", Severity.Error);
+        });
+        Dispatcher.Dispatch(new GetOneEmployeeAction(EmployeeId!.Value));
+        
         MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false });
         await base.OnInitializedAsync();
     }

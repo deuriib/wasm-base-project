@@ -15,16 +15,21 @@
 @code {
     [CascadingParameter]
     MudDialogInstance? MudDialog { get; set; }
-    
+
     [Parameter]
-    public Employee? Employee { get; set; }
-    
+    public EmployeeListDto? Employee { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false, NoHeader = true, FullWidth = true});
+        MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false, NoHeader = true, FullWidth = true });
+        SubscribeToAction<DeleteEmployeeSuccessAction>(action =>
+        {
+            Dispatcher.Dispatch(new GetEmployeesAction());
+            MudDialog?.Close(DialogResult.Ok(true));
+        });
         await base.OnInitializedAsync();
     }
-    
-    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+
+    private void Submit() => Dispatcher.Dispatch(new DeleteEmployeeAction(Employee!.Id));
     private void Cancel() => MudDialog?.Cancel();
 }
