@@ -1,0 +1,8 @@
+/* /Pages/Employees/Employees.razor.rz.scp.css */
+mud-button-group-root[b-uhnb06mner] {
+    opacity: 0;
+}
+
+mud-button-group-root:hover[b-uhnb06mner] {
+    opacity: 1;
+}
