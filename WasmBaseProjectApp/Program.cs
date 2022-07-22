@@ -31,7 +31,6 @@ builder.Services.AddHttpClient<EmployeeService>(config =>
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
-
     config.SnackbarConfiguration.PreventDuplicates = true;
     config.SnackbarConfiguration.NewestOnTop = false;
     config.SnackbarConfiguration.ShowCloseIcon = false;
@@ -55,7 +54,7 @@ builder.Services.AddFluxor(options =>
         options.UseReduxDevTools();
     
     options.UseRouting();
-    options.UsePersist(options => options.UseInclusionApproach());
+    options.UsePersist(config => config.UseInclusionApproach());
 });
 
 await builder.Build().RunAsync();

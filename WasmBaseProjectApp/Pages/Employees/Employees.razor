@@ -9,7 +9,7 @@
 <MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
 
 <MudPaper Class="pa-4 d-flex align-center justify-center" MinHeight="420px">
-    <MudTable Class="flex-grow-1" Items="State.Value.Employees" Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees.Count()" Virtualize Filter="new Func<EmployeeListDto, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
+    <MudTable Class="flex-grow-1" Items="State.Value.Employees" Dense Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees!.Count()" Virtualize Filter="new Func<EmployeeListDto, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
         <ToolBarContent>
             <MudText Typo="Typo.h6">List of employees</MudText>
             <MudSpacer />
@@ -33,7 +33,7 @@
         </NoRecordsContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
-            <MudTd DataLabel="Name">@context.Name @context.LastName</MudTd>
+            <MudTd DataLabel="Name">@context.FirstName @context.LastName</MudTd>
             <MudTd DataLabel="Birthdate">@context.Birthdate.ToString("MM/dd/yyyy")</MudTd>
             <MudTd DataLabel="Status">
                 <MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton>
@@ -47,7 +47,7 @@
             </MudTd>
         </RowTemplate>
         <PagerContent>
-            <MudTablePager PageSizeOptions="new int[] { 10, 15, 20, 40, 50 }" />
+            <MudTablePager PageSizeOptions="new [] { 10, 15, 20, 40, 50 }" />
         </PagerContent>
     </MudTable>
 </MudPaper>
@@ -60,15 +60,14 @@
     {
         Dispatcher.Dispatch(new GetEmployeesAction());
 
-        SubscribeToAction<GetEmployeesSuccessAction>(action => { Snackbar.Add("Employees loaded", Severity.Success); });
+        SubscribeToAction<GetEmployeesSuccessAction>(_ => { Snackbar.Add("Employees loaded", Severity.Success); });
         SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action =>
         {
             Snackbar.Add($"Employee Id:{action.Id}  status updated", Severity.Success);
             Dispatcher.Dispatch(new GetEmployeesAction());
         });
 
-        SubscribeToAction<GetEmployeesFailedAction>(action => { Snackbar.Add($"Failed loading employees: reason, ${action.ErrorMessage}", Severity.Error); });
-        SubscribeToAction<UpdateEmployeeStatusFailedAction>(action => { Snackbar.Add($"Failed update status, reason:, ${action.ErrorMessage}", Severity.Error); });
+        SubscribeToAction<EmployeeFailedAction>(action => { Snackbar.Add(action.ErrorMessage, Severity.Error); });
 
         await base.OnInitializedAsync();
     }
@@ -104,7 +103,7 @@
             return true;
         if (employeeListDto.LastName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (employeeListDto.Name!.Contains(filter, StringComparison.OrdinalIgnoreCase))
+        if (employeeListDto.FirstName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }
