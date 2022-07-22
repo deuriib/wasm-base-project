@@ -13,6 +13,7 @@
 </MudDialog>
 
 @code {
+
     [CascadingParameter]
     MudDialogInstance? MudDialog { get; set; }
 
@@ -23,17 +24,15 @@
     {
         MudDialog?.SetOptions(new DialogOptions()
         {
-            DisableBackdropClick = true, 
-            CloseButton = false, 
-            CloseOnEscapeKey = false, 
-            NoHeader = true, 
+            DisableBackdropClick = true,
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            NoHeader = true,
             FullWidth = true
         });
         SubscribeToAction<DeleteEmployeeSuccessAction>(_ =>
-        {
-            Dispatcher.Dispatch(new GetEmployeesAction());
-            MudDialog?.Close(DialogResult.Ok(true));
-        });
+            MudDialog?.Close(DialogResult.Ok(true))
+            );
         await base.OnInitializedAsync();
     }
 
