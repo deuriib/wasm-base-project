@@ -3,4 +3,4 @@
 namespace WasmBaseProjectApp.Store.Employees;
 
 public record UpdateEmployeeAction(int? Id, EditEmployeeDto? Employee);
-public record UpdateEmployeeSuccessAction(int? Id);
+public record UpdateEmployeeSuccessAction(int? Id, EditEmployeeDto? Employee);

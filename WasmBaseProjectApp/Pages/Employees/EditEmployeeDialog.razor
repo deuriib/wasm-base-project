@@ -62,7 +62,6 @@
         SubscribeToAction<UpdateEmployeeSuccessAction>(action =>
         {
             Snackbar.Add($"Employee Id:{action.Id}  updated", Severity.Success);
-            Dispatcher.Dispatch(new GetEmployeesAction());
             MudDialog?.Close(DialogResult.Ok(true));
         });
 

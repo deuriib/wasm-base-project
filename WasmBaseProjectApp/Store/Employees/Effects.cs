@@ -19,7 +19,7 @@ public class Effects
         {
             var employees = await _service.GetAllAsync();
 
-            dispatcher.Dispatch(new GetEmployeesSuccessAction(employees));
+            dispatcher.Dispatch(new GetEmployeesSuccessAction(employees?.OrderBy(e => e.Id).ToArray()));
         }
         catch (Exception ex)
         {
@@ -76,7 +76,7 @@ public class Effects
 
             await _service.UpdateAsync(action.Id!.Value, action.Employee!);
 
-            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id));
+            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id, action.Employee));
         }
         catch (Exception ex)
         {
@@ -97,7 +97,7 @@ public class Effects
             
             await _service.UpdateStatusAsync(action.Id!.Value, action.Dto!);
 
-            dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id));
+            dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id, action.Dto!.Status));
         }
         catch (Exception ex)
         {

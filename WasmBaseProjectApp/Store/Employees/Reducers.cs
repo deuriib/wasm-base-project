@@ -28,4 +28,42 @@ public static class Reducers
     [ReducerMethod]
     public static EmployeesState Reduce(EmployeesState state, GetOneEmployeeFailedAction action)
         => state with { SelectedEmployee = null };
+
+    [ReducerMethod]
+    public static EmployeesState Reduce(EmployeesState state, DeleteEmployeeSuccessAction action)
+        => state with { Employees = state.Employees?.Where(e => !e.Id.Equals(action.Id)).ToArray() };
+
+    [ReducerMethod]
+    public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeStatusSuccessAction action)
+    {
+        var employee = state.Employees?.FirstOrDefault(e => e.Id.Equals(action.Id));
+        if (employee == null)
+            return state;
+
+        employee = employee with { Status = action.NewStatus };
+
+        var index = Array.FindIndex(state.Employees!, e => e.Id.Equals(action.Id));
+        state.Employees?.SetValue(employee, index);
+
+        return state with { Employees = state.Employees };
+    }
+
+    [ReducerMethod]
+    public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeSuccessAction action)
+    {
+        var employee = state.Employees?.FirstOrDefault(e => e.Id.Equals(action.Id));
+        if (employee == null)
+            return state;
+
+        employee = employee with
+        {
+            FirstName = action.Employee!.FirstName, LastName = action.Employee!.LastName,
+            Birthdate = action.Employee!.Birthdate!.Value
+        };
+
+        var index = Array.FindIndex(state.Employees!, e => e.Id.Equals(action.Id));
+        state.Employees?.SetValue(employee, index);
+
+        return state with { Employees = state.Employees, SelectedEmployee = null };
+    }
 }
