@@ -1,5 +1,7 @@
-﻿namespace WasmBaseProjectApp.Store.Employees;
+﻿using WasmBaseProjectApp.Services;
 
-public record UpdateEmployeeStatusAction(int Id, bool CurrentStatus);
+namespace WasmBaseProjectApp.Store.Employees;
 
-public record UpdateEmployeeStatusSuccessAction(int Id);
+public record UpdateEmployeeStatusAction(int? Id, UpdateEmployeeStatusDto? Dto);
+
+public record UpdateEmployeeStatusSuccessAction(int? Id);
