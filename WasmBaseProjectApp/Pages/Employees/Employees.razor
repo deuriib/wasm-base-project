@@ -33,7 +33,7 @@
         </NoRecordsContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
-            <MudTd DataLabel="Name">@context.Name @context.LastName</MudTd>
+            <MudTd DataLabel="Name">@context.FirstName @context.LastName</MudTd>
             <MudTd DataLabel="Birthdate">@context.Birthdate.ToString("MM/dd/yyyy")</MudTd>
             <MudTd DataLabel="Status">
                 <MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton>
@@ -104,7 +104,7 @@
             return true;
         if (employeeListDto.LastName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (employeeListDto.Name!.Contains(filter, StringComparison.OrdinalIgnoreCase))
+        if (employeeListDto.FirstName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }

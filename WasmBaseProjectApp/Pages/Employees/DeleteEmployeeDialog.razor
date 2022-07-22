@@ -3,7 +3,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.h5">Are you sure you want to delete @Employee?.Name @Employee?.LastName employee?</MudText>
+        <MudText Typo="Typo.h5">Are you sure you want to delete @Employee?.FirstName @Employee?.LastName employee?</MudText>
         <MudText Typo="Typo.body2">This will remove the employee data permanently</MudText>
     </DialogContent>
     <DialogActions>
@@ -21,8 +21,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false, NoHeader = true, FullWidth = true });
-        SubscribeToAction<DeleteEmployeeSuccessAction>(action =>
+        MudDialog?.SetOptions(new DialogOptions()
+        {
+            DisableBackdropClick = true, 
+            CloseButton = false, 
+            CloseOnEscapeKey = false, 
+            NoHeader = true, 
+            FullWidth = true
+        });
+        SubscribeToAction<DeleteEmployeeSuccessAction>(_ =>
         {
             Dispatcher.Dispatch(new GetEmployeesAction());
             MudDialog?.Close(DialogResult.Ok(true));

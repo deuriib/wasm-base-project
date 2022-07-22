@@ -20,7 +20,7 @@
                     <MudTextField T="string" @bind-Value="model.Note" For="@(() => model.Note)" Immediate="false" DebounceInterval="500" Label="Note" Required="false"/>
 
                     <div class="d-flex align-center justify-end mt-6">
-                        <MudButton StartIcon="@Icons.Filled.Save" OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" Disabled="@(!form.IsValid)">Save</MudButton>
+                        <MudButton StartIcon="@Icons.Filled.Save" OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" Disabled="@(!success)">Save</MudButton>
                         <MudButton StartIcon="@Icons.Filled.Cancel" OnClick="Cancel" Color="Color.Error" Variant="Variant.Outlined" Class="ml-4">Cancel</MudButton>
                     </div>
                 </MudForm>
@@ -44,7 +44,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        MudDialog?.SetOptions(new DialogOptions() { DisableBackdropClick = true, CloseButton = false, CloseOnEscapeKey = false, MaxWidth = MaxWidth.Medium, FullWidth = true});
+        MudDialog?.SetOptions(new DialogOptions()
+        {
+            DisableBackdropClick = true, 
+            CloseButton = false, 
+            CloseOnEscapeKey = false, 
+            MaxWidth = MaxWidth.Medium, 
+            FullWidth = true
+        });
         SubscribeToAction<CreateEmployeeSuccessAction>(_ =>
         {
             Dispatcher.Dispatch(new GetEmployeesAction());
