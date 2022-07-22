@@ -89,8 +89,13 @@ public class Effects
     {
         try
         {
-            var dto = new UpdateEmployeeStatusDto { Status = !action.CurrentStatus };
-            await _service.UpdateStatusAsync(action.Id, dto);
+            if (action.Id is null)
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee id is null"));
+
+            if (action.Dto is null)
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee status is null"));
+            
+            await _service.UpdateStatusAsync(action.Id!.Value, action.Dto!);
 
             dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id));
         }

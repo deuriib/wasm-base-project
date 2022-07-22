@@ -74,7 +74,7 @@
 
     private void UpdateEmployeeStatus(int id, bool status)
     {
-        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id, status));
+        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id, new UpdateEmployeeStatusDto{Status = status}));
     }
 
     private void ShowCreateNewDialog()
