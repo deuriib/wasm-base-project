@@ -6,6 +6,6 @@ namespace WasmBaseProjectApp.Store.Employees
 
     public record GetEmployeesSuccessAction(EmployeeListDto[]? Employees);
 
-    public record GetEmployeesFailedAction(string ErrorMessage);
+    public record GetEmployeesFailedAction(string? ErrorMessage) : EmployeeFailedAction(ErrorMessage);
 
 }

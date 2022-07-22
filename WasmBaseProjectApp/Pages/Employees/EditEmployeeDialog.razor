@@ -59,12 +59,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<GetOneEmployeeFailedAction>(action => { Snackbar.Add($"GetOneEmployeeFailed: {action.ErrorMessage}", Severity.Error); });
-        
-        SubscribeToAction<UpdateEmployeeFailedAction>(action => { Snackbar.Add($"UpdateEmployeeFailed: {action.ErrorMessage}", Severity.Error); });
-
-        SubscribeToAction<UpdateEmployeeSuccessAction>(_ =>
+        SubscribeToAction<UpdateEmployeeSuccessAction>(action =>
         {
+            Snackbar.Add($"Employee Id:{action.Id}  updated", Severity.Success);
             Dispatcher.Dispatch(new GetEmployeesAction());
             MudDialog?.Close(DialogResult.Ok(true));
         });

@@ -3,5 +3,3 @@
 public record UpdateEmployeeStatusAction(int Id, bool CurrentStatus);
 
 public record UpdateEmployeeStatusSuccessAction(int Id);
-
-public record UpdateEmployeeStatusFailedAction(string? ErrorMessage);

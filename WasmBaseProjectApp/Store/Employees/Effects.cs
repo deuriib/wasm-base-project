@@ -23,7 +23,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new GetEmployeesFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new GetEmployeesFailedAction($"Failed loading employees: {ex.Message}"));
         }
     }
 
@@ -41,7 +41,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new GetOneEmployeeFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new GetOneEmployeeFailedAction($"Failed loading employee: {ex.Message}"));
         }
     }
 
@@ -51,7 +51,7 @@ public class Effects
         try
         {
             if (action.Dto is null)
-                dispatcher.Dispatch(new CreateEmployeeFailedAction("Employee is null"));
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee is null"));
 
             await _service.AddOneAsync(action.Dto!);
 
@@ -59,7 +59,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new CreateEmployeeFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new EmployeeFailedAction($"Failed creating employee: {ex.Message}"));
         }
     }
 
@@ -69,10 +69,10 @@ public class Effects
         try
         {
             if (action.Id is null)
-                dispatcher.Dispatch(new UpdateEmployeeFailedAction("Employee id is null"));
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee id is null"));
 
             if (action.Employee is null)
-                dispatcher.Dispatch(new UpdateEmployeeFailedAction("Employee is null"));
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee is null"));
 
             await _service.UpdateAsync(action.Id!.Value, action.Employee!);
 
@@ -80,7 +80,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new UpdateEmployeeFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new EmployeeFailedAction($"Failed updating employee: {ex.Message}"));
         }
     }
 
@@ -96,7 +96,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new UpdateEmployeeStatusFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new EmployeeFailedAction($"Failed updating employee status: {ex.Message}"));
         }
     }
 
@@ -106,7 +106,7 @@ public class Effects
         try
         {
             if (action.Id is null)
-                dispatcher.Dispatch(new DeleteEmployeeFailedAction("Employee id is null"));
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee id is null"));
 
             await _service.DeleteAsync(action.Id!.Value);
 
@@ -114,7 +114,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new DeleteEmployeeFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new EmployeeFailedAction(ex.GetBaseException().Message));
         }
     }
 }
