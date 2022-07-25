@@ -19,7 +19,7 @@ public class Effects
         {
             var employees = await _service.GetAllAsync();
 
-            dispatcher.Dispatch(new GetEmployeesSuccessAction(employees?.OrderBy(e => e.Id).ToArray()));
+            dispatcher.Dispatch(new GetEmployeesSuccessAction(employees));
         }
         catch (Exception ex)
         {
@@ -74,7 +74,10 @@ public class Effects
             if (action.Employee is null)
                 dispatcher.Dispatch(new EmployeeFailedAction("Employee is null"));
 
-            await _service.UpdateAsync(action.Id!.Value, action.Employee!);
+            var dto = new EditEmployeeDto(action.Employee?.FirstName, action.Employee?.LastName,
+                action.Employee?.Address, action.Employee?.Note, action.Employee?.Birthdate);
+            
+            await _service.UpdateAsync(action.Id!.Value, dto);
 
             dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id, action.Employee));
         }
@@ -94,7 +97,7 @@ public class Effects
 
             if (action.Dto is null)
                 dispatcher.Dispatch(new EmployeeFailedAction("Employee status is null"));
-            
+
             await _service.UpdateStatusAsync(action.Id!.Value, action.Dto!);
 
             dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id, action.Dto!.Status));

@@ -8,6 +8,7 @@ using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
 using MudBlazor;
+using WasmBaseProjectApp.Data.Repositories;
 using WasmBaseProjectApp.Services;
 using WasmBaseProjectApp.Store;
 
@@ -19,14 +20,16 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddHttpClient<EmployeeService>(config =>
+
+var initializeSupabase = async () =>
 {
-    var apiBaseUri = builder.Configuration.GetValue<string>("ApiSettings:BaseUri");
-    var apiKey = builder.Configuration.GetValue<string>("ApiSettings:Key");
-    config.BaseAddress = new Uri(apiBaseUri);
-    config.DefaultRequestHeaders.Add("apikey", apiKey);
-    config.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
-});
+    var url = builder.Configuration.GetValue<string>("SupabaseConfig:Url");
+    var key = builder.Configuration.GetValue<string>("SupabaseConfig:Key");
+
+    await Supabase.Client.InitializeAsync(url, key);
+};
+
+initializeSupabase().Wait();
 
 builder.Services.AddMudServices(config =>
 {
@@ -39,6 +42,9 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
+
+builder.Services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddSingleton<EmployeeService>();
 
 builder.Services.AddScoped<WeatherService>();
 
