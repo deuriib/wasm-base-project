@@ -1,9 +1,10 @@
-﻿@inherits FluxorLayout
+﻿@using WasmBaseProjectApp.ViewModels
+@inherits FluxorLayout
 @inject IDispatcher Dispatcher
 
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.h5">Are you sure you want to delete @Employee?.FirstName @Employee?.LastName employee?</MudText>
+        <MudText Typo="Typo.h5">Are you sure you want to delete @Employee?.FullName employee?</MudText>
         <MudText Typo="Typo.body2">This will remove the employee data permanently</MudText>
     </DialogContent>
     <DialogActions>
@@ -18,7 +19,7 @@
     MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public EmployeeListDto? Employee { get; set; }
+    public EmployeeListViewModel? Employee { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

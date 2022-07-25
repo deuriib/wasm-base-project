@@ -78,7 +78,7 @@
 
     private void OnValidSubmit(EditContext context)
     {
-        Dispatcher.Dispatch(new UpdateEmployeeAction(EmployeeId,State.Value.SelectedEmployee));
+        Dispatcher.Dispatch(new UpdateEmployeeAction(EmployeeId, State.Value.SelectedEmployee));
     }
 
     private void Cancel() => MudDialog?.Cancel();

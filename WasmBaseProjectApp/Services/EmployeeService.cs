@@ -2,105 +2,96 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Supabase.Realtime;
+using WasmBaseProjectApp.Data.Models;
+using WasmBaseProjectApp.Data.Repositories;
+using WasmBaseProjectApp.ViewModels;
 
 namespace WasmBaseProjectApp.Services;
 
 public class EmployeeService
 {
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient = null!;
+    private readonly IEmployeeRepository _employeeRepository;
 
-    public EmployeeService(HttpClient httpClient)
+    public EmployeeService(IEmployeeRepository employeeRepository)
     {
-        _httpClient = httpClient;
+        _employeeRepository = employeeRepository;
     }
 
-    public async Task<EmployeeListDto[]?> GetAllAsync()
+    public async Task<EmployeeListViewModel[]> GetAllAsync()
     {
-        return await _httpClient.GetFromJsonAsync<EmployeeListDto[]>("/rest/v1/employees?select=*");
+        var dto = await _employeeRepository.GetAllAsync();
+        var viewmodel = dto.Select(e
+            => new EmployeeListViewModel
+            {
+                Id = e.Id, FullName = $"{e.FirstName} {e.LastName}", Status = e.Status,
+                BirthDate = $"{e.Birthdate:dd/MM/yyyy}"
+            }).ToArray();
+        return viewmodel;
     }
 
-    public async Task<EditEmployeeDto?> GetOneAsync(int id)
+    public async Task<EmployeeEditViewModel?> GetOneAsync(int id)
     {
-        var employees = await _httpClient.GetFromJsonAsync<EditEmployeeDto[]>($"/rest/v1/employees?id=eq.{id}&select=*");
-        return employees?[0];
+        var employee = await _employeeRepository.GetOneAsync(id);
+        return new EmployeeEditViewModel
+        {
+            Address = employee.Address,
+            Birthdate = employee.Birthdate,
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
+            Note = employee.Note
+        };
     }
 
     public async Task AddOneAsync(CreateEmployeeDto dto)
     {
-        var response = await _httpClient.PostAsJsonAsync("/rest/v1/employees?id=eq.{id}", dto);
-        response.EnsureSuccessStatusCode();
+        await _employeeRepository.AddOneAsync(dto);
     }
-     
+
     public async Task UpdateAsync(int id, EditEmployeeDto dto)
     {
-        var content = new StringContent(JsonSerializer.Serialize(dto));
-        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        
-        var response = await _httpClient.PatchAsync($"/rest/v1/employees?id=eq.{id}", content);
-        
-        response.EnsureSuccessStatusCode();
+        await _employeeRepository.UpdateAsync(id, dto); 
     }
 
     public async Task UpdateStatusAsync(int id, UpdateEmployeeStatusDto dto)
     {
-
-        var content = new StringContent(JsonSerializer.Serialize(dto));
-        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-        var response = await _httpClient.PatchAsync($"/rest/v1/employees?id=eq.{id}", content);
-
-        response.EnsureSuccessStatusCode();
+        await _employeeRepository.UpdateStatusAsync(id, dto);
     }
 
     public async Task DeleteAsync(int id)
     {
-        var response = await _httpClient.DeleteAsync($"/rest/v1/employees?id=eq.{id}");
-        response.EnsureSuccessStatusCode();
+        await _employeeRepository.DeleteAsync(id);
     }
 }
 
-public record EditEmployeeDto
-{
-    [JsonPropertyName("name")] public string? FirstName { get; set; }
-
-    [JsonPropertyName("last_name")] public string? LastName { get; set; }
-
-    [JsonPropertyName("address")] public string? Address { get; set; }
-
-    [JsonPropertyName("note")] public string? Note { get; set; }
-
-    [JsonPropertyName("birth_date")] public DateTime? Birthdate { get; set; }
-}
+public record EditEmployeeDto(string? FirstName, string? LastName, string? Address, string? Note, DateTime? Birthdate);
 
 public record UpdateEmployeeStatusDto
 {
-    [JsonPropertyName("status")]public bool Status { get; set; }
+    [JsonPropertyName("status")] public bool Status { get; set; }
 }
 
 public record EmployeeListDto
 {
     public int Id { get; set; }
 
-    [JsonPropertyName("name")]public string? FirstName { get; set; }
+    public string? FirstName { get; set; }
 
-    [JsonPropertyName("last_name")] public string? LastName { get; set; }
+    public string? LastName { get; set; }
 
-    [JsonPropertyName("status")] public bool Status { get; set; }
+    public bool Status { get; set; }
 
-    [JsonPropertyName("birth_date")]
     public DateTime Birthdate { get; set; }
 }
 
 public record CreateEmployeeDto
 {
-    [JsonPropertyName("name")]
-    public string? FirstName { get; set; }
+    [JsonPropertyName("name")] public string? FirstName { get; set; }
 
-    [JsonPropertyName("last_name")]
-    public string? LastName { get; set; }
+    [JsonPropertyName("last_name")] public string? LastName { get; set; }
     public string? Address { get; set; }
     public string? Note { get; set; }
 
-    [JsonPropertyName("birth_date")]
-    public DateTime? Birthdate { get; set; }
+    [JsonPropertyName("birth_date")] public DateTime? Birthdate { get; set; }
 };

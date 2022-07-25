@@ -1,5 +1,6 @@
 ﻿using Fluxor;
 using WasmBaseProjectApp.Services;
+using WasmBaseProjectApp.ViewModels;
 
 namespace WasmBaseProjectApp.Store.Employees;
 
@@ -7,7 +8,7 @@ public static class Reducers
 {
     [ReducerMethod]
     public static EmployeesState Reduce(EmployeesState state, GetEmployeesAction action)
-        => state with { IsLoading = true, Employees = Array.Empty<EmployeeListDto>() };
+        => state with { IsLoading = true, Employees = Array.Empty<EmployeeListViewModel>() };
 
     [ReducerMethod]
     public static EmployeesState Reduce(EmployeesState state, GetEmployeesSuccessAction action)
@@ -15,7 +16,7 @@ public static class Reducers
 
     [ReducerMethod]
     public static EmployeesState Reduce(EmployeesState state, GetEmployeesFailedAction action)
-        => state with { IsLoading = false, Employees = Array.Empty<EmployeeListDto>() };
+        => state with { IsLoading = false, Employees = Array.Empty<EmployeeListViewModel>() };
 
     [ReducerMethod]
     public static EmployeesState Reduce(EmployeesState state, GetOneEmployeeAction action)
@@ -57,8 +58,8 @@ public static class Reducers
 
         employee = employee with
         {
-            FirstName = action.Employee!.FirstName, LastName = action.Employee!.LastName,
-            Birthdate = action.Employee!.Birthdate!.Value
+            FullName =$"{action.Employee!.FirstName} {action.Employee!.LastName}",
+            BirthDate = $"{action.Employee!.Birthdate!.Value:dd/MM/yyyy}"
         };
 
         var index = Array.FindIndex(state.Employees!, e => e.Id.Equals(action.Id));

@@ -1,4 +1,5 @@
 ﻿@page "/employees"
+@using WasmBaseProjectApp.ViewModels
 @inherits FluxorComponent
 @inject IState<EmployeesState> State
 @inject IDispatcher Dispatcher
@@ -9,7 +10,7 @@
 <MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
 
 <MudPaper Class="pa-4 d-flex align-center justify-center" MinHeight="420px" Elevation="3">
-    <MudTable Class="flex-grow-1" Items="State.Value.Employees" Dense="true" Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees!.Count()" Virtualize Filter="new Func<EmployeeListDto, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
+    <MudTable Class="flex-grow-1" Items="State.Value.Employees" Dense="true" Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees!.Count()" Virtualize Filter="new Func<EmployeeListViewModel, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
         <ToolBarContent>
             <MudText Typo="Typo.h6">List of employees</MudText>
             <MudSpacer/>
@@ -19,7 +20,7 @@
         <HeaderContent>
             <MudTh>Id</MudTh>
             <MudTh>Name</MudTh>
-            <MudTh>Birthdate</MudTh>
+            <MudTh>BirthDate</MudTh>
             <MudTh>Status</MudTh>
             <MudTh>Options</MudTh>
         </HeaderContent>
@@ -33,14 +34,15 @@
         </NoRecordsContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
-            <MudTd DataLabel="Name">@context.FirstName @context.LastName</MudTd>
-            <MudTd DataLabel="Birthdate">@context.Birthdate.ToString("MM/dd/yyyy")</MudTd>
+            <MudTd DataLabel="Name">@context.FullName </MudTd>
+            <MudTd DataLabel="BirthDate" HideSmall>@context.BirthDate</MudTd>
             <MudTd DataLabel="Status">
                 <MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton>
             </MudTd>
             <MudTd DataLabel="Options">
                 <MudButtonGroup OverrideStyles="false">
                     <MudIconButton Color="Color.Primary" Icon="@(context.Status ? Icons.Filled.PersonOff : Icons.Filled.Person)" Title="@(context.Status ? "Deactivate" : "Activate")" OnClick="() => UpdateEmployeeStatus(context.Id, context.Status)"></MudIconButton>
+                    <MudButton Color="Color.Primary" StartIcon="@Icons.Filled.Info" OnClick="() => ShowDetailsDialog(context.Id)">Details</MudButton>
                     <MudButton Color="Color.Primary" StartIcon="@Icons.Filled.Edit" OnClick="() => ShowEditDialog(context.Id)">Edit</MudButton>
                     <MudButton StartIcon="@Icons.Filled.Delete" Color="Color.Error" OnClick="() => ShowDeleteDialog(context)">Remove</MudButton>
                 </MudButtonGroup>
@@ -87,6 +89,12 @@
         DialogService.Show<CreateEmployeeDialog>("Create New Employee",
             new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
     }
+    
+    private void ShowDetailsDialog(int id)
+    {
+        DialogService.Show<DetailsEmployeeDialog>("Employee Details", new DialogParameters { { "EmployeeId", id } },
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+    }
 
     private void ShowEditDialog(int id)
     {
@@ -94,21 +102,19 @@
             new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
     }
 
-    private void ShowDeleteDialog(EmployeeListDto employeeListDto)
+    private void ShowDeleteDialog(EmployeeListViewModel viewModel)
     {
-        DialogService.Show<DeleteEmployeeDialog>("Delete Employee", new DialogParameters { { "Employee", employeeListDto } },
+        DialogService.Show<DeleteEmployeeDialog>("Delete Employee", new DialogParameters { { "Employee", viewModel } },
             new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
     }
 
-    private bool FilterFunc1(EmployeeListDto employeeListDto) => FilterFunc(employeeListDto, _filterString);
+    private bool FilterFunc1(EmployeeListViewModel viewModel) => FilterFunc(viewModel, _filterString);
 
-    private bool FilterFunc(EmployeeListDto employeeListDto, string filter)
+    private bool FilterFunc(EmployeeListViewModel viewModel, string filter)
     {
         if (string.IsNullOrWhiteSpace(filter))
             return true;
-        if (employeeListDto.LastName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (employeeListDto.FirstName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
+        if (viewModel.FullName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }

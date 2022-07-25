@@ -1,5 +1,6 @@
 ﻿using Fluxor;
 using WasmBaseProjectApp.Services;
+using WasmBaseProjectApp.ViewModels;
 
 namespace WasmBaseProjectApp.Store.Employees;
 
@@ -10,7 +11,7 @@ public class EmployeesFeature : Feature<EmployeesState>
     protected override EmployeesState GetInitialState()
         => new EmployeesState(
             IsLoading: true,
-            Employees: Array.Empty<EmployeeListDto>(),
+            Employees: Array.Empty<EmployeeListViewModel>(),
             SelectedEmployee: new()
         );
 }

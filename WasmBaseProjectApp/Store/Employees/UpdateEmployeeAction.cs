@@ -1,6 +1,7 @@
 ﻿using WasmBaseProjectApp.Services;
+using WasmBaseProjectApp.ViewModels;
 
 namespace WasmBaseProjectApp.Store.Employees;
 
-public record UpdateEmployeeAction(int? Id, EditEmployeeDto? Employee);
-public record UpdateEmployeeSuccessAction(int? Id, EditEmployeeDto? Employee);
+public record UpdateEmployeeAction(int? Id, EmployeeEditViewModel? Employee);
+public record UpdateEmployeeSuccessAction(int? Id, EmployeeEditViewModel? Employee);
