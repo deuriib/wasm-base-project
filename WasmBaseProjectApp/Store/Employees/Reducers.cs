@@ -41,7 +41,7 @@ public static class Reducers
         if (employee == null)
             return state;
 
-        employee = employee with { Status = action.NewStatus };
+        employee = employee with { Status = action.Status };
 
         var index = Array.FindIndex(state.Employees!, e => e.Id.Equals(action.Id));
         state.Employees?.SetValue(employee, index);

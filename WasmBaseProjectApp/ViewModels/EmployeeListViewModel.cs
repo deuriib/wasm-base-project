@@ -1,4 +1,6 @@
-﻿namespace WasmBaseProjectApp.ViewModels;
+﻿using WasmBaseProjectApp.Services;
+
+namespace WasmBaseProjectApp.ViewModels;
 
 public record EmployeeListViewModel
 {
@@ -8,5 +10,5 @@ public record EmployeeListViewModel
 
     public string? BirthDate { get; set; }
     
-    public bool Status { get; set; }
+    public EmployeeStatus? Status { get; set; }
 }

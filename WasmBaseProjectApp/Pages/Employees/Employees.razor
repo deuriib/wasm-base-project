@@ -1,5 +1,4 @@
 ﻿@page "/employees"
-@using WasmBaseProjectApp.ViewModels
 @inherits FluxorComponent
 @inject IState<EmployeesState> State
 @inject IDispatcher Dispatcher
@@ -24,6 +23,9 @@
             <MudTh>Status</MudTh>
             <MudTh>Options</MudTh>
         </HeaderContent>
+        <LoadingContent>
+            <Loading />
+        </LoadingContent>
         <NoRecordsContent>
             <div class="d-flex align-center justify-center flex-column ">
                 <MudContainer Class="flex-grow-1">
@@ -37,11 +39,11 @@
             <MudTd DataLabel="Name">@context.FullName </MudTd>
             <MudTd DataLabel="BirthDate" HideSmall>@context.BirthDate</MudTd>
             <MudTd DataLabel="Status">
-                <MudButton Variant="Variant.Text" Color="context.Status ? Color.Success : Color.Error">@(context.Status ? "Active" : "Inactive")</MudButton>
+                <MudButton Variant="Variant.Text" DisableRipple Color="context.Status!.Value ? Color.Success : Color.Error">@context.Status!.Name</MudButton>
             </MudTd>
             <MudTd DataLabel="Options">
                 <MudButtonGroup OverrideStyles="false">
-                    <MudIconButton Color="Color.Primary" Icon="@(context.Status ? Icons.Filled.PersonOff : Icons.Filled.Person)" Title="@(context.Status ? "Deactivate" : "Activate")" OnClick="() => UpdateEmployeeStatus(context.Id, context.Status)"></MudIconButton>
+                    <MudIconButton Color="Color.Primary" Icon="@(context.Status!.Value ? Icons.Filled.PersonOff : Icons.Filled.Person)" Title="@(context.Status!.Value ? "Deactivate" : "Activate")" OnClick="() => UpdateEmployeeStatus(context.Id, context.Status!)"></MudIconButton>
                     <MudButton Color="Color.Primary" StartIcon="@Icons.Filled.Info" OnClick="() => ShowDetailsDialog(context.Id)">Details</MudButton>
                     <MudButton Color="Color.Primary" StartIcon="@Icons.Filled.Edit" OnClick="() => ShowEditDialog(context.Id)">Edit</MudButton>
                     <MudButton StartIcon="@Icons.Filled.Delete" Color="Color.Error" OnClick="() => ShowDeleteDialog(context)">Remove</MudButton>
@@ -79,9 +81,9 @@
         await base.OnInitializedAsync();
     }
 
-    private void UpdateEmployeeStatus(int id, bool status)
+    private void UpdateEmployeeStatus(int id, EmployeeStatus status)
     {
-        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id, new UpdateEmployeeStatusDto { Status = !status }));
+        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id, new UpdateEmployeeStatusDto { Status = status }));
     }
 
     private void ShowCreateNewDialog()

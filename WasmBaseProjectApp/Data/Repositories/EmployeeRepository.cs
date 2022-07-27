@@ -24,7 +24,7 @@ public class EmployeeRepository : IEmployeeRepository
             FirstName = e.FirstName,
             LastName = e.LastName,
             Birthdate = e.Birthdate!.Value,
-            Status = e.Status
+            Status = EmployeeStatus.FromValue(e.Status)
         }).ToArray();
         return employees;
     }
