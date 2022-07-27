@@ -6,12 +6,12 @@ using Supabase.Realtime;
 using WasmBaseProjectApp.Data.Models;
 using WasmBaseProjectApp.Data.Repositories;
 using WasmBaseProjectApp.ViewModels;
+using Ardalis.SmartEnum;
 
 namespace WasmBaseProjectApp.Services;
 
 public class EmployeeService
 {
-    private readonly HttpClient _httpClient = null!;
     private readonly IEmployeeRepository _employeeRepository;
 
     public EmployeeService(IEmployeeRepository employeeRepository)
@@ -69,7 +69,7 @@ public record EditEmployeeDto(string? FirstName, string? LastName, string? Addre
 
 public record UpdateEmployeeStatusDto
 {
-    [JsonPropertyName("status")] public bool Status { get; set; }
+    [JsonPropertyName("status")] public EmployeeStatus? Status { get; set; }
 }
 
 public record EmployeeListDto
@@ -80,7 +80,7 @@ public record EmployeeListDto
 
     public string? LastName { get; set; }
 
-    public bool Status { get; set; }
+    public EmployeeStatus? Status { get; set; }
 
     public DateTime Birthdate { get; set; }
 }
@@ -95,3 +95,28 @@ public record CreateEmployeeDto
 
     [JsonPropertyName("birth_date")] public DateTime? Birthdate { get; set; }
 };
+
+public abstract class EmployeeStatus : SmartEnum<EmployeeStatus, bool>
+{
+    public static readonly EmployeeStatus Inactive = new InactiveStatus();
+    public static readonly EmployeeStatus Active = new ActiveStatus();
+
+    private EmployeeStatus(string name, bool value) : base(name, value)
+    {
+    }
+
+
+    private sealed class InactiveStatus : EmployeeStatus
+    {
+        public InactiveStatus() : base("Inactive", false)
+        {
+        }
+    }
+
+    private sealed class ActiveStatus : EmployeeStatus
+    {
+        public ActiveStatus() : base("Active", true)
+        {
+        }
+    }
+}

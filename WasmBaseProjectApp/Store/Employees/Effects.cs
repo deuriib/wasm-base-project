@@ -96,7 +96,13 @@ public class Effects
                 dispatcher.Dispatch(new EmployeeFailedAction("Employee id is null"));
 
             if (action.Dto is null)
+                dispatcher.Dispatch(new EmployeeFailedAction("Employee is null"));
+
+            if(action.Dto?.Status is null)
                 dispatcher.Dispatch(new EmployeeFailedAction("Employee status is null"));
+
+            action.Dto!.Status = action.Dto.Status!.Equals(EmployeeStatus.Active) ? EmployeeStatus.Inactive : EmployeeStatus.Active;
+
 
             await _service.UpdateStatusAsync(action.Id!.Value, action.Dto!);
 
@@ -122,7 +128,7 @@ public class Effects
         }
         catch (Exception ex)
         {
-            dispatcher.Dispatch(new EmployeeFailedAction(ex.GetBaseException().Message));
+            dispatcher.Dispatch(new EmployeeFailedAction($"Failed deleting employee: {ex.Message}"));
         }
     }
 }

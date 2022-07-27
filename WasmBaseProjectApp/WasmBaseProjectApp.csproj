@@ -17,6 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Ardalis.SmartEnum" Version="2.1.0" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
 		<PackageReference Include="Bogus" Version="34.0.2" />
 		<PackageReference Include="Fluxor" Version="5.4.0" />
