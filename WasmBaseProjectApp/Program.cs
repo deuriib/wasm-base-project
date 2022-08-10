@@ -8,9 +8,12 @@ using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
 using MudBlazor;
-using WasmBaseProjectApp.Data.Repositories;
-using WasmBaseProjectApp.Services;
-using WasmBaseProjectApp.Store;
+using WasmBaseProject.Adapters.Services;
+using WasmBaseProject.Domain.Services;
+using WasmBaseProject.Infrastructure;
+using WasmBaseProject.Infrastructure.Data.Services;
+using WasmBaseProject.Infrastructure.Store;
+using WasmBaseProject.Infrastructure.Store.Weather;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -21,15 +24,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-var initializeSupabase = async () =>
-{
-    var url = builder.Configuration.GetValue<string>("SupabaseConfig:Url");
-    var key = builder.Configuration.GetValue<string>("SupabaseConfig:Key");
-
-    await Supabase.Client.InitializeAsync(url, key);
-};
-
-initializeSupabase().Wait();
+await InfrastructureInitializer.InitializeAsync(builder.Configuration);
 
 builder.Services.AddMudServices(config =>
 {
@@ -43,7 +38,7 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
-builder.Services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddSingleton<IEmployeeRepository, SupabaseEmployeeRepository>();
 builder.Services.AddSingleton<EmployeeService>();
 
 builder.Services.AddScoped<WeatherService>();
@@ -54,11 +49,14 @@ builder.Services.AddScoped<IStoreHandler, JsonStoreHandler>();
 
 builder.Services.AddFluxor(options =>
 {
-    options.ScanAssemblies(typeof(App).Assembly);
+    options.ScanAssemblies(typeof(InfrastructureInitializer).Assembly, additionalAssembliesToScan: new[]
+    {
+        typeof(WeatherReducers).Assembly
+    });
 
     if (env.IsDevelopment())
         options.UseReduxDevTools();
-    
+
     options.UseRouting();
     options.UsePersist(config => config.UseInclusionApproach());
 });
