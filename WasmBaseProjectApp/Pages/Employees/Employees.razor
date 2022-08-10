@@ -1,4 +1,8 @@
 ﻿@page "/employees"
+@using WasmBaseProject.Infrastructure.Store.Employees
+@using WasmBaseProject.Domain.Enums
+@using WasmBaseProject.Domain.Dtos
+@using WasmBaseProject.Infrastructure.ViewModels
 @inherits FluxorComponent
 @inject IState<EmployeesState> State
 @inject IDispatcher Dispatcher
