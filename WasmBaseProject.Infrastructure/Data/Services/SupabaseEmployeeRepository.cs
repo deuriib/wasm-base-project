@@ -1,5 +1,7 @@
-﻿using WasmBaseProject.Domain.Dtos;
-using WasmBaseProject.Domain.Enums;
+﻿using AutoMapper;
+using Postgrest;
+using WasmBaseProject.Domain.Dtos;
+using WasmBaseProject.Domain.Models;
 using WasmBaseProject.Domain.Services;
 using WasmBaseProject.Infrastructure.Data.Models;
 
@@ -7,39 +9,33 @@ namespace WasmBaseProject.Infrastructure.Data.Services;
 
 public class SupabaseEmployeeRepository : IEmployeeRepository
 {
+    private readonly IMapper _mapper;
     private readonly Supabase.Client _client;
 
-    public SupabaseEmployeeRepository()
+    public SupabaseEmployeeRepository(IMapper mapper)
     {
+        _mapper = mapper;
         _client = Supabase.Client.Instance;
     }
 
-    public async Task<EmployeeListDto[]?> GetAllAsync()
+    public async Task<Employee[]?> GetAllAsync()
     {
-        var channel = await _client.From<EmployeeModel>().Get();
-        channel.ResponseMessage.EnsureSuccessStatusCode();
+        var response = await _client.From<EmployeeModel>().Order("id", Constants.Ordering.Ascending).Get();
+        response.ResponseMessage.EnsureSuccessStatusCode();
 
-        var employees = channel.Models.Select(e => new EmployeeListDto
-        {
-            Id = e.Id,
-            FirstName = e.FirstName,
-            LastName = e.LastName,
-            Birthdate = e.Birthdate!.Value,
-            Status = EmployeeStatus.FromValue(e.Status)
-        }).ToArray();
-        return employees;
+        return _mapper.Map<Employee[]>(response.Models.ToArray());
     }
 
-    public async Task<EditEmployeeDto?> GetOneAsync(int id)
+    public async Task<Employee?> GetOneAsync(int id)
     {
-        var channel = await _client.From<EmployeeModel>().Get();
-
-        var employee = channel.Models.Find(e => e.Id.Equals(id));
-        return new EditEmployeeDto(employee?.FirstName, employee?.LastName, employee?.Address, employee?.Note,
-            employee?.Birthdate);
+        var response = await _client.From<EmployeeModel>().Get();
+        response.ResponseMessage.EnsureSuccessStatusCode();
+        
+        var model = response.Models.Find(e => e.Id.Equals(id));
+        return _mapper.Map<Employee>(model);
     }
 
-    public async Task AddOneAsync(CreateEmployeeDto dto)
+    public async Task<Employee?> CreateAsync(CreateEmployeeDto dto)
     {
         var response = await _client.From<EmployeeModel>().Insert(
             new EmployeeModel
@@ -47,16 +43,22 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Address = dto.Address,
+                Email = dto.Email,
                 Note = dto.Note,
                 Birthdate = dto.Birthdate
             });
-        
+
         response.ResponseMessage.EnsureSuccessStatusCode();
+
+        var employee = response.Models.FindLast(e => e.Email!.Equals(dto.Email));
+        return _mapper.Map<Employee>(employee);
     }
 
-    public async Task UpdateAsync(int id, EditEmployeeDto dto)
+    public async Task<Employee?> UpdateAsync(int id, EditEmployeeDto dto)
     {
         var response = await _client.From<EmployeeModel>().Get();
+        response.ResponseMessage.EnsureSuccessStatusCode();
+        
         var employee = response.Models.Find(e => e.Id.Equals(id));
 
         if (employee is null)
@@ -65,15 +67,19 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
         employee.FirstName = dto.FirstName;
         employee.LastName = dto.LastName;
         employee.Address = dto.Address;
+        employee.Email = dto.Email;
         employee.Note = dto.Note;
         employee.Birthdate = dto.Birthdate;
 
-        await employee.Update<EmployeeModel>();
+        var updatedResponse = await employee.Update<EmployeeModel>();
 
-        response.ResponseMessage.EnsureSuccessStatusCode();
+        updatedResponse.ResponseMessage.EnsureSuccessStatusCode();
+        
+        var updatedEmployee = updatedResponse.Models.FindLast(e => e.Id.Equals(id));
+        return _mapper.Map<Employee>(updatedEmployee);
     }
 
-    public async Task UpdateStatusAsync(int id, UpdateEmployeeStatusDto dto)
+    public async Task<Employee?> UpdateStatusAsync(int id, UpdateEmployeeStatusDto dto)
     {
         var response = await _client.From<EmployeeModel>().Get();
         var employee = response.Models.Find(e => e.Id.Equals(id));
@@ -83,19 +89,24 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
 
         employee.Status = dto.Status;
 
-        await employee.Update<EmployeeModel>();
+        var updatedResponse = await employee.Update<EmployeeModel>();
 
-        response.ResponseMessage.EnsureSuccessStatusCode();
+        updatedResponse.ResponseMessage.EnsureSuccessStatusCode();
+        
+        var updatedEmployee = updatedResponse.Models.FindLast(e => e.Id!.Equals(id));
+        return _mapper.Map<Employee>(updatedEmployee);
     }
 
     public async Task DeleteAsync(int id)
     {
         var response = await _client.From<EmployeeModel>().Get();
-        var employee = response.Models.Find(e => e.Id.Equals(id));
+        response.ResponseMessage.EnsureSuccessStatusCode();
         
+        var employee = response.Models.Find(e => e.Id.Equals(id));
+
         if (employee is null)
             throw new ArgumentException($"Employee with id {id} not found");
-        
+
         await employee.Delete<EmployeeModel>();
     }
 }

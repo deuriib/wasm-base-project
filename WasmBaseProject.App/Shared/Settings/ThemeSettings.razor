@@ -7,9 +7,9 @@
     <MudListSubheader>
         Theme
     </MudListSubheader>
-    <MudListItem Icon="@(_themeState.Value.isDarkMode ? Icons.Material.Rounded.LightMode : Icons.Material.Rounded.DarkMode)"
-                 IconColor="@(_themeState.Value.isDarkMode ? Color.Warning : Color.Dark )"
-                 Text="@(_themeState.Value.isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode")"
+    <MudListItem Icon="@(_themeState.Value.IsDarkMode ? Icons.Material.Rounded.LightMode : Icons.Material.Rounded.DarkMode)"
+                 IconColor="@(_themeState.Value.IsDarkMode ? Color.Warning : Color.Dark )"
+                 Text="@(_themeState.Value.IsDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode")"
                  OnClick="ChangeTheme" />
 </MudList>
 

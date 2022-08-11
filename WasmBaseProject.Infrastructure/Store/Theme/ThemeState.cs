@@ -3,5 +3,5 @@
 namespace WasmBaseProject.Infrastructure.Store.Theme
 {
     [PersistState]
-    public record ThemeState(bool isDarkMode);
+    public record ThemeState(bool IsDarkMode);
 }

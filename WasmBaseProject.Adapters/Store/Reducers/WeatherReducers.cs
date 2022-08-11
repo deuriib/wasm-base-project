@@ -8,14 +8,14 @@ namespace WasmBaseProject.Infrastructure.Store.Weather
     {
         [ReducerMethod]
         public static WeatherState Reduce(WeatherState state, FetchDataAction action)
-            => state with { isLoading = true, forecasts = Array.Empty<WeatherForecast>(), error = string.Empty };
+            => state with { IsLoading = true, Forecasts = Array.Empty<WeatherForecast>(), Error = string.Empty };
 
         [ReducerMethod]
         public static WeatherState Reduce(WeatherState state, FetchDataSuccessAction action)
-            => state with { isLoading = false, forecasts = action.Forecasts, error = string.Empty };
+            => state with { IsLoading = false, Forecasts = action.Forecasts, Error = string.Empty };
 
         [ReducerMethod]
         public static WeatherState Reduce(WeatherState state, FetchDataFailAction action)
-           => state with { isLoading = false, forecasts = Array.Empty<WeatherForecast>(), error = action.ErrorMessage };
+           => state with { IsLoading = false, Forecasts = Array.Empty<WeatherForecast>(), Error = action.ErrorMessage };
     }
 }
