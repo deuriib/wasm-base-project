@@ -1,13 +1,14 @@
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
-using WasmBaseProjectApp;
+using WasmBaseProject.App;
 using Fluxor;
 using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
+using MediatR;
 using MudBlazor;
+using WasmBaseProject.Adapters.Mappers;
 using WasmBaseProject.Adapters.Services;
 using WasmBaseProject.Domain.Services;
 using WasmBaseProject.Infrastructure;
@@ -23,6 +24,11 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+builder.Services.AddAutoMapper(
+    typeof(EmployeeProfile).Assembly);
+
+builder.Services.AddMediatR(typeof(InfrastructureInitializer).Assembly);
 
 await InfrastructureInitializer.InitializeAsync(builder.Configuration);
 

@@ -1,13 +1,14 @@
 ﻿using WasmBaseProject.Domain.Dtos;
+using WasmBaseProject.Domain.Models;
 
 namespace WasmBaseProject.Domain.Services;
 
 public interface IEmployeeRepository
 {
-    Task<EmployeeListDto[]?> GetAllAsync();
-    Task<EditEmployeeDto?> GetOneAsync(int id);
-    Task AddOneAsync(CreateEmployeeDto dto);
-    Task UpdateAsync(int id, EditEmployeeDto dto);
-    Task UpdateStatusAsync(int id, UpdateEmployeeStatusDto dto);
+    Task<Employee[]?> GetAllAsync();
+    Task<Employee?> GetOneAsync(int id);
+    Task<Employee?> CreateAsync(CreateEmployeeDto dto);
+    Task<Employee?> UpdateAsync(int id, EditEmployeeDto dto);
+    Task<Employee?> UpdateStatusAsync(int id, UpdateEmployeeStatusDto dto);
     Task DeleteAsync(int id);
 }

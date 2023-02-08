@@ -41,7 +41,7 @@ public static class EmployeeReducers
         if (employee == null)
             return state;
 
-        employee = employee with { Status = action.Status };
+        employee = employee with { Status = action.Status! };
 
         var index = Array.FindIndex(state.Employees!, e => e.Id.Equals(action.Id));
         state.Employees?.SetValue(employee, index);
@@ -59,7 +59,8 @@ public static class EmployeeReducers
         employee = employee with
         {
             FullName =$"{action.Employee!.FirstName} {action.Employee!.LastName}",
-            BirthDate = $"{action.Employee!.Birthdate!.Value:dd/MM/yyyy}"
+            Email = action.Employee!.Email!,
+            Birthdate = $"{action.Employee!.Birthdate!.Value:dd/MM/yyyy}"
         };
 
         var index = Array.FindIndex(state.Employees!, e => e.Id.Equals(action.Id));

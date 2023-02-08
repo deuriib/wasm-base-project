@@ -16,6 +16,7 @@
                             <MudTextField T="string" @bind-Value="model.LastName" For="@(() => model.LastName)" Immediate="false" DebounceInterval="500" Label="Last Name" Required="true" RequiredError="Last name is required!"/>
                         </MudItem>
                     </MudGrid>
+                     <MudTextField T="string" @bind-Value="model.Email" For="@(() => model.Email)" Immediate="false" DebounceInterval="500" Label="Email" Required="true"/>
                     <MudDatePicker For="@(() => model.Birthdate)" Label="Birthdate" Editable="false" @bind-Date="model.Birthdate" Required RequiredError="Birthdate is required"/>
                     <MudTextField T="string" @bind-Value="model.Address" For="@(() => model.Address)" Immediate="false" DebounceInterval="500" Label="Address" Required="false"/>
                     <MudTextField T="string" @bind-Value="model.Note" For="@(() => model.Note)" Immediate="false" DebounceInterval="500" Label="Note" Required="false"/>

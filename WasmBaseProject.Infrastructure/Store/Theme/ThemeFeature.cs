@@ -7,6 +7,6 @@ namespace WasmBaseProject.Infrastructure.Store.Theme
         public override string GetName() => "Theme";
 
         protected override ThemeState GetInitialState()
-            => new ThemeState(isDarkMode: false);
+            => new ThemeState(IsDarkMode: false);
     }
 }

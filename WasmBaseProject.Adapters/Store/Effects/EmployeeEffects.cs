@@ -1,4 +1,5 @@
-﻿using Fluxor;
+﻿using AutoMapper;
+using Fluxor;
 using WasmBaseProject.Adapters.Services;
 using WasmBaseProject.Domain.Dtos;
 using WasmBaseProject.Domain.Enums;
@@ -10,10 +11,12 @@ namespace WasmBaseProject.Adapters.Store.Effects;
 public class EmployeeEffects
 {
     private readonly EmployeeService _service;
+    private readonly IMapper _mapper;
 
-    public EmployeeEffects(EmployeeService service)
+    public EmployeeEffects(EmployeeService service, IMapper mapper)
     {
         _service = service;
+        _mapper = mapper;
     }
 
     [EffectMethod]
@@ -26,13 +29,9 @@ public class EmployeeEffects
             if (employees is null)
                 dispatcher.Dispatch(new GetEmployeesFailedAction($"Failed loading employees: employees is null"));
 
-            var employeesViewModel = employees?.Select(e => new EmployeeListViewModel
-            {
-                Id = e.Id, FullName = $"{e.FirstName} {e.LastName}", Status = e.Status,
-                BirthDate = $"{e.Birthdate:dd/MM/yyyy}"
-            }).ToArray();
+            var viewModel = _mapper.Map<EmployeeListViewModel[]>(employees);
             
-            dispatcher.Dispatch(new GetEmployeesSuccessAction(employeesViewModel));
+            dispatcher.Dispatch(new GetEmployeesSuccessAction(viewModel));
         }
         catch (Exception ex)
         {
@@ -55,8 +54,8 @@ public class EmployeeEffects
 
             var employeeViewModel = new EmployeeEditViewModel
             {
-                FirstName = employee?.FirstName, LastName = employee?.LastName, Birthdate = employee?.Birthdate,
-                Address = employee?.Address, Note = employee?.Note
+                FirstName = employee?.FirstName, LastName = employee?.LastName, Email = employee?.Email,
+                Birthdate = employee?.Birthdate, Address = employee?.Address, Note = employee?.Note
             };
 
             dispatcher.Dispatch(new GetOneEmployeeSuccessAction(employeeViewModel));
@@ -75,7 +74,7 @@ public class EmployeeEffects
             if (action.Dto is null)
                 dispatcher.Dispatch(new EmployeeFailedAction("Employee is null"));
 
-            await _service.AddOneAsync(action.Dto!);
+            await _service.CreateAsync(action.Dto!);
 
             dispatcher.Dispatch(new CreateEmployeeSuccessAction());
         }
@@ -96,8 +95,8 @@ public class EmployeeEffects
             if (action.Employee is null)
                 dispatcher.Dispatch(new EmployeeFailedAction("Employee is null"));
 
-            var dto = new EditEmployeeDto(action.Employee?.FirstName, action.Employee?.LastName,
-                action.Employee?.Address, action.Employee?.Note, action.Employee?.Birthdate);
+            var dto = new EditEmployeeDto(action.Employee?.FirstName!, action.Employee?.LastName!, action.Employee?.Email!,
+                action.Employee?.Address, action.Employee?.Note, action.Employee!.Birthdate!.Value);
 
             await _service.UpdateAsync(action.Id!.Value, dto);
 

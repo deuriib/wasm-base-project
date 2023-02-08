@@ -12,8 +12,8 @@
 <PageTitle>Employees</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
 
-<MudPaper Class="pa-4 d-flex align-center justify-center" MinHeight="420px" Elevation="3">
-    <MudTable Class="flex-grow-1" Items="State.Value.Employees" Dense="true" Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees!.Count()" Virtualize Filter="new Func<EmployeeListViewModel, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
+<MudPaper Class="pa-4 d-flex align-center justify-center" Elevation="3">
+    <MudTable HeaderClass="mt-4" Class="flex-grow-1" Items="State.Value.Employees" Dense="true" Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees!.Count()" Virtualize Filter="new Func<EmployeeListViewModel, bool>(FilterFunc1)" Hover="true" SortLabel="Sort By" Elevation="0">
         <ToolBarContent>
             <MudText Typo="Typo.h6">List of employees</MudText>
             <MudSpacer/>
@@ -23,6 +23,7 @@
         <HeaderContent>
             <MudTh>Id</MudTh>
             <MudTh>Name</MudTh>
+            <MudTh>Email</MudTh>
             <MudTh>BirthDate</MudTh>
             <MudTh>Status</MudTh>
             <MudTh>Options</MudTh>
@@ -41,7 +42,8 @@
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Name">@context.FullName </MudTd>
-            <MudTd DataLabel="BirthDate" HideSmall>@context.BirthDate</MudTd>
+            <MudTd DataLabel="Email">@context.Email </MudTd>
+            <MudTd DataLabel="BirthDate" HideSmall>@context.Birthdate</MudTd>
             <MudTd DataLabel="Status">
                 <MudButton Variant="Variant.Text" DisableRipple Color="context.Status!.Value ? Color.Success : Color.Error">@context.Status!.Name</MudButton>
             </MudTd>
@@ -78,7 +80,8 @@
 
             Snackbar.Add("Employees loaded", Severity.Success);
         });
-        SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action => { Snackbar.Add($"Employee Id:{action.Id}  status updated", Severity.Success); });
+        SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action => { Snackbar.Add($"Employee Id:{action.Id} status updated", Severity.Success); });
+        SubscribeToAction<DeleteEmployeeSuccessAction>(action => { Snackbar.Add($"Employee Id:{action.Id} deleted", Severity.Success); });
 
         SubscribeToAction<EmployeeFailedAction>(action => { Snackbar.Add(action.ErrorMessage, Severity.Error); });
 
@@ -121,6 +124,8 @@
         if (string.IsNullOrWhiteSpace(filter))
             return true;
         if (viewModel.FullName!.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (viewModel.Email!.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }

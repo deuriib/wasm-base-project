@@ -2,6 +2,6 @@
 
 namespace WasmBaseProject.Infrastructure.Store.App
 {
-    [SkipPersistState]
+    [PersistState]
     public record AppState(string AppName, string AppVersion);
 }

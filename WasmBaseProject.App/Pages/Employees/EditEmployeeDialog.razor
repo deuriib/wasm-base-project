@@ -24,6 +24,7 @@
                                 <MudTextField T="string" @bind-Value="State.Value.SelectedEmployee.LastName" For="@(() => State.Value.SelectedEmployee.LastName)" Immediate="false" DebounceInterval="500" Label="Last Name" Required="true" RequiredError="Last name is required!"/>
                             </MudItem>
                         </MudGrid>
+                        <MudTextField T="string" @bind-Value="State.Value.SelectedEmployee.Email" For="@(() => State.Value.SelectedEmployee.Email)" Immediate="false" DebounceInterval="500" Label="Email" Required="false"/>
                         <MudDatePicker For="@(() => State.Value.SelectedEmployee.Birthdate)" Label="Birthdate" Editable="false" @bind-Date="State.Value.SelectedEmployee.Birthdate" Required RequiredError="Birthdate is required" />
                         <MudTextField T="string" @bind-Value="State.Value.SelectedEmployee.Address" For="@(() => State.Value.SelectedEmployee.Address)" Immediate="false" DebounceInterval="500" Label="Address" Required="false"/>
                         <MudTextField T="string" @bind-Value="State.Value.SelectedEmployee.Note" For="@(() => State.Value.SelectedEmployee.Note)" Immediate="false" DebounceInterval="500" Label="Note" Required="false"/>

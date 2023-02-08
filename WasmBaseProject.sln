@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WasmBaseProjectApp", "WasmBaseProjectApp\WasmBaseProjectApp.csproj", "{29940C80-E8E9-47A3-8DCF-F278B4C2CC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WasmBaseProject.App", "WasmBaseProject.App\WasmBaseProject.App.csproj", "{29940C80-E8E9-47A3-8DCF-F278B4C2CC44}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmBaseProject.Infrastructure", "WasmBaseProject.Infrastructure\WasmBaseProject.Infrastructure.csproj", "{DDCC56EF-0275-4039-AD0F-D5DC916703BF}"
 EndProject
