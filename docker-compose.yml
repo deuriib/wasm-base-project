@@ -1,0 +1,13 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.7'
+
+services:
+  wasmbaseprojectapp:
+    container_name: wasmbaseprojectapp
+    image: wasmbaseprojectapp
+    build:
+      context: .
+      dockerfile: WasmBaseProject.App/Dockerfile
+    ports:
+      - 5000:5000
