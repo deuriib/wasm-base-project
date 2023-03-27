@@ -1,0 +1,57 @@
+﻿@page "/counter"
+
+@using BaseProject.Infrastructure.Store.Counter
+@using BaseProject.Infrastructure.Store.App
+@inherits FluxorComponent
+@inject IState<CounterState> State
+
+
+<PageTitle>Counter</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Counter</MudText>
+
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+        <MudPaper Class="pa-8" Elevation="3">
+            <MudText Typo="Typo.body2" Color="Color.Info">Increment By: (@IncrementBy)</MudText>
+
+            <MudText Class="mb-4">Current count: @State.Value.CurrentCount</MudText>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="ma-2" Variant="Variant.Filled" @onclick="IncrementCount">Increment</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Secondary" Class="ma-2"  Variant="Variant.Outlined" @onclick="ResetCounter">Reset Counter</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+
+    [Parameter]
+    public int IncrementBy { get; set; } = 1;
+
+    [Inject]
+    private IDispatcher? Dispatcher { get; set; }
+
+    [Inject]
+    private ISnackbar? Snackbar { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SubscribeToAction<ClearStorageAction>(result =>
+        {
+            ResetCounter();
+        });
+
+        SubscribeToAction<ResetCounterAction>(result =>
+        {
+            Snackbar?.Add(message: "Counter was reset to initial value", severity: Severity.Info);
+        });
+    }
+
+    private void IncrementCount()
+    => Dispatcher?.Dispatch(new IncrementCounterAction(IncrementBy));
+
+    private void ResetCounter()
+        => Dispatcher?.Dispatch(new ResetCounterAction());
+
+}

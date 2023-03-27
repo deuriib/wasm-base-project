@@ -1,0 +1,60 @@
+﻿@using BaseProject.Infrastructure.Store.Employees
+@inherits FluxorComponent
+@inject ISnackbar Snackbar
+@inject IDispatcher Dispatcher
+@inject IState<EmployeesState> State
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="10" md="12">
+                @if (State.Value.IsLoadingEmployee)
+                {
+                    <Loading />
+                }
+                
+                @if (State.Value.SelectedEmployee is not null)
+                {
+                    <MudText Typo="Typo.h1" GutterBottom>@State.Value.SelectedEmployee?.FirstName @State.Value.SelectedEmployee?.LastName</MudText>
+                }
+
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+     <DialogActions>
+            <MudButton StartIcon="@Icons.Material.Filled.Close" OnClick="Close" Color="Color.Primary" Variant="Variant.Filled">Close</MudButton>
+        </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public int? EmployeeId { get; set; }
+    
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<int>(nameof(EmployeeId), out var employeeId))
+        {
+            Dispatcher.Dispatch(new GetOneEmployeeAction(employeeId));
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        MudDialog?.SetOptions(new DialogOptions()
+        {
+            DisableBackdropClick = true,
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        });
+        await base.OnInitializedAsync();
+    }
+    
+    private void Close() => MudDialog?.Cancel();
+}

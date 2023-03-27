@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>BaseProject.Adapters</AssemblyName>
+        <RootNamespace>BaseProject.Adapters</RootNamespace>
+        <LangVersion>11</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BaseProject.Domain\BaseProject.Domain.csproj" />
+      <ProjectReference Include="..\BaseProject.Infrastructure\BaseProject.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Fluxor" Version="5.4.0" />
+    </ItemGroup>
+
+</Project>
