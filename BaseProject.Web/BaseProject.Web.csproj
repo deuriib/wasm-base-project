@@ -20,7 +20,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
-		<PackageReference Include="Bogus" Version="34.0.2" />
 		<PackageReference Include="Fluxor" Version="5.7.0" />
 		<PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
 		<PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.7.0" />
