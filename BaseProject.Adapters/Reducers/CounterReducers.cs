@@ -1,7 +1,7 @@
 using BaseProject.Infrastructure.Store.Counter;
 using Fluxor;
 
-namespace BaseProject.Adapters.Store.Reducers
+namespace BaseProject.Adapters.Reducers
 {
     public static class CounterReducers
     {

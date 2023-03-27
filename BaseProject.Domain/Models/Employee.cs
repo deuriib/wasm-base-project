@@ -45,13 +45,13 @@ public class Employee
          Birthdate = birthdate;
      }
 
-     public Employee AddOrUpdateAddress(string address)
+     public Employee AddOrUpdateAddress(string? address)
      {
          Address = address;
          return this;
      }
 
-     public Employee AddOrUpdateNote(string note)
+     public Employee AddOrUpdateNote(string? note)
      {
          Note = note;
          return this;

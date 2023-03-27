@@ -1,11 +1,11 @@
-﻿@using BaseProject.Infrastructure.Store.App
-@using BaseProject.Infrastructure.Store.Theme
-@inherits FluxorLayout
+﻿@inherits FluxorLayout
 @inject IState<AppState> AppState
 @inject IState<ThemeState> ThemeState
+@inject NavigationManager NavigationManager
+@inject AuthFacade AuthFacade
 
 <MudThemeProvider IsDarkMode="ThemeState.Value.IsDarkMode" Theme="CurrentTheme"/>
-<MudDialogProvider/>
+<MudDialogProvider/>    
 <MudSnackbarProvider/>
 
 <MudLayout>
@@ -39,7 +39,7 @@
                         <MudMenuItem>
                             Profile
                         </MudMenuItem>
-                        <MudMenuItem Class="d-flex align-center justify-center">
+                        <MudMenuItem Class="d-flex align-center justify-center" OnClick="SignOut">
                             Logout
                         </MudMenuItem>
                     </MudMenu>
@@ -54,7 +54,7 @@
                         <MudMenuItem>
                             Profile
                         </MudMenuItem>
-                        <MudMenuItem Class="d-flex align-center justify-center">
+                        <MudMenuItem Class="d-flex align-center justify-center" OnClick="SignOut">
                             Logout
                         </MudMenuItem>
                     </MudMenu>
@@ -88,6 +88,13 @@
 
     bool _isOpenDrawer = true;
     bool _isOpenSettingsDrawer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SubscribeToAction<LogoutActionSuccess>(_ => NavigationManager.NavigateTo("/authentication/login"));
+        
+        await base.OnInitializedAsync();
+    }
 
     private void DrawerToggle()
     {
@@ -150,4 +157,8 @@
         }
     };
 
+    private void SignOut()
+    {
+        AuthFacade.Logout();
+    }
 }

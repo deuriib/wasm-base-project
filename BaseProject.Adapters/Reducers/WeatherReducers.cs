@@ -2,7 +2,7 @@
 using BaseProject.Infrastructure.Store.Weather;
 using Fluxor;
 
-namespace BaseProject.Adapters.Store.Reducers
+namespace BaseProject.Adapters.Reducers
 {
     public static class WeatherReducers
     {

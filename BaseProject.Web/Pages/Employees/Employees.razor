@@ -1,8 +1,6 @@
 ﻿@page "/employees"
 @using BaseProject.Infrastructure.Store.Employees
 @using BaseProject.Infrastructure.ViewModels
-@using BaseProject.Domain.Enums
-@using BaseProject.Domain.Dtos
 @inherits FluxorComponent
 @inject IState<EmployeesState> State
 @inject IDispatcher Dispatcher
@@ -69,7 +67,7 @@
                     <MudIconButton Color="Color.Primary"
                                    Icon="@(context.Status.Value ? Icons.Material.Filled.PersonOff : Icons.Material.Filled.Person)"
                                    Title="@(context.Status.Value ? "Deactivate" : "Activate")"
-                                   OnClick="() => UpdateEmployeeStatus(context.Id, context.Status)">
+                                   OnClick="() => ToggleEmployeeStatus(context.Id)">
                     </MudIconButton>
                     <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Info"
                                OnClick="() => ShowDetailsDialog(context.Id)">
@@ -117,11 +115,9 @@
         await base.OnInitializedAsync();
     }
 
-    private void UpdateEmployeeStatus(int id, EmployeeStatus status)
+    private void ToggleEmployeeStatus(int id)
     {
-        Dispatcher.Dispatch(
-            new UpdateEmployeeStatusAction(id,
-                new UpdateEmployeeStatusDto(status)));
+        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id));
     }
 
     private void ShowCreateNewDialog()

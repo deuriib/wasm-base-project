@@ -2,7 +2,7 @@
 using BaseProject.Infrastructure.ViewModels;
 using Fluxor;
 
-namespace BaseProject.Adapters.Store.Reducers;
+namespace BaseProject.Adapters.Reducers;
 
 public static class EmployeeReducers
 {

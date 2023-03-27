@@ -1,9 +1,10 @@
 ﻿using System.Net.Http.Json;
 using BaseProject.Domain.Models;
+using BaseProject.Domain.Services;
 
-namespace BaseProject.Adapters.Services
+namespace BaseProject.Infrastructure.Data.Services
 {
-    public class WeatherService
+    public class WeatherService : IWeatherService
     {
         private readonly HttpClient _http;
         public WeatherService(HttpClient http)

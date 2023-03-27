@@ -2,7 +2,7 @@
 using Blazored.LocalStorage;
 using Fluxor;
 
-namespace BaseProject.Adapters.Store.Effects
+namespace BaseProject.Adapters.Effects
 {
     public class CounterEffects
     {

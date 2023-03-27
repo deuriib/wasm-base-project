@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
+      <PackageReference Include="gotrue-csharp" Version="3.0.5" />
     </ItemGroup>
 
 </Project>

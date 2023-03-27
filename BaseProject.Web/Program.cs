@@ -1,5 +1,5 @@
-using BaseProject.Adapters.Services;
-using BaseProject.Adapters.Store.Reducers;
+using BaseProject.Adapters.Facades;
+using BaseProject.Adapters.Reducers;
 using BaseProject.Domain.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -9,8 +9,13 @@ using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
 using BaseProject.Infrastructure.Data.Services;
+using BaseProject.Infrastructure.Providers;
 using BaseProject.Infrastructure.Store;
 using BaseProject.Infrastructure.Store.App;
+using BaseProject.Infrastructure.Store.Auth;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
+using Supabase.Interfaces;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -24,16 +29,13 @@ builder.Services.AddScoped(sp =>
     {
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
     });
-
-// Supabase config
-var url = builder.Configuration["Supabase:Url"] ?? "";
-var key = builder.Configuration["Supabase:Key"];
-var options = new SupabaseOptions
+builder.Services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();
+builder.Services.AddAuthorizationCore(config =>
 {
-    AutoRefreshToken = true,
-    AutoConnectRealtime = true
-};
-builder.Services.AddSingleton(_ => new Client(url, key, options));
+    config.DefaultPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddMudServices(config =>
 {
@@ -47,10 +49,13 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
-builder.Services.AddSingleton<IEmployeeRepository, SupabaseEmployeeRepository>();
-builder.Services.AddSingleton<EmployeeService>();
+// Facades
+builder.Services.AddScoped<AuthFacade>();
 
-builder.Services.AddScoped<WeatherService>();
+// Services
+builder.Services.AddScoped<IEmployeeService, SupabaseEmployeeService>();
+builder.Services.AddScoped<IAuthenticationService, SupabaseAuthenticationService>();
+builder.Services.AddScoped<IWeatherService,WeatherService>();
 
 builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = false);
 builder.Services.AddScoped<IStringStateStorage, LocalStateStorage>();
@@ -69,5 +74,21 @@ builder.Services.AddFluxor(fluxorOptions =>
     fluxorOptions.UseRouting();
     fluxorOptions.UsePersist(config => config.UseInclusionApproach());
 });
+
+// Supabase config
+// builder.Services.AddSingleton<ISupabaseSessionHandler, SupabaseSessionHandler>();
+var url = builder.Configuration["Supabase:Url"] ?? "";
+var key = builder.Configuration["Supabase:Key"];
+builder.Services.AddScoped(provider => new Client(url, key, new SupabaseOptions
+{
+    AutoRefreshToken = true,
+    AutoConnectRealtime = true,
+    PersistSession = true,
+    SessionHandler = new SupabaseSessionHandler(
+        provider.GetRequiredService<ILocalStorageService>(),
+        provider.GetRequiredService<ILogger<SupabaseSessionHandler>>(),
+        provider.GetRequiredService<IDispatcher>(),
+        provider.GetRequiredService<IState<AuthState>>())
+}));
 
 await builder.Build().RunAsync();

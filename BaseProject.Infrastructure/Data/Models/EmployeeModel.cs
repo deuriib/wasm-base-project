@@ -28,5 +28,9 @@ public class EmployeeModel : BaseModel
     [Column("birth_date")] 
     public DateTime Birthdate { get; set; }
     
-    [Column("status")] public bool Status { get; set; }
+    [Column("status")] 
+    public bool Status { get; set; }
+
+    [Column("user_id")]
+    public Guid UserId { get; set; }
 }

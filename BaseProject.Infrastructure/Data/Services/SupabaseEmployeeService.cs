@@ -7,10 +7,10 @@ using Postgrest;
 
 namespace BaseProject.Infrastructure.Data.Services;
 
-public class SupabaseEmployeeRepository : IEmployeeRepository
+public class SupabaseEmployeeService : IEmployeeService
 {
     private readonly Supabase.Client _client;
-    public SupabaseEmployeeRepository(Supabase.Client client)
+    public SupabaseEmployeeService(Supabase.Client client)
     {
         _client = client;
     }
@@ -20,12 +20,9 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
         var response = await _client
             .From<EmployeeModel>()
             .Select(x => new object[]{x.Id, x.FirstName, x.LastName, x.Email, x.Birthdate, x.Status})
+            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Order("id", Constants.Ordering.Descending)
             .Get(cancellationToken);
-        
-        response
-            .ResponseMessage?
-            .EnsureSuccessStatusCode();
 
         return response
             .Models
@@ -39,6 +36,7 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
         var employee = await _client
             .From<EmployeeModel>()
             .Select(x => new object[]{x.Id, x.FirstName, x.LastName, x.Email, x.Birthdate})
+            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Where(e => e.Id.Equals(id))
             .Single(cancellationToken);
         
@@ -48,14 +46,16 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
         return new (employee.Id, employee.FirstName, employee.LastName, employee.Email, employee.Birthdate);
     }
 
-    public async Task CreateAsync(CreateEmployeeDto dto, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(Employee employee, CancellationToken cancellationToken = default)
     {
         var model = new EmployeeModel
         {
-            FirstName = dto.FirstName!,
-            LastName = dto.LastName!,
-            Email = dto.Email!,
-            Birthdate = dto.Birthdate!.Value
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
+            Email = employee.Email,
+            Birthdate = employee.Birthdate,
+            Status = employee.Status.Value,
+            UserId = Guid.Parse(_client.Auth.CurrentUser!.Id!)
         };
         
         await _client
@@ -63,31 +63,37 @@ public class SupabaseEmployeeRepository : IEmployeeRepository
             .Insert(model, null, cancellationToken);
     }
 
-    public async Task UpdateAsync(int id, EditEmployeeDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(int id, Employee employee, CancellationToken cancellationToken = default)
     {
-        await _client.From<EmployeeModel>()
+        await _client
+            .From<EmployeeModel>()
             .Where(e => e.Id.Equals(id))
-            .Set(e => e.FirstName, dto.FirstName)
-            .Set(e => e.LastName, dto.LastName)
-            .Set(e => e.Email, dto.Email)
-            .Set(e => e.Birthdate, dto.Birthdate)
-            .Set(e => e.Address!, dto.Address)
-            .Set(e => e.Note!, dto.Note)
+            .Set(e => e.FirstName, employee.FirstName)
+            .Set(e => e.LastName, employee.LastName)
+            .Set(e => e.Email, employee.Email)
+            .Set(e => e.Birthdate, employee.Birthdate)
+            .Set(e => e.Address!, employee.Address)
+            .Set(e => e.Note!, employee.Note)
+            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Update(null, cancellationToken);
     }
 
-    public async Task UpdateStatusAsync(int id, UpdateEmployeeStatusDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateStatusAsync(int id, Employee employee, CancellationToken cancellationToken = default)
     {
-        await _client.From<EmployeeModel>()
+        await _client
+            .From<EmployeeModel>()
             .Where(e => e.Id.Equals(id))
-            .Set(x => x.Status, !dto.Status.Value)
+            .Set(x => x.Status, employee.Status.Value)
+            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Update(null, cancellationToken);
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        await _client.From<EmployeeModel>()
+        await _client
+            .From<EmployeeModel>()
             .Where(e => e.Id.Equals(id))
+            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Delete(null, cancellationToken);
     }
 }

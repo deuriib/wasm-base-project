@@ -61,6 +61,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        SubscribeToAction<EmployeeFailedAction>(_=> MudDialog?.Close(DialogResult.Ok(false)));
+        
         SubscribeToAction<UpdateEmployeeSuccessAction>(action =>
         {
             Snackbar.Add($"Employee Id:{action.Id}  updated", Severity.Success);
@@ -80,7 +82,8 @@
 
     private void OnValidSubmit(EditContext context)
     {
-        Dispatcher.Dispatch(new UpdateEmployeeAction(EmployeeId, State.Value.SelectedEmployee));
+        if(EmployeeId is not null)
+            Dispatcher.Dispatch(new UpdateEmployeeAction(EmployeeId!.Value, State.Value.SelectedEmployee!));
     }
 
     private void Cancel() => MudDialog?.Cancel();

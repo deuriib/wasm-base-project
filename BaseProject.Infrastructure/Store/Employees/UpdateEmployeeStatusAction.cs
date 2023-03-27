@@ -3,6 +3,6 @@ using BaseProject.Domain.Enums;
 
 namespace BaseProject.Infrastructure.Store.Employees;
 
-public record UpdateEmployeeStatusAction(int? Id, UpdateEmployeeStatusDto Dto);
+public record UpdateEmployeeStatusAction(int Id);
 
-public record UpdateEmployeeStatusSuccessAction(int? Id, EmployeeStatus Status);
+public record UpdateEmployeeStatusSuccessAction(int Id, EmployeeStatus Status);

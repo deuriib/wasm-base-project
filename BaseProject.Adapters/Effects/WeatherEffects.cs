@@ -1,14 +1,14 @@
-﻿using BaseProject.Adapters.Services;
+﻿using BaseProject.Domain.Services;
 using BaseProject.Infrastructure.Store.Weather;
 using Fluxor;
 
-namespace BaseProject.Adapters.Store.Effects
+namespace BaseProject.Adapters.Effects
 {
     public class WeatherEffects
     {
-        private readonly WeatherService _service;
+        private readonly IWeatherService _service;
 
-        public WeatherEffects(WeatherService service)
+        public WeatherEffects(IWeatherService service)
         {
             _service = service;
         }
