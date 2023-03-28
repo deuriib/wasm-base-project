@@ -76,7 +76,6 @@ builder.Services.AddFluxor(fluxorOptions =>
 });
 
 // Supabase config
-// builder.Services.AddSingleton<ISupabaseSessionHandler, SupabaseSessionHandler>();
 var url = builder.Configuration["Supabase:Url"] ?? "";
 var key = builder.Configuration["Supabase:Key"];
 builder.Services.AddScoped(provider => new Client(url, key, new SupabaseOptions
