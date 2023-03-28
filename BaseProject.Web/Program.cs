@@ -12,10 +12,8 @@ using BaseProject.Infrastructure.Data.Services;
 using BaseProject.Infrastructure.Providers;
 using BaseProject.Infrastructure.Store;
 using BaseProject.Infrastructure.Store.App;
-using BaseProject.Infrastructure.Store.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
-using Supabase.Interfaces;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -57,13 +55,15 @@ builder.Services.AddScoped<IEmployeeService, SupabaseEmployeeService>();
 builder.Services.AddScoped<IAuthenticationService, SupabaseAuthenticationService>();
 builder.Services.AddScoped<IWeatherService,WeatherService>();
 
-builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = false);
+builder.Services.AddBlazoredLocalStorage(config 
+    => config.JsonSerializerOptions.WriteIndented = false);
 builder.Services.AddScoped<IStringStateStorage, LocalStateStorage>();
 builder.Services.AddScoped<IStoreHandler, JsonStoreHandler>();
 
 builder.Services.AddFluxor(fluxorOptions =>
 {
-    fluxorOptions.ScanAssemblies(typeof(AppState).Assembly, additionalAssembliesToScan: new[]
+    fluxorOptions.ScanAssemblies(typeof(AppState).Assembly, 
+        additionalAssembliesToScan: new[]
     {
         typeof(EmployeeReducers).Assembly
     });
@@ -72,7 +72,8 @@ builder.Services.AddFluxor(fluxorOptions =>
         fluxorOptions.UseReduxDevTools();
 
     fluxorOptions.UseRouting();
-    fluxorOptions.UsePersist(config => config.UseInclusionApproach());
+    fluxorOptions.UsePersist(config 
+        => config.UseInclusionApproach());
 });
 
 // Supabase config
