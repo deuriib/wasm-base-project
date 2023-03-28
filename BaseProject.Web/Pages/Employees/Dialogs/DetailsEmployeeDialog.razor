@@ -45,8 +45,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<EmployeeFailedAction>(_=> MudDialog?.Close(DialogResult.Ok(false)));
-        
         MudDialog?.SetOptions(new DialogOptions()
         {
             DisableBackdropClick = true,
