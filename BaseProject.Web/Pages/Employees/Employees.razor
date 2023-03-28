@@ -1,7 +1,7 @@
 ﻿@page "/employees"
+@inherits FluxorComponent
 @using BaseProject.Infrastructure.Store.Employees
 @using BaseProject.Infrastructure.ViewModels
-@inherits FluxorComponent
 @inject IState<EmployeesState> State
 @inject IDispatcher Dispatcher
 @inject ISnackbar Snackbar

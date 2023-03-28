@@ -48,16 +48,4 @@ public static class AuthReducers
     {
         return new AuthState(isLoading: false, session: null);
     }
-    
-    [ReducerMethod]
-    public static AuthState SaveSessionAction(AuthState state, SaveSessionAction action)
-    {
-        return new AuthState(isLoading: false, session: action.Session);
-    }
-    
-    [ReducerMethod(typeof(RemoveSessionAction))]
-    public static AuthState RemoveSessionAction(AuthState state)
-    {
-        return new AuthState(isLoading: false, session: null);
-    }
 }

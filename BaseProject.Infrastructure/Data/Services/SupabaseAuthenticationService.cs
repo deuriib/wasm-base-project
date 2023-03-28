@@ -8,8 +8,8 @@ public class SupabaseAuthenticationService : IAuthenticationService
 {
     private readonly Supabase.Client _supabaseClient;
     private readonly ILogger<SupabaseAuthenticationService> _logger;
-
-    public SupabaseAuthenticationService(Supabase.Client supabaseClient,
+    public SupabaseAuthenticationService(
+        Supabase.Client supabaseClient,
         ILogger<SupabaseAuthenticationService> logger)
     {
         _supabaseClient = supabaseClient;
@@ -65,17 +65,9 @@ public class SupabaseAuthenticationService : IAuthenticationService
             .GetSessionFromUrl(new Uri(signInUrl));
     }
 
-    public async ValueTask<Session?> GetCurrentSessionAsync()
+    public async ValueTask<User?> GetCurrentUserAsync()
     {
-        return await _supabaseClient.Auth.RetrieveSessionAsync();
-    }
-    
-    public Session? SetSessionFromAccessToken(string accessToken)
-    {
-        return _supabaseClient.Auth.SetAuth(accessToken);
-    }
-    public async ValueTask<User?> GetUserFromJwtAsync(string jwt)
-    {
-        return await _supabaseClient.Auth.GetUser(jwt);
+        var session = await _supabaseClient.Auth.RetrieveSessionAsync();
+        return session?.User;
     }
 }

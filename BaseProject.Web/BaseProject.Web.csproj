@@ -42,10 +42,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AdditionalFiles Include="Pages\Settings\Dialogs\ClearCacheDialog.razor" />
 	  <AdditionalFiles Include="Pages\Settings\SettingsMenu.razor" />
 	  <AdditionalFiles Include="Pages\Settings\StorageSettings.razor" />
 	  <AdditionalFiles Include="Pages\Settings\ThemeSettings.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Pages\Settings\Dialogs\ClearCacheDialog.razor" />
 	</ItemGroup>
 	
 	

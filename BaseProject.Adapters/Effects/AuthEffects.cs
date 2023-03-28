@@ -1,6 +1,7 @@
 using BaseProject.Domain.Services;
 using BaseProject.Infrastructure.Store.Auth;
 using Fluxor;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace BaseProject.Adapters.Effects;
@@ -9,11 +10,15 @@ public class AuthEffects
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ILogger<AuthEffects> _logger;
-
-    public AuthEffects(IAuthenticationService authenticationService, ILogger<AuthEffects> logger)
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    public AuthEffects(
+        IAuthenticationService authenticationService, 
+        ILogger<AuthEffects> logger, 
+        AuthenticationStateProvider authenticationStateProvider)
     {
         _authenticationService = authenticationService;
         _logger = logger;
+        _authenticationStateProvider = authenticationStateProvider;
     }
 
     [EffectMethod]
@@ -29,7 +34,9 @@ public class AuthEffects
                 dispatcher.Dispatch(new LoginWithEmailAndPasswordActionFailed("Credentials are invalid"));
                 return;
             }
-
+            
+            await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
             dispatcher.Dispatch(new LoginWithEmailAndPasswordActionSuccess(session));
         }
         catch (Exception ex)
@@ -55,6 +62,8 @@ public class AuthEffects
                 return;
             }
 
+            await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
             dispatcher.Dispatch(new LoginWithGoogleActionSuccess(session));
         }
         catch (Exception ex)
@@ -80,6 +89,8 @@ public class AuthEffects
                 return;
             }
 
+            await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
             dispatcher.Dispatch(
                 new RegisterActionSuccess(session));
         }
@@ -100,6 +111,8 @@ public class AuthEffects
             await _authenticationService
                 .SignOutAsync();
 
+            await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
             dispatcher.Dispatch(new LogoutActionSuccess());
         }
         catch (Exception ex)

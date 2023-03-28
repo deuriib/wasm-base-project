@@ -12,11 +12,7 @@ public interface IAuthenticationService
     
     ValueTask<Session?> SignInWithGoogleAsync();
     
-    ValueTask<Session?> GetCurrentSessionAsync();
+    ValueTask<User?> GetCurrentUserAsync();
     
     ValueTask<Session?> SignUpAsync(string email, string password);
-    
-    ValueTask<User?> GetUserFromJwtAsync(string jwt);
-    
-    Session? SetSessionFromAccessToken(string accessToken);
 }

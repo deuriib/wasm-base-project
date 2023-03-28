@@ -17,8 +17,9 @@
             <MudText Typo="Typo.body2" Color="Color.Info">Increment By: (@IncrementBy)</MudText>
 
             <MudText Class="mb-4">Current count: @State.Value.CurrentCount</MudText>
-            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="ma-2" Variant="Variant.Filled" @onclick="IncrementCount">Increment</MudButton>
-            <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Secondary" Class="ma-2"  Variant="Variant.Outlined" @onclick="ResetCounter">Reset Counter</MudButton>
+            
+            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="mr-2" Variant="Variant.Filled" @onclick="IncrementCount">Increment</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Secondary"  Variant="Variant.Outlined" @onclick="ResetCounter">Reset Counter</MudButton>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -38,10 +39,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        SubscribeToAction<ClearStorageAction>(result =>
-        {
-            ResetCounter();
-        });
 
         SubscribeToAction<ResetCounterAction>(result =>
         {

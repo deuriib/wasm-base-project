@@ -86,9 +86,7 @@ builder.Services.AddScoped(provider => new Client(url, key, new SupabaseOptions
     PersistSession = true,
     SessionHandler = new SupabaseSessionHandler(
         provider.GetRequiredService<ILocalStorageService>(),
-        provider.GetRequiredService<ILogger<SupabaseSessionHandler>>(),
-        provider.GetRequiredService<IDispatcher>(),
-        provider.GetRequiredService<IState<AuthState>>())
+        provider.GetRequiredService<ILogger<SupabaseSessionHandler>>())
 }));
 
 await builder.Build().RunAsync();
