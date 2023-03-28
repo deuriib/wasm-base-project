@@ -60,7 +60,7 @@
                             <MudMenuItem>
                                 Profile
                             </MudMenuItem>
-                            <MudMenuItem Class="d-flex align-center justify-center" OnClick="SignOut">
+                            <MudMenuItem Class="d-flex align-center justify-center" OnClick="Logout">
                                 Logout
                             </MudMenuItem>
                         </MudMenu>
@@ -112,7 +112,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<LogoutActionSuccess>(_ => NavigationManager.NavigateTo("/", true));
+        SubscribeToAction<LogoutActionSuccess>(_ => NavigationManager.NavigateTo("/"));
 
         await base.OnInitializedAsync();
     }
@@ -139,19 +139,19 @@
         _isOpenSettingsDrawer = !_isOpenSettingsDrawer;
     }
 
-    private void SignOut()
+    private void Logout()
     {
         AuthFacade.Logout();
     }
 
     private void GoToLogin()
     {
-        NavigationManager.NavigateTo("/authentication/login", true);
+        NavigationManager.NavigateTo("/authentication/login");
     }
 
     private void GoToRegister()
     {
-        NavigationManager.NavigateTo("/authentication/register", true);
+        NavigationManager.NavigateTo("/authentication/register");
     }
 
 }

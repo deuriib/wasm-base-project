@@ -1,11 +1,11 @@
 ﻿@page "/counter"
 @attribute [AllowAnonymous]
-
 @using BaseProject.Infrastructure.Store.Counter
 @using BaseProject.Infrastructure.Store.App
 @inherits FluxorComponent
 @inject IState<CounterState> State
-
+@inject CounterFacade CounterFacade
+@inject ISnackbar Snackbar
 
 <PageTitle>Counter</PageTitle>
 
@@ -14,12 +14,21 @@
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
         <MudPaper Class="pa-8" Elevation="3">
+            
             <MudText Typo="Typo.body2" Color="Color.Info">Increment By: (@IncrementBy)</MudText>
 
             <MudText Class="mb-4">Current count: @State.Value.CurrentCount</MudText>
-            
-            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="mr-2" Variant="Variant.Filled" @onclick="IncrementCount">Increment</MudButton>
-            <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Secondary"  Variant="Variant.Outlined" @onclick="ResetCounter">Reset Counter</MudButton>
+
+            <MudButton StartIcon="@Icons.Material.Filled.Add"
+                       Color="Color.Primary"
+                       Class="mr-2"
+                       Variant="Variant.Filled"
+                       OnClick="IncrementCount">Increment</MudButton>
+
+            <MudButton StartIcon="@Icons.Material.Filled.Delete"
+                       Color="Color.Secondary"
+                       Variant="Variant.Outlined"
+                       OnClick="ResetCounter">Reset Counter</MudButton>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -30,26 +39,20 @@
     [Parameter]
     public int IncrementBy { get; set; } = 1;
 
-    [Inject]
-    private IDispatcher? Dispatcher { get; set; }
-
-    [Inject]
-    private ISnackbar? Snackbar { get; set; }
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-
         SubscribeToAction<ResetCounterAction>(result =>
-        {
-            Snackbar?.Add(message: "Counter was reset to initial value", severity: Severity.Info);
-        });
+            Snackbar
+                .Add(message: "Counter was reset to initial value", 
+                    severity: Severity.Info));
+        
+        await base.OnInitializedAsync();
     }
 
     private void IncrementCount()
-    => Dispatcher?.Dispatch(new IncrementCounterAction(IncrementBy));
+    => CounterFacade.IncrementCounter(IncrementBy);
 
     private void ResetCounter()
-        => Dispatcher?.Dispatch(new ResetCounterAction());
+        => CounterFacade.ResetCounter();
 
 }

@@ -31,20 +31,20 @@ public class AuthEffects
 
             if (session is null)
             {
-                dispatcher.Dispatch(new LoginWithEmailAndPasswordActionFailed("Credentials are invalid"));
+                dispatcher.Dispatch(new LoginFailedAction("Credentials are invalid"));
                 return;
             }
             
             await _authenticationStateProvider.GetAuthenticationStateAsync();
             
-            dispatcher.Dispatch(new LoginWithEmailAndPasswordActionSuccess(session));
+            dispatcher.Dispatch(new LoginSuccessAction(session));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred trying to sign in");
             
             dispatcher.Dispatch(
-                new LoginWithEmailAndPasswordActionFailed($"An error occurred trying to login in"));
+                new LoginFailedAction($"An error occurred trying to login in"));
         }
     }
 
@@ -58,20 +58,20 @@ public class AuthEffects
 
             if (session is null)
             {
-                dispatcher.Dispatch(new LoginWithGoogleActionFailed("Credentials are invalid"));
+                dispatcher.Dispatch(new LoginFailedAction("Credentials are invalid"));
                 return;
             }
 
             await _authenticationStateProvider.GetAuthenticationStateAsync();
             
-            dispatcher.Dispatch(new LoginWithGoogleActionSuccess(session));
+            dispatcher.Dispatch(new LoginSuccessAction(session));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred trying to sign in with google");
             
             dispatcher.Dispatch(
-                new LoginWithGoogleActionFailed($"An error occurred trying to sig in with google: {ex.Message}"));
+                new LoginFailedAction($"An error occurred trying to sig in with google: {ex.Message}"));
         }
     }
 

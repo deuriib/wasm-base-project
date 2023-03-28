@@ -13,86 +13,81 @@
 <MudPaper Class="p-8 d-flex align-center justify-center">
     <MudGrid>
         <MudItem xs="12" sm="10" md="12">
-            <MudForm Model="@Model" @ref="Form" @bind-IsValid="@IsSuccessForm">
-                                <MudGrid>
-                                    <MudItem xs="12" sm="6" md="6">
-                                        <MudTextField T="string" @bind-Value="Model.Email" 
-                                                      InputType="InputType.Email"
-                                                      For="@(() => Model.Email)" Immediate="false" 
-                                                      DebounceInterval="500" Label="Email" Required="true" 
-                                                      RequiredError="First name is required!"/>
-                                    </MudItem>
-                                    <MudItem xs="12" sm="6" md="6">
-                                        <MudTextField T="string" @bind-Value="Model.Password" 
-                                                      InputType="InputType.Password"
-                                                      For="@(() => Model.Password)" Immediate="false" 
-                                                      DebounceInterval="500" Label="Password" 
-                                                      HelperText="Choose a strong password"
-                                                      Required="true" RequiredError="Last name is required!"/>
-                                    </MudItem>
-                                </MudGrid>
-            
-                                <div class="d-flex flex-column align-center justify-end mt-6">
-                                    <MudButton StartIcon="@Icons.Material.Filled.Login" OnClick="Submit" 
-                                               Color="Color.Primary" Variant="Variant.Filled" 
-                                               Disabled="@(!IsSuccessForm)">Login In</MudButton>
-                                    
-                                    <MudButton StartIcon="@Icons.Custom.Brands.Google" OnClick="Submit" 
-                                               Color="Color.Primary" Variant="Variant.Outlined" 
-                                               Disabled="@(!IsSuccessForm)">With Google</MudButton>
-                                    
-                                    <MudButton StartIcon="@Icons.Material.Filled.WrapText" OnClick="GoToRegister" 
-                                               Color="Color.Tertiary" Variant="Variant.Text">Register</MudButton>
-                                </div>
-                            </MudForm>
+            <MudForm Model="@_model" @ref="_form" @bind-IsValid="@_isSuccessForm">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudTextField T="string" @bind-Value="_model.Email"
+                                      InputType="InputType.Email"
+                                      For="@(() => _model.Email)" Immediate="false"
+                                      DebounceInterval="500" Label="Email" Required="true"
+                                      RequiredError="First name is required!"/>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudTextField T="string" @bind-Value="_model.Password"
+                                      InputType="InputType.Password"
+                                      For="@(() => _model.Password)" Immediate="false"
+                                      DebounceInterval="500" Label="Password"
+                                      HelperText="Choose a strong password"
+                                      Required="true" RequiredError="Last name is required!"/>
+                    </MudItem>
+                </MudGrid>
+
+                <div class="d-flex flex-column align-center justify-end mt-6">
+                    <MudButton StartIcon="@Icons.Material.Filled.Login" OnClick="Submit"
+                               Color="Color.Primary" Variant="Variant.Filled"
+                               Disabled="@(!_isSuccessForm)">
+                        Login In
+                    </MudButton>
+
+                    <MudButton StartIcon="@Icons.Custom.Brands.Google" OnClick="Submit"
+                               Color="Color.Primary" Variant="Variant.Outlined"
+                               Disabled="@(!_isSuccessForm)">
+                        With Google
+                    </MudButton>
+
+                    <MudButton StartIcon="@Icons.Material.Filled.WrapText" OnClick="GoToRegister"
+                               Color="Color.Tertiary" Variant="Variant.Text">
+                        Register
+                    </MudButton>
+                </div>
+            </MudForm>
         </MudItem>
     </MudGrid>
 </MudPaper>
 
 @code {
+
     [Parameter]
     public string? ReturnUrl { get; set; }
 
-    private LoginWithEmailViewModel? Model = new();
-    private MudForm? Form { get; set;}
-    private bool IsSuccessForm { get; set; }
-    
-    public override async Task SetParametersAsync(ParameterView parameters)
-    {
-        if (parameters.TryGetValue<string>(nameof(ReturnUrl), out var returnUrl))
-        {
-            ReturnUrl = returnUrl;
-        }
-
-        await base.SetParametersAsync(parameters);
-    }
+    private LoginWithEmailViewModel? _model = new();
+    private MudForm? _form;
+    private bool _isSuccessForm;
 
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<LoginWithEmailAndPasswordActionFailed>(action =>
+        SubscribeToAction<LoginFailedAction>(action =>
             Snackbar.Add(action.ErrorMessage, Severity.Error));
-        
-        SubscribeToAction<LoginWithEmailAndPasswordActionSuccess>(action =>
-        {
-            NavigationManager.NavigateTo(ReturnUrl ?? "/");
-        });
-        
+
+        SubscribeToAction<LoginSuccessAction>(action => { NavigationManager.NavigateTo(ReturnUrl ?? "/"); });
+
         await base.OnInitializedAsync();
     }
 
     private void Submit()
     {
-        if (!IsSuccessForm)
+        if (!_isSuccessForm)
             return;
 
-        if (Model is not null)
-        {
-            AuthFacade.LoginWithEmailAndPassword(Model.Email!, Model.Password!);
-        }
+        if (_model is null)
+            return;
+
+        AuthFacade.LoginWithEmailAndPassword(_model.Email!, _model.Password!);
     }
-    
+
     private void GoToRegister()
     {
         NavigationManager.NavigateTo($"/authentication/register?returnUrl={ReturnUrl}");
     }
+
 }

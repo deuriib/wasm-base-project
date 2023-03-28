@@ -43,7 +43,6 @@
 
 	<ItemGroup>
 	  <AdditionalFiles Include="Pages\Settings\SettingsMenu.razor" />
-	  <AdditionalFiles Include="Pages\Settings\StorageSettings.razor" />
 	  <AdditionalFiles Include="Pages\Settings\ThemeSettings.razor" />
 	</ItemGroup>
 

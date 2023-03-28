@@ -1,5 +1,5 @@
 ﻿@using BaseProject.Infrastructure.Store.Employees
-@using BaseProject.Infrastructure.ViewModels
+
 @inherits FluxorLayout
 @inject IDispatcher Dispatcher
 
@@ -20,7 +20,7 @@
     MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public EmployeeListViewModel? Employee { get; set; }
+    public ListEmployeeDto? Employee { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

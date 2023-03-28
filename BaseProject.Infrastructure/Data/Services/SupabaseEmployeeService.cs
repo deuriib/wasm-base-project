@@ -15,7 +15,7 @@ public class SupabaseEmployeeService : IEmployeeService
         _client = client;
     }
 
-    public async Task<Employee[]?> GetAllAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<Employee[]?> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var response = await _client
             .From<EmployeeModel>()
@@ -31,7 +31,7 @@ public class SupabaseEmployeeService : IEmployeeService
             .ToArray();
     }
 
-    public async Task<Employee?> GetOneAsync(int id, CancellationToken cancellationToken = default)
+    public async ValueTask<Employee?> GetOneAsync(int id, CancellationToken cancellationToken = default)
     {
         var employee = await _client
             .From<EmployeeModel>()
@@ -46,7 +46,7 @@ public class SupabaseEmployeeService : IEmployeeService
         return new (employee.Id, employee.FirstName, employee.LastName, employee.Email, employee.Birthdate);
     }
 
-    public async Task CreateAsync(Employee employee, CancellationToken cancellationToken = default)
+    public async ValueTask<Employee?> CreateAsync(Employee employee, CancellationToken cancellationToken = default)
     {
         var model = new EmployeeModel
         {
@@ -58,9 +58,19 @@ public class SupabaseEmployeeService : IEmployeeService
             UserId = Guid.Parse(_client.Auth.CurrentUser!.Id!)
         };
         
-        await _client
+        var response = await _client
             .From<EmployeeModel>()
-            .Insert(model, null, cancellationToken);
+            .Insert(model, 
+                new QueryOptions
+                {
+                    Returning = QueryOptions.ReturnType.Representation
+                }, cancellationToken);
+        
+        return response.Models
+            .Select(e =>
+                new Employee(e.Id, e.FirstName, e.LastName, e.Email, e.Birthdate)
+                .ChangeStatus(EmployeeStatus.FromValue(e.Status)))
+            .FirstOrDefault();
     }
 
     public async Task UpdateAsync(int id, Employee employee, CancellationToken cancellationToken = default)

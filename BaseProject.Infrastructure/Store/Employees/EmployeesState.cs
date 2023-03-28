@@ -1,4 +1,5 @@
-﻿using BaseProject.Infrastructure.ViewModels;
+﻿using BaseProject.Domain.Dtos;
+using BaseProject.Infrastructure.ViewModels;
 using Fluxor;
 using Fluxor.Persist.Storage;
 
@@ -9,8 +10,8 @@ namespace BaseProject.Infrastructure.Store.Employees;
 public class EmployeesState
 {
     public EmployeesState(bool isLoading, 
-        EmployeeListViewModel[] employees, 
-        EmployeeEditViewModel? selectedEmployee,
+        ListEmployeeDto[] employees, 
+        UpdateEmployeeDto? selectedEmployee,
         bool isLoadingEmployee)
     {
         IsLoading = isLoading;
@@ -20,14 +21,14 @@ public class EmployeesState
     }
 
     public bool IsLoading { get;  }
-    public EmployeeListViewModel[] Employees { get;  }
-    public EmployeeEditViewModel? SelectedEmployee { get;  }
+    public ListEmployeeDto[] Employees { get;  }
+    public UpdateEmployeeDto? SelectedEmployee { get;  }
     public bool IsLoadingEmployee { get;  }
 
     private EmployeesState()
     {
         IsLoading = false;
-        Employees = Array.Empty<EmployeeListViewModel>();
+        Employees = Array.Empty<ListEmployeeDto>();
         SelectedEmployee = null;
         IsLoadingEmployee = false;
     }

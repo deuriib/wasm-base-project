@@ -3,7 +3,6 @@ using BaseProject.Domain.Enums;
 using BaseProject.Domain.Models;
 using BaseProject.Domain.Services;
 using BaseProject.Infrastructure.Store.Employees;
-using BaseProject.Infrastructure.ViewModels;
 using Fluxor;
 using Microsoft.Extensions.Logging;
 
@@ -33,8 +32,11 @@ public class EmployeeEffects
 
             var viewModel = employees!
                 .Select(e =>
-                    new EmployeeListViewModel(e.Id, $"{e.FirstName} {e.LastName}", e.Email, e.Status,
-                        $"{e.Birthdate:dd/MM/yyyy}"))
+                    new ListEmployeeDto(e.Id, 
+                        $"{e.FirstName} {e.LastName}", 
+                        e.Email, 
+                        e.Status,
+                        e.Birthdate))
                 .ToArray();
 
             dispatcher.Dispatch(new GetEmployeesSuccessAction(viewModel));
@@ -42,6 +44,7 @@ public class EmployeeEffects
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed loading employees");
+            
             dispatcher.Dispatch(new GetEmployeesFailedAction("Failed loading employees"));
         }
     }
@@ -59,10 +62,14 @@ public class EmployeeEffects
             if (employee is null)
                 dispatcher.Dispatch(new GetOneEmployeeFailedAction("Employee is null"));
 
-            var employeeViewModel = new EmployeeEditViewModel
+            var employeeViewModel = new UpdateEmployeeDto
             {
-                FirstName = employee?.FirstName, LastName = employee?.LastName, Email = employee?.Email,
-                Birthdate = employee?.Birthdate, Address = employee?.Address, Note = employee?.Note
+                FirstName = employee?.FirstName, 
+                LastName = employee?.LastName, 
+                Email = employee?.Email,
+                Birthdate = employee?.Birthdate, 
+                Address = employee?.Address, 
+                Note = employee?.Note
             };
 
             dispatcher.Dispatch(new GetOneEmployeeSuccessAction(employeeViewModel));
@@ -70,6 +77,7 @@ public class EmployeeEffects
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed loading employee");
+            
             dispatcher.Dispatch(new GetOneEmployeeFailedAction("Failed loading employee"));
         }
     }
@@ -82,13 +90,18 @@ public class EmployeeEffects
             var employee = new Employee(0, action.Dto.FirstName!, action.Dto.LastName!, action.Dto.Email!,
                 action.Dto.Birthdate!.Value);
 
-            await _employeeService.CreateAsync(employee);
+            var newEmployee = await _employeeService.CreateAsync(employee);
 
-            dispatcher.Dispatch(new CreateEmployeeSuccessAction());
+            dispatcher.Dispatch(new CreateEmployeeSuccessAction(newEmployee!.Id,
+                $"{newEmployee.FirstName} {newEmployee.LastName}",
+                newEmployee.Email,
+                newEmployee.Birthdate,
+                newEmployee.Status));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed creating employee");
+            
             dispatcher.Dispatch(new EmployeeFailedAction("Failed creating employee"));
         }
     }
@@ -98,18 +111,22 @@ public class EmployeeEffects
     {
         try
         {
-            var employee = new Employee(action.Id, action.Employee.FirstName!, action.Employee.LastName!,
-                action.Employee.Email!, action.Employee.Birthdate!.Value)
-                .AddOrUpdateNote(action.Employee.Note!)
-                .AddOrUpdateAddress(action.Employee.Address!);
+            var employee = new Employee(action.Id, 
+                    action.UpdateEmployee.FirstName!, 
+                    action.UpdateEmployee.LastName!,
+                    action.UpdateEmployee.Email!, 
+                    action.UpdateEmployee.Birthdate!.Value)
+                .AddOrUpdateNote(action.UpdateEmployee.Note!)
+                .AddOrUpdateAddress(action.UpdateEmployee.Address!);
 
             await _employeeService.UpdateAsync(action.Id, employee);
 
-            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id, action.Employee));
+            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id, action.UpdateEmployee));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed updating employee");
+            
             dispatcher.Dispatch(new EmployeeFailedAction("Failed updating employee"));
         }
     }
@@ -140,6 +157,7 @@ public class EmployeeEffects
         catch (Exception ex)
         {
             _logger.LogError(ex,"Failed updating employee status");
+            
             dispatcher.Dispatch(new EmployeeFailedAction("Failed updating employee status"));
         }
     }
@@ -159,6 +177,7 @@ public class EmployeeEffects
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed deleting employee");
+            
             dispatcher.Dispatch(new EmployeeFailedAction("Failed deleting employee"));
         }
     }

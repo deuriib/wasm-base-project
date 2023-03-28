@@ -5,24 +5,24 @@ namespace BaseProject.Adapters.Reducers;
 
 public static class AuthReducers
 {
-    [ReducerMethod(typeof(LoginWithEmailAndPasswordActionSuccess))]
+    [ReducerMethod(typeof(LoginSuccessAction))]
     public static AuthState LoginWithEmailAndPasswordAction(AuthState state)
     {
         return new AuthState(isLoading: true, session: null);
     }
 
     [ReducerMethod]
-    public static AuthState LoginWithEmailAndPasswordActionSuccess(
+    public static AuthState LoginSuccessAction(
         AuthState state,
-        LoginWithEmailAndPasswordActionSuccess action)
+        LoginSuccessAction action)
     {
         return new AuthState(isLoading: false, session: action.Session);
     }
 
     [ReducerMethod]
-    public static AuthState LoginWithEmailAndPasswordActionFailed(
+    public static AuthState LoginFailedAction(
         AuthState state,
-        LoginWithEmailAndPasswordActionFailed action)
+        LoginFailedAction action)
     {
         return new AuthState(isLoading: false, session: null);
     }
@@ -31,21 +31,5 @@ public static class AuthReducers
     public static AuthState LoginWithGoogleAction(AuthState state)
     {
         return new AuthState(isLoading: true, session: null);
-    }
-
-    [ReducerMethod]
-    public static AuthState LoginWithGoogleActionSuccess(
-        AuthState state,
-        LoginWithGoogleActionSuccess action)
-    {
-        return new AuthState(isLoading: false, session: action.Session);
-    }
-
-    [ReducerMethod]
-    public static AuthState LoginWithGoogleActionFailed(
-        AuthState state,
-        LoginWithGoogleActionFailed action)
-    {
-        return new AuthState(isLoading: false, session: null);
     }
 }

@@ -27,6 +27,7 @@ builder.Services.AddScoped(sp =>
     {
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
     });
+
 builder.Services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();
 builder.Services.AddAuthorizationCore(config =>
 {
@@ -49,6 +50,9 @@ builder.Services.AddMudServices(config =>
 
 // Facades
 builder.Services.AddScoped<AuthFacade>();
+builder.Services.AddScoped<CounterFacade>();
+builder.Services.AddScoped<EmployeeFacade>();
+builder.Services.AddScoped<ThemeFacade>();
 
 // Services
 builder.Services.AddScoped<IEmployeeService, SupabaseEmployeeService>();

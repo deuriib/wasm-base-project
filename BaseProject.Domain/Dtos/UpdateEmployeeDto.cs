@@ -1,6 +1,6 @@
-﻿namespace BaseProject.Infrastructure.ViewModels;
+﻿namespace BaseProject.Domain.Dtos;
 
-public record EmployeeEditViewModel
+public record UpdateEmployeeDto
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }

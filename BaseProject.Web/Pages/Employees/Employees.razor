@@ -1,9 +1,9 @@
 ﻿@page "/employees"
 @inherits FluxorComponent
 @using BaseProject.Infrastructure.Store.Employees
-@using BaseProject.Infrastructure.ViewModels
+@using BaseProject.Domain.Dtos
 @inject IState<EmployeesState> State
-@inject IDispatcher Dispatcher
+@inject EmployeeFacade EmployeeFacade
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -11,20 +11,33 @@
 <MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
 
 <MudPaper Class="pa-4" Elevation="3">
-    <MudTable HeaderClass="mt-4" Items="State.Value.Employees" Dense="true"
-              Loading="@State.Value.IsLoading" TotalItems="@State.Value.Employees.Count()"
-              Virtualize Filter="new Func<EmployeeListViewModel, bool>(FilterEmployees)"
-              Hover="true" SortLabel="Sort By" Elevation="0">
+    <MudTable HeaderClass="mt-4"
+              Items="State.Value.Employees"
+              Dense="true"
+              Loading="@State.Value.IsLoading"
+              TotalItems="@State.Value.Employees.Count()"
+              Virtualize
+              Filter="new Func<ListEmployeeDto, bool>(FilterEmployees)"
+              Hover="true"
+              SortLabel="Sort By"
+              Elevation="0">
         <ToolBarContent>
             <MudText Typo="Typo.h6" GutterBottom>List of employees</MudText>
             <MudSpacer/>
-            <MudTextField @bind-Value="_filterString" Variant="Variant.Outlined"
-                          Margin="Margin.Dense" Immediate Placeholder="Search"
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
-                          IconSize="Size.Medium" Class="mt-0 mx-2">
+            <MudTextField @bind-Value="_filterString"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate Placeholder="Search"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          IconSize="Size.Medium"
+                          Class="mt-0 mx-2">
             </MudTextField>
-            <MudButton StartIcon="@Icons.Material.Filled.PersonAdd" DisableElevation="true"
-                       Size="Size.Large" Color="Color.Primary" Variant="Variant.Filled"
+            <MudButton StartIcon="@Icons.Material.Filled.PersonAdd"
+                       DisableElevation="true"
+                       Size="Size.Large"
+                       Color="Color.Primary"
+                       Variant="Variant.Filled"
                        OnClick="ShowCreateNewDialog">
                 Add
             </MudButton>
@@ -43,9 +56,11 @@
             <div class="d-flex align-center justify-center flex-column ">
                 <MudContainer Class="flex-grow-1">
                     <MudIcon Style="@($"color:{Colors.Grey.Lighten1}")"
-                             Icon="@Icons.Material.Filled.List" Size="Size.Large">
+                             Icon="@Icons.Material.Filled.List"
+                             Size="Size.Large">
                     </MudIcon>
-                    <MudText Typo="Typo.subtitle1" GutterBottom
+                    <MudText Typo="Typo.subtitle1"
+                             GutterBottom
                              Style="@($"color:{Colors.Grey.Lighten1}")">
                         There is no employees, click + Add button to create a new one
                     </MudText>
@@ -58,28 +73,33 @@
             <MudTd DataLabel="Email">@context.Email </MudTd>
             <MudTd DataLabel="Status">
                 <MudButton Variant="Variant.Text" DisableRipple
-                           Color="context.Status!.Value ? Color.Success : Color.Error">
+                           Color="context.Status.Value ? Color.Success : Color.Error">
                     @context.Status!.Name
                 </MudButton>
             </MudTd>
             <MudTd DataLabel="Options">
                 <MudButtonGroup OverrideStyles="false">
-                    <MudIconButton Color="Color.Primary"
-                                   Icon="@(context.Status.Value 
-                                             ? Icons.Material.Filled.PersonOff 
-                                             : Icons.Material.Filled.Person)"
-                                   Title="@(context.Status.Value ? "Deactivate" : "Activate")"
-                                   OnClick="() => ToggleEmployeeStatus(context.Id)">
-                    </MudIconButton>
-                    <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Info"
+                    <MudTooltip Text="@(context.Status.Value ? "Deactivate" : "Activate")">
+                        <MudIconButton Color="Color.Primary"
+                                       Icon="@(context.Status.Value 
+                                                 ? Icons.Material.Filled.PersonOff 
+                                                 : Icons.Material.Filled.Person)"
+                                       OnClick="() => ToggleEmployeeStatus(context.Id)">
+                        </MudIconButton>
+                    </MudTooltip>
+
+                    <MudButton Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Info"
                                OnClick="() => ShowDetailsDialog(context.Id)">
                         Details
                     </MudButton>
-                    <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit"
+                    <MudButton Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Edit"
                                OnClick="() => ShowEditDialog(context.Id)">
                         Edit
                     </MudButton>
-                    <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                    <MudButton StartIcon="@Icons.Material.Filled.Delete"
+                               Color="Color.Error"
                                OnClick="() => ShowDeleteDialog(context)">
                         Remove
                     </MudButton>
@@ -96,9 +116,10 @@
 @code {
     private string _filterString = "";
     private IDialogReference? _dialogReference;
+
     protected override async Task OnInitializedAsync()
     {
-        Dispatcher.Dispatch(new GetEmployeesAction());
+        EmployeeFacade.GetEmployees();
 
         SubscribeToAction<GetEmployeesSuccessAction>(action =>
         {
@@ -108,16 +129,16 @@
             Snackbar.Add("Employees loaded", Severity.Success);
         });
 
-        SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action => 
+        SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action =>
             Snackbar.Add($"Employee Id:{action.Id} status updated", Severity.Success));
 
-        SubscribeToAction<DeleteEmployeeSuccessAction>(action => 
+        SubscribeToAction<DeleteEmployeeSuccessAction>(action =>
             Snackbar.Add($"Employee Id:{action.Id} deleted", Severity.Success));
 
         SubscribeToAction<EmployeeFailedAction>(action =>
         {
             _dialogReference?.Close();
-            
+
             Snackbar.Add(action.ErrorMessage, Severity.Error);
         });
 
@@ -126,20 +147,20 @@
 
     private void ToggleEmployeeStatus(int id)
     {
-        Dispatcher.Dispatch(new UpdateEmployeeStatusAction(id));
+        EmployeeFacade.UpdateEmployeeStatus(id);
     }
 
     private void ShowCreateNewDialog()
     {
-        ShowDialog(typeof(CreateEmployeeDialog), 
-            "Create New Employee", 
+        ShowDialog(typeof(CreateEmployeeDialog),
+            "Create New Employee",
             null);
     }
 
     private void ShowDetailsDialog(int id)
     {
-        ShowDialog(typeof(DetailsEmployeeDialog), 
-            "Employee Details", 
+        ShowDialog(typeof(DetailsEmployeeDialog),
+            "Employee Details",
             new DialogParameters
             {
                 { "EmployeeId", id }
@@ -148,47 +169,47 @@
 
     private void ShowEditDialog(int id)
     {
-        ShowDialog(typeof(EditEmployeeDialog), 
-            "Edit Employee", 
+        ShowDialog(typeof(EditEmployeeDialog),
+            "Edit Employee",
             new DialogParameters
             {
                 { "EmployeeId", id }
             });
     }
 
-    private void ShowDeleteDialog(EmployeeListViewModel viewModel)
+    private void ShowDeleteDialog(ListEmployeeDto viewModel)
     {
-        ShowDialog(typeof(DeleteEmployeeDialog), 
-            "Delete Employee", 
+        ShowDialog(typeof(DeleteEmployeeDialog),
+            "Delete Employee",
             new DialogParameters
             {
                 { "Employee", viewModel }
             });
     }
-    
-    private void ShowDialog(Type dialog,string title, DialogParameters? parameters)
+
+    private void ShowDialog(Type dialog, string title, DialogParameters? parameters)
     {
         _dialogReference = DialogService.Show(dialog, title, parameters,
             new DialogOptions
             {
-                MaxWidth = MaxWidth.Medium, 
-                FullWidth = true, 
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
                 CloseButton = true
             });
     }
 
-    private bool FilterEmployees(EmployeeListViewModel viewModel) 
-        => Filter(viewModel, _filterString);
+    private bool FilterEmployees(ListEmployeeDto dto)
+        => Filter(dto, _filterString);
 
-    private bool Filter(EmployeeListViewModel viewModel, string filter)
+    private bool Filter(ListEmployeeDto dto, string filter)
     {
         if (string.IsNullOrWhiteSpace(filter))
             return true;
-        
-        return viewModel
+
+        return dto
             .FullName
-            .Contains(filter, StringComparison.OrdinalIgnoreCase) 
-               || viewModel
+            .Contains(filter, StringComparison.OrdinalIgnoreCase)
+               || dto
                    .Email
                    .Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
