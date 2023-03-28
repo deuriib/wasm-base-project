@@ -112,7 +112,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<LogoutActionSuccess>(_ => NavigationManager.NavigateTo("/authentication/login"));
+        SubscribeToAction<LogoutActionSuccess>(_ => NavigationManager.NavigateTo("/", true));
 
         await base.OnInitializedAsync();
     }
@@ -146,12 +146,12 @@
 
     private void GoToLogin()
     {
-        NavigationManager.NavigateTo("/authentication/login");
+        NavigationManager.NavigateTo("/authentication/login", true);
     }
 
     private void GoToRegister()
     {
-        NavigationManager.NavigateTo("/authentication/register");
+        NavigationManager.NavigateTo("/authentication/register", true);
     }
 
 }
