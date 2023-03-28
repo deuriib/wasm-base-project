@@ -1,0 +1,17 @@
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (authenticationState.User.Identity is null || authenticationState.User.Identity?.IsAuthenticated == false)
+        {
+            var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            NavigationManager.NavigateTo($"authentication/login?returnUrl={returnUrl}");
+        }
+        
+        await base.OnInitializedAsync();
+    }
+}

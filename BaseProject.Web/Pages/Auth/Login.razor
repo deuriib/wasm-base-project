@@ -1,0 +1,97 @@
+@page "/authentication/login"
+@layout EmptyLayout
+@using BaseProject.Infrastructure.ViewModels.Auth
+@inherits FluxorComponent
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject AuthFacade AuthFacade
+
+<PageTitle>Sign In</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom>Sign In</MudText>
+
+<MudPaper Class="p-8 d-flex align-center justify-center">
+    <MudGrid>
+        <MudItem xs="12" sm="10" md="12">
+            <MudForm Model="@Model" @ref="Form" @bind-IsValid="@IsSuccessForm">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="6">
+                                        <MudTextField T="string" @bind-Value="Model.Email" 
+                                                      InputType="InputType.Email"
+                                                      For="@(() => Model.Email)" Immediate="false" 
+                                                      DebounceInterval="500" Label="Email" Required="true" 
+                                                      RequiredError="First name is required!"/>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="6">
+                                        <MudTextField T="string" @bind-Value="Model.Password" 
+                                                      InputType="InputType.Password"
+                                                      For="@(() => Model.Password)" Immediate="false" 
+                                                      DebounceInterval="500" Label="Password" 
+                                                      HelperText="Choose a strong password"
+                                                      Required="true" RequiredError="Last name is required!"/>
+                                    </MudItem>
+                                </MudGrid>
+            
+                                <div class="d-flex flex-column align-center justify-end mt-6">
+                                    <MudButton StartIcon="@Icons.Material.Filled.Login" OnClick="Submit" 
+                                               Color="Color.Primary" Variant="Variant.Filled" 
+                                               Disabled="@(!IsSuccessForm)">Login In</MudButton>
+                                    
+                                    <MudButton StartIcon="@Icons.Custom.Brands.Google" OnClick="Submit" 
+                                               Color="Color.Primary" Variant="Variant.Outlined" 
+                                               Disabled="@(!IsSuccessForm)">With Google</MudButton>
+                                    
+                                    <MudButton StartIcon="@Icons.Material.Filled.WrapText" OnClick="GoToRegister" 
+                                               Color="Color.Tertiary" Variant="Variant.Text">Register</MudButton>
+                                </div>
+                            </MudForm>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string? ReturnUrl { get; set; }
+
+    private LoginWithEmailViewModel? Model = new();
+    private MudForm? Form { get; set;}
+    private bool IsSuccessForm { get; set; }
+    
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<string>(nameof(ReturnUrl), out var returnUrl))
+        {
+            ReturnUrl = returnUrl;
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SubscribeToAction<LoginWithEmailAndPasswordActionFailed>(action =>
+            Snackbar.Add(action.ErrorMessage, Severity.Error));
+        
+        SubscribeToAction<LoginWithEmailAndPasswordActionSuccess>(action =>
+        {
+            NavigationManager.NavigateTo(ReturnUrl ?? "/");
+        });
+        
+        await base.OnInitializedAsync();
+    }
+
+    private void Submit()
+    {
+        if (!IsSuccessForm)
+            return;
+
+        if (Model is not null)
+        {
+            AuthFacade.LoginWithEmailAndPassword(Model.Email!, Model.Password!);
+        }
+    }
+    
+    private void GoToRegister()
+    {
+        NavigationManager.NavigateTo($"/authentication/register?returnUrl={ReturnUrl}");
+    }
+}

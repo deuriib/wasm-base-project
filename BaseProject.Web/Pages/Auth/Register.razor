@@ -1,0 +1,114 @@
+@page "/authentication/register"
+@layout EmptyLayout
+@using BaseProject.Infrastructure.ViewModels.Auth
+@inherits FluxorComponent
+@inject IDispatcher Dispatcher
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom>Register</MudText>
+
+<MudPaper Class="p-8 d-flex align-center justify-center">
+    <MudGrid>
+        <MudItem xs="12" sm="10" md="12">
+            <MudForm Model="@_model" @ref="_form" @bind-IsValid="@_success">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudTextField T="string" @bind-Value="_model.Email"
+                                      InputType="InputType.Email"
+                                      For="@(() => _model.Email)" Immediate="false"
+                                      DebounceInterval="500" Label="Email" Required="true"
+                                      RequiredError="First name is required!"/>
+
+                        <MudTextField T="string" @bind-Value="_model.Password"
+                                      InputType="InputType.Password"
+                                      For="@(() => _model.Password)" Immediate="false"
+                                      DebounceInterval="500" Label="Password"
+                                      HelperText="Choose a strong password"
+                                      Required="true" RequiredError="Last name is required!"
+                                      @ref="pwField1"/>
+
+                        <MudTextField T="string" @bind-Value="_model.ConfirmPassword"
+                                      InputType="InputType.Password"
+                                      For="@(() => _model.ConfirmPassword)" Immediate="false"
+                                      DebounceInterval="500" Label="Password"
+                                      HelperText="Repeat the password"
+                                      Required="true" RequiredError="Password Confirmation is required!"
+                                      Validation="@(new Func<string, string>(PasswordMatch))"/>
+                    </MudItem>
+                </MudGrid>
+
+                <div class="d-flex flex-column align-center justify-end mt-6">
+                    <MudButton StartIcon="@Icons.Material.Filled.Login" OnClick="Submit"
+                               Color="Color.Primary" Variant="Variant.Filled"
+                               Disabled="@(!_success)">
+                        Register
+                    </MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.WrapText" OnClick="GoToLogin"
+                               Color="Color.Tertiary" Variant="Variant.Text">
+                        Login Instead
+                    </MudButton>
+
+                </div>
+            </MudForm>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string? ReturnUrl { get; set; }
+
+    RegisterViewModel? _model = new();
+
+    MudTextField<string> pwField1;
+    MudForm? _form;
+    bool _success;
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<string>(nameof(ReturnUrl), out var returnUrl))
+        {
+            ReturnUrl = returnUrl;
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        SubscribeToAction<RegisterActionFailed>(action =>
+            Snackbar.Add(action.ErrorMessage, Severity.Error));
+
+        SubscribeToAction<RegisterActionSuccess>(action =>
+        {
+            NavigationManager.NavigateTo(ReturnUrl ?? "/");
+        });
+
+        await base.OnInitializedAsync();
+    }
+
+    private void Submit()
+    {
+        if (!_success)
+            return;
+
+        if (_model is not null)
+        {
+            Dispatcher.Dispatch(new RegisterAction(_model.Email!, _model.Password!));
+        }
+    }
+
+    private string? PasswordMatch(string arg)
+    {
+        return pwField1.Value != arg ? "Passwords don't match" : null;
+    }
+
+    private void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/authentication/login");
+    }
+
+}

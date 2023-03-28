@@ -1,0 +1,17 @@
+@inherits FluxorLayout
+@inject IState<AppState> AppState
+@inject IState<ThemeState> ThemeState
+@inject NavigationManager NavigationManager
+@inject AuthFacade AuthFacade
+
+<MudThemeProvider IsDarkMode="ThemeState.Value.IsDarkMode" Theme="ThemeState.Value.CurrentTheme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth.Large" Class="pa-8">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+</MudLayout>

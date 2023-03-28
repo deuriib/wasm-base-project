@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RepositoryUrl>https://github.com/deuriib/wasm-base-project</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>D:\Documents\Projects\wasm-base-project\LICENSE.txt</PackageLicenseFile>
+		<RootNamespace>BaseProject.App</RootNamespace>
+		<LangVersion>11</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+		<PackageReference Include="Fluxor" Version="5.7.0" />
+		<PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
+		<PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.7.0" />
+		<PackageReference Include="Fluxor.Persist" Version="2.4.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.4" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+		<PackageReference Include="MudBlazor" Version="6.2.0" />
+		<PackageReference Include="supabase-csharp" Version="0.8.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Remove="appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BaseProject.Adapters\BaseProject.Adapters.csproj" />
+	  <ProjectReference Include="..\BaseProject.Infrastructure\BaseProject.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AdditionalFiles Include="Pages\Settings\SettingsMenu.razor" />
+	  <AdditionalFiles Include="Pages\Settings\StorageSettings.razor" />
+	  <AdditionalFiles Include="Pages\Settings\ThemeSettings.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Pages\Settings\Dialogs\ClearCacheDialog.razor" />
+	</ItemGroup>
+	
+	
+</Project>

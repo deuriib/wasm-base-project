@@ -1,0 +1,28 @@
+<Fluxor.Blazor.Web.StoreInitializer/>
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <RedirectToLogin/>
+                </NotAuthorized>
+                <Authorizing>
+                    <MudText Typo="Typo.h5" Color="Color.Surface">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" 
+                                 Color="Color.Info" 
+                                 Size="Size.Small" 
+                                 Title="Verifying identity"></MudIcon>
+                        Please wait, we are verifying your identity...
+                    </MudText>
+                </Authorizing>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <PageNotFound/>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
