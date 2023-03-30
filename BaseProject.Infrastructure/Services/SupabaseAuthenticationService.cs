@@ -2,9 +2,9 @@ using BaseProject.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Supabase.Gotrue;
 
-namespace BaseProject.Infrastructure.Data.Services;
+namespace BaseProject.Infrastructure.Services;
 
-public class SupabaseAuthenticationService : IAuthenticationService
+public sealed class SupabaseAuthenticationService : IAuthenticationService
 {
     private readonly Supabase.Client _supabaseClient;
     private readonly ILogger<SupabaseAuthenticationService> _logger;
@@ -63,11 +63,5 @@ public class SupabaseAuthenticationService : IAuthenticationService
         return await _supabaseClient
             .Auth
             .GetSessionFromUrl(new Uri(signInUrl));
-    }
-
-    public async ValueTask<User?> GetCurrentUserAsync()
-    {
-        var session = await _supabaseClient.Auth.RetrieveSessionAsync();
-        return session?.User;
     }
 }

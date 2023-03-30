@@ -4,5 +4,5 @@ namespace BaseProject.Domain.Services;
 
 public interface IWeatherService
 {
-    Task<WeatherForecast[]> GetWeathersAsync(CancellationToken cancellationToken = default);
+    ValueTask<WeatherForecast[]?> GetWeathersAsync(CancellationToken cancellationToken = default);
 }

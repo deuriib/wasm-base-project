@@ -1,6 +1,6 @@
 ﻿namespace BaseProject.Domain.Dtos;
 
-public record UpdateEmployeeDto
+public sealed record EmployeeDto
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }

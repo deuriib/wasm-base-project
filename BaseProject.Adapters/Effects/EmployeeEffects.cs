@@ -35,8 +35,7 @@ public class EmployeeEffects
                     new ListEmployeeDto(e.Id, 
                         $"{e.FirstName} {e.LastName}", 
                         e.Email, 
-                        e.Status,
-                        e.Birthdate))
+                        e.Status))
                 .ToArray();
 
             dispatcher.Dispatch(new GetEmployeesSuccessAction(viewModel));
@@ -54,22 +53,23 @@ public class EmployeeEffects
     {
         try
         {
-            if (action.Id is null)
-                dispatcher.Dispatch(new GetOneEmployeeFailedAction("Employee id is null"));
-
-            var employee = await _employeeService.GetOneAsync(action.Id!.Value);
+            var employee = await _employeeService.GetOneAsync(action.Id);
 
             if (employee is null)
-                dispatcher.Dispatch(new GetOneEmployeeFailedAction("Employee is null"));
-
-            var employeeViewModel = new UpdateEmployeeDto
             {
-                FirstName = employee?.FirstName, 
-                LastName = employee?.LastName, 
-                Email = employee?.Email,
-                Birthdate = employee?.Birthdate, 
-                Address = employee?.Address, 
-                Note = employee?.Note
+                dispatcher.Dispatch(
+                    new GetOneEmployeeFailedAction($"Employee with id {action.Id} not found"));
+                return;
+            }
+
+            var employeeViewModel = new EmployeeDto
+            {
+                FirstName = employee.FirstName, 
+                LastName = employee.LastName, 
+                Email = employee.Email,
+                Birthdate = employee.Birthdate, 
+                Address = employee.Address, 
+                Note = employee.Note
             };
 
             dispatcher.Dispatch(new GetOneEmployeeSuccessAction(employeeViewModel));
@@ -92,7 +92,13 @@ public class EmployeeEffects
 
             var newEmployee = await _employeeService.CreateAsync(employee);
 
-            dispatcher.Dispatch(new CreateEmployeeSuccessAction(newEmployee!.Id,
+            if (newEmployee is null)
+            {
+                dispatcher.Dispatch(new EmployeeFailedAction("Failed creating employee"));
+                return;
+            }
+
+            dispatcher.Dispatch(new CreateEmployeeSuccessAction(newEmployee.Id,
                 $"{newEmployee.FirstName} {newEmployee.LastName}",
                 newEmployee.Email,
                 newEmployee.Birthdate,
@@ -112,16 +118,16 @@ public class EmployeeEffects
         try
         {
             var employee = new Employee(action.Id, 
-                    action.UpdateEmployee.FirstName!, 
-                    action.UpdateEmployee.LastName!,
-                    action.UpdateEmployee.Email!, 
-                    action.UpdateEmployee.Birthdate!.Value)
-                .AddOrUpdateNote(action.UpdateEmployee.Note!)
-                .AddOrUpdateAddress(action.UpdateEmployee.Address!);
+                    action.Employee.FirstName!, 
+                    action.Employee.LastName!,
+                    action.Employee.Email!, 
+                    action.Employee.Birthdate!.Value)
+                .AddOrUpdateNote(action.Employee.Note!)
+                .AddOrUpdateAddress(action.Employee.Address!);
 
             await _employeeService.UpdateAsync(action.Id, employee);
 
-            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id, action.UpdateEmployee));
+            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.Id, action.Employee));
         }
         catch (Exception ex)
         {

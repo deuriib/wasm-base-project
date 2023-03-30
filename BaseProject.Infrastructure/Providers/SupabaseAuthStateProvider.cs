@@ -23,18 +23,26 @@ public class SupabaseAuthStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
+        _logger.LogDebug("GetAuthenticationStateAsync");
+        
         await _supabaseClient.InitializeAsync();
         
         var session = _supabaseClient.Auth.CurrentSession;
 
         var token = session?.AccessToken;
+        
+        _logger.LogDebug("Token: {token}", token);
 
         var identity = !string.IsNullOrEmpty(token)
             ? new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token),
                 "supabase")
             : new ClaimsIdentity();
+        
+        _logger.LogDebug("Identity: {identity}", identity);
 
         var state = new AuthenticationState(new ClaimsPrincipal(identity));
+        
+        _logger.LogDebug("AuthenticationState: {state}", state);
 
         NotifyAuthenticationStateChanged(Task.FromResult(state));
 

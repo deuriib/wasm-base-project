@@ -1,15 +1,15 @@
-﻿using BaseProject.Domain.Dtos;
-using BaseProject.Domain.Enums;
+﻿using BaseProject.Domain.Enums;
 using BaseProject.Domain.Models;
 using BaseProject.Domain.Services;
-using BaseProject.Infrastructure.Data.Models;
+using BaseProject.Infrastructure.Models;
 using Postgrest;
 
-namespace BaseProject.Infrastructure.Data.Services;
+namespace BaseProject.Infrastructure.Services;
 
-public class SupabaseEmployeeService : IEmployeeService
+public sealed class SupabaseEmployeeService : IEmployeeService
 {
     private readonly Supabase.Client _client;
+
     public SupabaseEmployeeService(Supabase.Client client)
     {
         _client = client;
@@ -19,8 +19,6 @@ public class SupabaseEmployeeService : IEmployeeService
     {
         var response = await _client
             .From<EmployeeModel>()
-            .Select(x => new object[]{x.Id, x.FirstName, x.LastName, x.Email, x.Birthdate, x.Status})
-            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Order("id", Constants.Ordering.Descending)
             .Get(cancellationToken);
 
@@ -33,17 +31,15 @@ public class SupabaseEmployeeService : IEmployeeService
 
     public async ValueTask<Employee?> GetOneAsync(int id, CancellationToken cancellationToken = default)
     {
-        var employee = await _client
+        var model = await _client
             .From<EmployeeModel>()
-            .Select(x => new object[]{x.Id, x.FirstName, x.LastName, x.Email, x.Birthdate})
-            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Where(e => e.Id.Equals(id))
             .Single(cancellationToken);
-        
-        if (employee is null)
-            throw new NullReferenceException("Employee not found");
-        
-        return new (employee.Id, employee.FirstName, employee.LastName, employee.Email, employee.Birthdate);
+
+        if (model is null)
+            throw new NullReferenceException($"Employee with id {id} not found");
+
+        return new(model.Id, model.FirstName, model.LastName, model.Email, model.Birthdate);
     }
 
     public async ValueTask<Employee?> CreateAsync(Employee employee, CancellationToken cancellationToken = default)
@@ -54,22 +50,21 @@ public class SupabaseEmployeeService : IEmployeeService
             LastName = employee.LastName,
             Email = employee.Email,
             Birthdate = employee.Birthdate,
-            Status = employee.Status.Value,
-            UserId = Guid.Parse(_client.Auth.CurrentUser!.Id!)
+            Status = employee.Status.Value
         };
-        
-        var response = await _client
-            .From<EmployeeModel>()
-            .Insert(model, 
+
+        var response = await _client.Postgrest
+            .Table<EmployeeModel>()
+            .Insert(model,
                 new QueryOptions
                 {
                     Returning = QueryOptions.ReturnType.Representation
                 }, cancellationToken);
-        
+
         return response.Models
             .Select(e =>
                 new Employee(e.Id, e.FirstName, e.LastName, e.Email, e.Birthdate)
-                .ChangeStatus(EmployeeStatus.FromValue(e.Status)))
+                    .ChangeStatus(EmployeeStatus.FromValue(e.Status)))
             .FirstOrDefault();
     }
 
@@ -77,14 +72,13 @@ public class SupabaseEmployeeService : IEmployeeService
     {
         await _client
             .From<EmployeeModel>()
-            .Where(e => e.Id.Equals(id))
             .Set(e => e.FirstName, employee.FirstName)
             .Set(e => e.LastName, employee.LastName)
             .Set(e => e.Email, employee.Email)
             .Set(e => e.Birthdate, employee.Birthdate)
             .Set(e => e.Address!, employee.Address)
             .Set(e => e.Note!, employee.Note)
-            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
+            .Where(e => e.Id.Equals(id))
             .Update(null, cancellationToken);
     }
 
@@ -92,9 +86,8 @@ public class SupabaseEmployeeService : IEmployeeService
     {
         await _client
             .From<EmployeeModel>()
-            .Where(e => e.Id.Equals(id))
             .Set(x => x.Status, employee.Status.Value)
-            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
+            .Where(e => e.Id.Equals(id))
             .Update(null, cancellationToken);
     }
 
@@ -103,7 +96,6 @@ public class SupabaseEmployeeService : IEmployeeService
         await _client
             .From<EmployeeModel>()
             .Where(e => e.Id.Equals(id))
-            .Filter("user_id",Constants.Operator.Equals, _client.Auth.CurrentUser!.Id!)
             .Delete(null, cancellationToken);
     }
 }

@@ -12,7 +12,5 @@ public interface IAuthenticationService
     
     ValueTask<Session?> SignInWithGoogleAsync();
     
-    ValueTask<User?> GetCurrentUserAsync();
-    
     ValueTask<Session?> SignUpAsync(string email, string password);
 }

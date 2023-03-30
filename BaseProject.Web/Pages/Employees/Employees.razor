@@ -1,7 +1,6 @@
 ﻿@page "/employees"
 @inherits FluxorComponent
 @using BaseProject.Infrastructure.Store.Employees
-@using BaseProject.Domain.Dtos
 @inject IState<EmployeesState> State
 @inject EmployeeFacade EmployeeFacade
 @inject ISnackbar Snackbar
@@ -115,11 +114,28 @@
 
 @code {
     private string _filterString = "";
-    private IDialogReference? _dialogReference;
 
     protected override async Task OnInitializedAsync()
     {
         EmployeeFacade.GetEmployees();
+
+        SubscribeToAction<OpenCreateEmployeeModalAction>(_ =>
+        {
+            ShowDialog(typeof(CreateEmployeeDialog),
+                "Create New Employee",
+                new DialogParameters());
+        });
+
+        SubscribeToAction<OpenDeleteEmployeeModalAction>(action =>
+        {
+            ShowDialog(typeof(DeleteEmployeeDialog),
+                "Delete Employee",
+                new DialogParameters
+                {
+                    { "EmployeeId", action.EmployeeId },
+                    { "EmployeeName", action.EmployeeName }
+                });
+        });
 
         SubscribeToAction<GetEmployeesSuccessAction>(action =>
         {
@@ -132,15 +148,8 @@
         SubscribeToAction<UpdateEmployeeStatusSuccessAction>(action =>
             Snackbar.Add($"Employee Id:{action.Id} status updated", Severity.Success));
 
-        SubscribeToAction<DeleteEmployeeSuccessAction>(action =>
-            Snackbar.Add($"Employee Id:{action.Id} deleted", Severity.Success));
-
         SubscribeToAction<EmployeeFailedAction>(action =>
-        {
-            _dialogReference?.Close();
-
-            Snackbar.Add(action.ErrorMessage, Severity.Error);
-        });
+            Snackbar.Add(action.ErrorMessage, Severity.Error));
 
         await base.OnInitializedAsync();
     }
@@ -151,11 +160,7 @@
     }
 
     private void ShowCreateNewDialog()
-    {
-        ShowDialog(typeof(CreateEmployeeDialog),
-            "Create New Employee",
-            null);
-    }
+        => EmployeeFacade.OpenCreateEmployeeModal();
 
     private void ShowDetailsDialog(int id)
     {
@@ -177,24 +182,19 @@
             });
     }
 
-    private void ShowDeleteDialog(ListEmployeeDto viewModel)
-    {
-        ShowDialog(typeof(DeleteEmployeeDialog),
-            "Delete Employee",
-            new DialogParameters
-            {
-                { "Employee", viewModel }
-            });
-    }
+    private void ShowDeleteDialog(ListEmployeeDto dto)
+        => EmployeeFacade.OpenDeleteEmployeeModal(dto.Id, dto.FullName);
 
-    private void ShowDialog(Type dialog, string title, DialogParameters? parameters)
+    private void ShowDialog(Type dialog, string title, DialogParameters parameters)
     {
-        _dialogReference = DialogService.Show(dialog, title, parameters,
+        DialogService.Show(dialog, title, parameters,
             new DialogOptions
             {
-                MaxWidth = MaxWidth.Medium,
+                Position = DialogPosition.Center,
                 FullWidth = true,
-                CloseButton = true
+                CloseButton = true,
+                CloseOnEscapeKey = false,
+                DisableBackdropClick = true
             });
     }
 

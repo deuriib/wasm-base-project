@@ -1,7 +1,7 @@
 @inherits FluxorLayout
 @inject IState<ThemeState> ThemeState
 
-<MudThemeProvider 
+<MudThemeProvider
     IsDarkMode="ThemeState.Value.IsDarkMode"
     Theme="ThemeState.Value.CurrentTheme"/>
 <MudDialogProvider/>
@@ -9,8 +9,8 @@
 
 <MudLayout>
     <MudMainContent>
-            <MudContainer MaxWidth="MaxWidth.Large" Class="pa-8">
-                @Body
-            </MudContainer>
-        </MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="pa-8">
+            @Body
+        </MudContainer>
+    </MudMainContent>
 </MudLayout>

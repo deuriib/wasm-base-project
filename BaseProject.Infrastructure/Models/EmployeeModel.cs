@@ -2,12 +2,12 @@
 using Postgrest.Attributes;
 using Postgrest.Models;
 
-namespace BaseProject.Infrastructure.Data.Models;
+namespace BaseProject.Infrastructure.Models;
 
 [Table("employees")]
 public class EmployeeModel : BaseModel
 {
-    [PrimaryKey("id", false)] 
+    [PrimaryKey("id")] 
     public int Id { get; set; }
     
     [Column("name")] 
@@ -22,7 +22,7 @@ public class EmployeeModel : BaseModel
     [Column("address", NullValueHandling.Ignore)]
     public string? Address { get; set; } 
 
-    [Column("note", NullValueHandling.Ignore)]
+    [Column( "note", NullValueHandling.Ignore)]
     public string? Note { get; set; } 
 
     [Column("birth_date")] 
@@ -30,7 +30,4 @@ public class EmployeeModel : BaseModel
     
     [Column("status")] 
     public bool Status { get; set; }
-
-    [Column("user_id")]
-    public Guid UserId { get; set; }
 }

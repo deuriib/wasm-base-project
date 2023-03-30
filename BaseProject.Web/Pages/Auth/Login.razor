@@ -2,57 +2,108 @@
 @attribute [AllowAnonymous]
 @layout EmptyLayout
 @using BaseProject.Infrastructure.ViewModels.Auth
+@using FluentValidation
 @inherits FluxorComponent
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @inject AuthFacade AuthFacade
+@inject IState<AppState> AppState
+@inject IState<AuthState> AuthState
+@inject IValidator<LoginWithEmailViewModel> Validator
 
-<PageTitle>Sign In</PageTitle>
-<MudText Typo="Typo.h3" GutterBottom>Sign In</MudText>
+<PageTitle>Login</PageTitle>
 
-<MudPaper Class="p-8 d-flex align-center justify-center">
-    <MudGrid>
-        <MudItem xs="12" sm="10" md="12">
-            <MudForm Model="@_model" @ref="_form" @bind-IsValid="@_isSuccessForm">
-                <MudGrid>
-                    <MudItem xs="12" sm="6" md="6">
-                        <MudTextField T="string" @bind-Value="_model.Email"
-                                      InputType="InputType.Email"
-                                      For="@(() => _model.Email)" Immediate="false"
-                                      DebounceInterval="500" Label="Email" Required="true"
-                                      RequiredError="First name is required!"/>
-                    </MudItem>
-                    <MudItem xs="12" sm="6" md="6">
-                        <MudTextField T="string" @bind-Value="_model.Password"
-                                      InputType="InputType.Password"
-                                      For="@(() => _model.Password)" Immediate="false"
-                                      DebounceInterval="500" Label="Password"
-                                      HelperText="Choose a strong password"
-                                      Required="true" RequiredError="Last name is required!"/>
-                    </MudItem>
-                </MudGrid>
+<MudPaper Class="pa-8 d-flex flex-column gap-8 align-center justify-space-evenly">
+    <MudContainer Class="gap-2 d-flex flex-column align-center">
+        <MudText Typo="Typo.h3" Color="Color.Primary">@AppState.Value.AppName</MudText>
+        <MudText Typo="Typo.h5">Sign In</MudText>
+    </MudContainer>
 
-                <div class="d-flex flex-column align-center justify-end mt-6">
-                    <MudButton StartIcon="@Icons.Material.Filled.Login" OnClick="Submit"
-                               Color="Color.Primary" Variant="Variant.Filled"
-                               Disabled="@(!_isSuccessForm)">
-                        Login In
-                    </MudButton>
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudForm Model="@Model"
+                 @ref="@Form"
+                 Validation="@Validator.ValidateValue()"
+                 ValidationDelay="0"
+                 class="d-flex flex-column align-stretch gap-2">
 
-                    <MudButton StartIcon="@Icons.Custom.Brands.Google" OnClick="Submit"
-                               Color="Color.Primary" Variant="Variant.Outlined"
-                               Disabled="@(!_isSuccessForm)">
-                        With Google
-                    </MudButton>
+            <MudTextField T="string" @bind-Value="Model!.Email"
+                          InputType="InputType.Email"
+                          For="() => Model!.Email"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Email"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Label="Email"/>
 
-                    <MudButton StartIcon="@Icons.Material.Filled.WrapText" OnClick="GoToRegister"
-                               Color="Color.Tertiary" Variant="Variant.Text">
-                        Register
-                    </MudButton>
-                </div>
-            </MudForm>
-        </MudItem>
-    </MudGrid>
+            <MudTextField T="string" @bind-Value="Model!.Password"
+                          InputType="InputType.Password"
+                          For="() => Model!.Password"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Lock"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Label="Password"/>
+
+            <div class="d-flex align-center flex-row justify-space-between">
+                <MudCheckBox @bind-Checked="@Model!.RememberMe"
+                             For="() => Model!.RememberMe"
+                             StopClickPropagation="true"
+                             Label="Remember me"
+                             Color="Color.Primary"/>
+
+                <MudLink Color="Color.Secondary"
+                         OnClick="GoToForgotPassword">
+                    Forgot password?
+                </MudLink>
+            </div>
+
+            <MudButton OnClick="Submit"
+                       Class="mt-2"
+                       Color="Color.Primary"
+                       Variant="Variant.Filled"
+                       Disabled="@(Form?.IsValid == false || AuthState.Value.IsLoading)">
+                @if (AuthState.Value.IsLoading)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                    <MudText Class="ms-2">Processing</MudText>
+                }
+                else
+                {
+                    <MudText>Login</MudText>
+                }
+            </MudButton>
+        </MudForm>
+    </MudContainer>
+
+    <MudContainer Class="d-flex flex-column align-center gap-2">
+        <MudText Typo="Typo.caption">Or login with</MudText>
+
+        <MudContainer Class="d-flex flex-row justify-space-evenly">
+            <MudButton StartIcon="@Icons.Custom.Brands.Facebook"
+                       Color="Color.Secondary"
+                       Disabled="true"
+                       Variant="Variant.Outlined">
+                Facebook
+            </MudButton>
+
+            <MudButton StartIcon="@Icons.Custom.Brands.Google"
+                       Color="Color.Secondary"
+                       Disabled="true"
+                       Variant="Variant.Outlined">
+                Google
+            </MudButton>
+        </MudContainer>
+    </MudContainer>
+
+
+    <MudButton EndIcon="@Icons.Material.Filled.ArrowForward"
+               OnClick="GoToRegister"
+               Color="Color.Tertiary"
+               Variant="Variant.Text">
+        Create new account
+    </MudButton>
 </MudPaper>
 
 @code {
@@ -60,34 +111,34 @@
     [Parameter]
     public string? ReturnUrl { get; set; }
 
-    private LoginWithEmailViewModel? _model = new();
-    private MudForm? _form;
-    private bool _isSuccessForm;
+    private LoginWithEmailViewModel? Model = new();
+    private MudForm? Form = new();
 
     protected override async Task OnInitializedAsync()
     {
         SubscribeToAction<LoginFailedAction>(action =>
-            Snackbar.Add(action.ErrorMessage, Severity.Error));
+            Snackbar.Add(action.ErrorMessage, MudBlazor.Severity.Error));
 
-        SubscribeToAction<LoginSuccessAction>(action => { NavigationManager.NavigateTo(ReturnUrl ?? "/"); });
+        SubscribeToAction<LoginSuccessAction>(_ => NavigationManager.NavigateTo(ReturnUrl ?? "/"));
 
         await base.OnInitializedAsync();
     }
 
     private void Submit()
     {
-        if (!_isSuccessForm)
+        if (!Form!.IsValid)
             return;
 
-        if (_model is null)
+        if (Model is null)
             return;
 
-        AuthFacade.LoginWithEmailAndPassword(_model.Email!, _model.Password!);
+        AuthFacade.LoginWithEmailAndPassword(Model.Email!, Model.Password!);
     }
+
+    private void GoToForgotPassword()
+        => NavigationManager.NavigateTo($"/authentication/forgot-password");
 
     private void GoToRegister()
-    {
-        NavigationManager.NavigateTo($"/authentication/register?returnUrl={ReturnUrl}");
-    }
+        => NavigationManager.NavigateTo($"/authentication/register?returnUrl={ReturnUrl}");
 
 }

@@ -28,9 +28,9 @@ public class EmployeeFacade
         _dispatcher.Dispatch(new CreateEmployeeAction(employee));
     }
     
-    public void UpdateEmployee(int id, UpdateEmployeeDto updateEmployee)
+    public void UpdateEmployee(int id, EmployeeDto employee)
     {
-        _dispatcher.Dispatch(new UpdateEmployeeAction(id, updateEmployee));
+        _dispatcher.Dispatch(new UpdateEmployeeAction(id, employee));
     }
     
     public void UpdateEmployeeStatus(int id)
@@ -41,5 +41,25 @@ public class EmployeeFacade
     public void DeleteEmployee(int id)
     {
         _dispatcher.Dispatch(new DeleteEmployeeAction(id));
+    }
+    
+    public void OpenCreateEmployeeModal()
+    {
+        _dispatcher.Dispatch(new OpenCreateEmployeeModalAction());
+    }
+    
+    public void CloseCreateEmployeeModal()
+    {
+        _dispatcher.Dispatch(new CloseCreateEmployeeAction());
+    }
+    
+    public void OpenDeleteEmployeeModal(int employeeId, string employeeName)
+    {
+        _dispatcher.Dispatch(new OpenDeleteEmployeeModalAction(employeeId, employeeName));
+    }
+    
+    public void CloseDeleteEmployeeModal()
+    {
+        _dispatcher.Dispatch(new CloseDeleteEmployeeModelAction());
     }
 }

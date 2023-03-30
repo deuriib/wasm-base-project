@@ -11,9 +11,10 @@ public class AuthEffects
     private readonly IAuthenticationService _authenticationService;
     private readonly ILogger<AuthEffects> _logger;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
+
     public AuthEffects(
-        IAuthenticationService authenticationService, 
-        ILogger<AuthEffects> logger, 
+        IAuthenticationService authenticationService,
+        ILogger<AuthEffects> logger,
         AuthenticationStateProvider authenticationStateProvider)
     {
         _authenticationService = authenticationService;
@@ -34,15 +35,15 @@ public class AuthEffects
                 dispatcher.Dispatch(new LoginFailedAction("Credentials are invalid"));
                 return;
             }
-            
+
             await _authenticationStateProvider.GetAuthenticationStateAsync();
-            
+
             dispatcher.Dispatch(new LoginSuccessAction(session));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred trying to sign in");
-            
+
             dispatcher.Dispatch(
                 new LoginFailedAction($"An error occurred trying to login in"));
         }
@@ -63,13 +64,13 @@ public class AuthEffects
             }
 
             await _authenticationStateProvider.GetAuthenticationStateAsync();
-            
+
             dispatcher.Dispatch(new LoginSuccessAction(session));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred trying to sign in with google");
-            
+
             dispatcher.Dispatch(
                 new LoginFailedAction($"An error occurred trying to sig in with google: {ex.Message}"));
         }
@@ -90,14 +91,14 @@ public class AuthEffects
             }
 
             await _authenticationStateProvider.GetAuthenticationStateAsync();
-            
+
             dispatcher.Dispatch(
                 new RegisterActionSuccess(session));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred trying to register");
-            
+
             dispatcher.Dispatch(
                 new RegisterActionFailed("An error occurred trying to register"));
         }
@@ -112,13 +113,13 @@ public class AuthEffects
                 .SignOutAsync();
 
             await _authenticationStateProvider.GetAuthenticationStateAsync();
-            
+
             dispatcher.Dispatch(new LogoutActionSuccess());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred trying to register");
-            
+
             dispatcher.Dispatch(
                 new LogoutActionFailed("An error occurred trying to register"));
         }

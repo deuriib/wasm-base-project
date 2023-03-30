@@ -1,10 +1,7 @@
-﻿@using BaseProject.Domain.Services
-@inherits FluxorLayout
+﻿@inherits FluxorLayout
 @inject IState<AppState> AppState
 @inject IState<ThemeState> ThemeState
 @inject NavigationManager NavigationManager
-@inject AuthFacade AuthFacade
-@inject IAuthenticationService AuthenticationService
 
 <MudThemeProvider IsDarkMode="ThemeState.Value.IsDarkMode" Theme="ThemeState.Value.CurrentTheme"/>
 <MudDialogProvider/>
@@ -20,72 +17,43 @@
         <MudText Typo="Typo.h6">@AppState.Value.AppName</MudText>
 
         <MudSpacer/>
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor"
-                       Color="Color.Inherit"
-                       Link="https://mudblazor.com/"
-                       Target="_blank"/>
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub"
-                       Color="Color.Inherit"
-                       Link="https://github.com/MudBlazor/MudBlazor/"
-                       Target="_blank"/>
+        <MudContainer Class="gap-2 d-flex flex-row justify-end">
+            <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor"
+                           Color="Color.Inherit"
+                           Link="https://mudblazor.com/"
+                           Target="_blank"/>
 
-        <MudTooltip Text="Settings">
-            <MudIconButton Icon="@Icons.Material.Filled.Settings"
-                           Title="Settings" aria-label="settings"
-                           Color="Color.Inherit" OnClick="SettingsDrawerToggle"/>
-        </MudTooltip>
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub"
+                           Color="Color.Inherit"
+                           Link="https://github.com/MudBlazor/MudBlazor/"
+                           Target="_blank"/>
 
-        <AuthorizeView>
-            <NotAuthorized>
-                <MudButton Class="ml-1" StartIcon="@Icons.Material.Filled.Login"
-                           Variant="Variant.Filled"
-                           Color="Color.Tertiary"
-                           OnClick="GoToLogin">
-                    Login
-                </MudButton>
+            <MudTooltip Text="Settings">
+                <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                               Title="Settings" aria-label="settings"
+                               Color="Color.Inherit"
+                               OnClick="SettingsDrawerToggle"/>
+            </MudTooltip>
+            
+            <UserAvatar/>
 
-                <MudButton Class="ml-1" EndIcon="@Icons.Material.Filled.PersonAddAlt"
-                           Color="Color.Surface"
-                           Variant="Variant.Text"
-                           OnClick="GoToRegister">
-                    Register
-                </MudButton>
-            </NotAuthorized>
-            <Authorized>
-                <MudTooltip Text="@_userEmail">
-                    <MudAvatar Color="Color.Tertiary" Variant="Variant.Outlined">
-                        <MudMenu Icon="@Icons.Material.Filled.Person"
-                                 Color="Color.Tertiary"
-                                 Dense AnchorOrigin="Origin.TopRight">
-                            <MudMenuItem>
-                                Profile
-                            </MudMenuItem>
-                            <MudMenuItem Class="d-flex align-center justify-center" OnClick="Logout">
-                                Logout
-                            </MudMenuItem>
-                        </MudMenu>
-                    </MudAvatar>
-                </MudTooltip>
-            </Authorized>
-        </AuthorizeView>
+        </MudContainer>
     </MudAppBar>
 
-    @*
-        LEFT DRAWER
-    *@
-    <MudDrawer @bind-Open="_isOpenDrawer"
-               ClipMode="DrawerClipMode.Always"
-               Anchor="Anchor.Left"
-               PreserveOpenState
-               Breakpoint="Breakpoint.Md"
-               Elevation="1"
-               Variant="@DrawerVariant.Mini">
-        <NavMenu/>
-    </MudDrawer>
+    <AuthorizeView>
+        <Authorized>
+            <MudDrawer @bind-Open="_isOpenDrawer"
+                       ClipMode="DrawerClipMode.Always"
+                       Anchor="Anchor.Left"
+                       PreserveOpenState
+                       Breakpoint="Breakpoint.Md"
+                       Elevation="1"
+                       Variant="@DrawerVariant.Mini">
+                <NavMenu/>
+            </MudDrawer>
+        </Authorized>
+    </AuthorizeView>
 
-    @*
-        RIGHT DRAWER
-    *@
     <MudDrawer @bind-Open="@_isOpenSettingsDrawer"
                Anchor="Anchor.Right"
                ClipMode="DrawerClipMode.Never"
@@ -106,52 +74,21 @@
 
 @code {
 
-    bool _isOpenDrawer = true;
-    bool _isOpenSettingsDrawer;
-    string _userEmail = "User";
+    private bool _isOpenDrawer = true;
+    private bool _isOpenSettingsDrawer;
 
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<LogoutActionSuccess>(_ => NavigationManager.NavigateTo("/"));
+        SubscribeToAction<LogoutActionSuccess>(_
+            => NavigationManager.NavigateTo("/authentication/login"));
 
         await base.OnInitializedAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        var user = await AuthenticationService.GetCurrentUserAsync();
-
-        if (user != null)
-        {
-            _userEmail = user.Email!;
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
     private void DrawerToggle()
-    {
-        _isOpenDrawer = !_isOpenDrawer;
-    }
+        => _isOpenDrawer = !_isOpenDrawer;
 
     private void SettingsDrawerToggle()
-    {
-        _isOpenSettingsDrawer = !_isOpenSettingsDrawer;
-    }
-
-    private void Logout()
-    {
-        AuthFacade.Logout();
-    }
-
-    private void GoToLogin()
-    {
-        NavigationManager.NavigateTo("/authentication/login");
-    }
-
-    private void GoToRegister()
-    {
-        NavigationManager.NavigateTo("/authentication/register");
-    }
+        => _isOpenSettingsDrawer = !_isOpenSettingsDrawer;
 
 }

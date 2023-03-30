@@ -1,5 +1,4 @@
 ﻿using BaseProject.Domain.Dtos;
-using BaseProject.Infrastructure.ViewModels;
 using Fluxor;
 using Fluxor.Persist.Storage;
 
@@ -7,29 +6,30 @@ namespace BaseProject.Infrastructure.Store.Employees;
 
 [SkipPersistState]
 [FeatureState]
-public class EmployeesState
+public sealed record EmployeesState
 {
-    public EmployeesState(bool isLoading, 
-        ListEmployeeDto[] employees, 
-        UpdateEmployeeDto? selectedEmployee,
-        bool isLoadingEmployee)
-    {
-        IsLoading = isLoading;
-        Employees = employees;
-        SelectedEmployee = SelectedEmployee;
-        IsLoadingEmployee = isLoadingEmployee;
-    }
-
-    public bool IsLoading { get;  }
-    public ListEmployeeDto[] Employees { get;  }
-    public UpdateEmployeeDto? SelectedEmployee { get;  }
-    public bool IsLoadingEmployee { get;  }
+    public bool IsLoading { get; init; }
+    
+    public ListEmployeeDto[] Employees { get; init; }
+    
+    public EmployeeDto? SelectedEmployee { get; init; }
+    
+    public bool IsLoadingEmployee { get; init; }
+    
+    public bool IsCreateEmployeeModalOpen { get; init; }
+    
+    public bool IsDeleteEmployeeModalOpen { get; init; }
+    
+    public string ErrorMessage { get; init; }
 
     private EmployeesState()
     {
         IsLoading = false;
+        ErrorMessage = string.Empty;
         Employees = Array.Empty<ListEmployeeDto>();
         SelectedEmployee = null;
         IsLoadingEmployee = false;
+        IsCreateEmployeeModalOpen = false;
+        IsDeleteEmployeeModalOpen = false;
     }
 }

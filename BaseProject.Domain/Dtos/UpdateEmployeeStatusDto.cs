@@ -1,6 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using BaseProject.Domain.Enums;
+﻿using BaseProject.Domain.Enums;
 
 namespace BaseProject.Domain.Dtos;
 
-public record UpdateEmployeeStatusDto(EmployeeStatus Status);
+public sealed record UpdateEmployeeStatusDto(EmployeeStatus Status);

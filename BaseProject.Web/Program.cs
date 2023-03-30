@@ -8,11 +8,12 @@ using BaseProject.App;
 using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
-using BaseProject.Infrastructure.Data.Services;
 using BaseProject.Infrastructure.Providers;
+using BaseProject.Infrastructure.Services;
 using BaseProject.Infrastructure.Store;
 using BaseProject.Infrastructure.Store.App;
-using Microsoft.AspNetCore.Authorization;
+using BaseProject.Infrastructure.Validations.Auth;
+using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -28,17 +29,16 @@ builder.Services.AddScoped(sp =>
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
     });
 
+// Authentication
 builder.Services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();
-builder.Services.AddAuthorizationCore(config =>
-{
-    config.DefaultPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
+builder.Services.AddAuthorizationCore();
+
+// Validators
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterViewModelValidator>();
 
 builder.Services.AddMudServices(config =>
 {
-    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopEnd;
     config.SnackbarConfiguration.PreventDuplicates = true;
     config.SnackbarConfiguration.NewestOnTop = false;
     config.SnackbarConfiguration.ShowCloseIcon = false;
@@ -47,12 +47,6 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
-
-// Facades
-builder.Services.AddScoped<AuthFacade>();
-builder.Services.AddScoped<CounterFacade>();
-builder.Services.AddScoped<EmployeeFacade>();
-builder.Services.AddScoped<ThemeFacade>();
 
 // Services
 builder.Services.AddScoped<IEmployeeService, SupabaseEmployeeService>();
@@ -79,6 +73,12 @@ builder.Services.AddFluxor(fluxorOptions =>
     fluxorOptions.UsePersist(config 
         => config.UseInclusionApproach());
 });
+
+// Facades
+builder.Services.AddScoped<AuthFacade>();
+builder.Services.AddScoped<CounterFacade>();
+builder.Services.AddScoped<EmployeeFacade>();
+builder.Services.AddScoped<ThemeFacade>();
 
 // Supabase config
 var url = builder.Configuration["Supabase:Url"] ?? "";

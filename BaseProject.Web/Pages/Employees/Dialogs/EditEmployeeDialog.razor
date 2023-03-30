@@ -1,14 +1,14 @@
 ﻿@using BaseProject.Infrastructure.Store.Employees
 @inherits FluxorLayout
 @inject ISnackbar Snackbar
-@inject IDispatcher Dispatcher
+@inject EmployeeFacade EmployeeFacade
 @inject IState<EmployeesState> State
 
 <MudDialog>
     <DialogContent>
         <MudGrid>
             <MudItem xs="12" sm="10" md="12">
-                @if (State.Value.SelectedEmployee is null)
+                @if (State.Value.IsLoadingEmployee)
                 {
                     <Loading />
                 }
@@ -53,7 +53,7 @@
     {
         if (parameters.TryGetValue<int>(nameof(EmployeeId), out var employeeId))
         {
-            Dispatcher.Dispatch(new GetOneEmployeeAction(employeeId));
+            EmployeeFacade.GetOneEmployee(employeeId);
         }
 
         await base.SetParametersAsync(parameters);
@@ -83,7 +83,7 @@
     private void OnValidSubmit(EditContext context)
     {
         if(EmployeeId is not null)
-            Dispatcher.Dispatch(new UpdateEmployeeAction(EmployeeId!.Value, State.Value.SelectedEmployee!));
+            EmployeeFacade.UpdateEmployee(EmployeeId.Value, State.Value.SelectedEmployee!);
     }
 
     private void Cancel() => MudDialog?.Cancel();

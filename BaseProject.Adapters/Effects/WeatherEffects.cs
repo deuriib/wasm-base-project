@@ -19,6 +19,13 @@ namespace BaseProject.Adapters.Effects
             try
             {
                 var forecasts = await _service.GetWeathersAsync();
+                
+                if (forecasts is null)
+                {
+                    dispatcher.Dispatch(new FetchDataFailAction("No data"));
+                    return;
+                }
+                
                 dispatcher.Dispatch(new FetchDataSuccessAction(forecasts));
             }
             catch (Exception ex)

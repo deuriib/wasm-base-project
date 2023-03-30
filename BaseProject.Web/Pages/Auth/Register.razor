@@ -1,85 +1,97 @@
 @page "/authentication/register"
 @attribute [AllowAnonymous]
 @layout EmptyLayout
-@using BaseProject.Infrastructure.ViewModels.Auth
 @inherits FluxorComponent
+@using BaseProject.Infrastructure.ViewModels.Auth
+@using FluentValidation
+@using Severity = MudBlazor.Severity
 @inject AuthFacade AuthFacade
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
+@inject IValidator<RegisterViewModel> Validator
+@inject IState<AppState> AppState
+@inject IState<AuthState> AuthState
 
 <PageTitle>Register</PageTitle>
-<MudText Typo="Typo.h3" GutterBottom>Register</MudText>
 
-<MudPaper Class="p-8 d-flex align-center justify-center">
-    <MudGrid>
-        <MudItem xs="12" sm="10" md="12">
-            <MudForm Model="@_model" @ref="_form" @bind-IsValid="@_isSuccess">
-                <MudGrid>
-                    <MudItem xs="12" sm="6" md="6">
-                        <MudTextField T="string"
-                                      @bind-Value="_model.Email"
-                                      InputType="InputType.Email"
-                                      For="@(() => _model.Email)"
-                                      Immediate="false"
-                                      DebounceInterval="500"
-                                      Label="Email"
-                                      Required="true"
-                                      RequiredError="First name is required!"/>
+<MudPaper Class="pa-8 d-flex flex-column gap-8 align-center justify-space-evenly">
+    <MudContainer Class="gap-2 d-flex flex-column align-center">
+        <MudText Typo="Typo.h3" Color="Color.Primary">@AppState.Value.AppName</MudText>
+        <MudText Typo="Typo.h5">Sign Up</MudText>
+    </MudContainer>
 
-                        <MudTextField T="string"
-                                      @bind-Value="_model.Password"
-                                      InputType="InputType.Password"
-                                      For="@(() => _model.Password)"
-                                      Immediate="false"
-                                      DebounceInterval="500" Label="Password"
-                                      HelperText="Choose a strong password"
-                                      Required="true" RequiredError="Last name is required!"
-                                      @ref="_passwordField"/>
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudForm Model="@Model"
+                 @ref="@Form"
+                 Validation="@Validator.ValidateValue()"
+                 ValidationDelay="0"
+                 class="d-flex flex-column align-stretch gap-4">
 
-                        <MudTextField T="string"
-                                      @bind-Value="_model.ConfirmPassword"
-                                      InputType="InputType.Password"
-                                      For="@(() => _model.ConfirmPassword)"
-                                      Immediate="false"
-                                      DebounceInterval="500"
-                                      Label="Password"
-                                      HelperText="Repeat the password"
-                                      Required="true"
-                                      RequiredError="Password Confirmation is required!"
-                                      Validation="@(new Func<string, string>(PasswordMatch))"/>
-                    </MudItem>
-                </MudGrid>
+            <MudTextField T="string" @bind-Value="Model!.Email"
+                          InputType="InputType.Email"
+                          For="() => Model!.Email"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Email"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Label="Email"/>
 
-                <div class="d-flex flex-column align-center justify-end mt-6">
-                    <MudButton StartIcon="@Icons.Material.Filled.Login"
-                               OnClick="Submit"
-                               Color="Color.Primary" Variant="Variant.Filled"
-                               Disabled="@(!_isSuccess)">
-                        Register
-                    </MudButton>
-                    <MudButton StartIcon="@Icons.Material.Filled.WrapText"
-                               OnClick="GoToLogin"
-                               Color="Color.Tertiary"
-                               Variant="Variant.Text">
-                        Login Instead
-                    </MudButton>
+            <MudTextField T="string" @bind-Value="Model!.Password"
+                          InputType="InputType.Password"
+                          For="() => Model!.Password"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Lock"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Label="Password"/>
 
-                </div>
-            </MudForm>
-        </MudItem>
-    </MudGrid>
+            <MudTextField T="string" @bind-Value="Model!.ConfirmPassword"
+                          InputType="InputType.Password"
+                          For="() => Model!.ConfirmPassword"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Lock"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Label="Confirm Password"/>
+
+
+            <MudButton OnClick="Submit"
+                       Class="mt-2"
+                       Color="Color.Primary"
+                       Variant="Variant.Filled"
+                       Disabled="@(Form?.IsValid == false || AuthState.Value.IsLoading)">
+                @if (AuthState.Value.IsLoading)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                    <MudText Class="ms-2">Processing</MudText>
+                }
+                else
+                {
+                    <MudText>Regiser</MudText>
+                }
+            </MudButton>
+        </MudForm>
+    </MudContainer>
+
+    <MudButton EndIcon="@Icons.Material.Filled.ArrowForward"
+               OnClick="GoToLogin"
+               Color="Color.Tertiary"
+               Variant="Variant.Text">
+        Already have an account? Login
+    </MudButton>
 </MudPaper>
 
-@code {
 
+@code {
+    
     [Parameter]
     public string? ReturnUrl { get; set; }
-
-    private RegisterViewModel? _model = new();
-
-    private MudTextField<string>? _passwordField;
-    private MudForm? _form;
-    private bool _isSuccess;
+    
+    private RegisterViewModel? Model = new();
+    private MudForm? Form = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,26 +99,23 @@
             Snackbar.Add(action.ErrorMessage, Severity.Error));
 
         SubscribeToAction<RegisterActionSuccess>(action =>
-            NavigationManager.NavigateTo(ReturnUrl ?? "/"));
+            NavigationManager.NavigateTo("/"));
 
         await base.OnInitializedAsync();
     }
 
     private void Submit()
     {
-        if (!_isSuccess)
+        if (!Form!.IsValid)
             return;
 
-        if (_model is null)
+        if (Model is null)
             return;
 
-        AuthFacade.RegisterWithEmailAndPassword(_model.Email!, _model.Password!);
+        AuthFacade.LoginWithEmailAndPassword(Model.Email!, Model.Password!);
     }
 
-    private string? PasswordMatch(string arg)
-        => _passwordField?.Value != arg ? "Passwords don't match" : null;
-
     private void GoToLogin()
-        => NavigationManager.NavigateTo("/authentication/login");
+        => NavigationManager.NavigateTo($"/authentication/login?returnUrl=/{ReturnUrl}");
 
 }
