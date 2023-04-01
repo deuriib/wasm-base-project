@@ -21,15 +21,15 @@
     </MudContainer>
 
     <MudContainer MaxWidth="MaxWidth.Large">
-        <MudForm Model="@Model"
-                 @ref="@Form"
+        <MudForm Model="@_model"
+                 @ref="@_form"
                  Validation="@Validator.ValidateValue()"
                  ValidationDelay="0"
                  class="d-flex flex-column align-stretch gap-4">
 
-            <MudTextField T="string" @bind-Value="Model!.Email"
+            <MudTextField T="string" @bind-Value="_model!.Email"
                           InputType="InputType.Email"
-                          For="() => Model!.Email"
+                          For="() => _model!.Email"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Email"
                           Variant="Variant.Outlined"
@@ -37,9 +37,9 @@
                           Immediate="true"
                           Label="Email"/>
 
-            <MudTextField T="string" @bind-Value="Model!.Password"
+            <MudTextField T="string" @bind-Value="_model!.Password"
                           InputType="InputType.Password"
-                          For="() => Model!.Password"
+                          For="() => _model!.Password"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Lock"
                           Variant="Variant.Outlined"
@@ -47,9 +47,9 @@
                           Immediate="true"
                           Label="Password"/>
 
-            <MudTextField T="string" @bind-Value="Model!.ConfirmPassword"
+            <MudTextField T="string" @bind-Value="_model!.ConfirmPassword"
                           InputType="InputType.Password"
-                          For="() => Model!.ConfirmPassword"
+                          For="() => _model!.ConfirmPassword"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Lock"
                           Variant="Variant.Outlined"
@@ -62,7 +62,7 @@
                        Class="mt-2"
                        Color="Color.Primary"
                        Variant="Variant.Filled"
-                       Disabled="@(Form?.IsValid == false || AuthState.Value.IsLoading)">
+                       Disabled="@(_form?.IsValid == false || AuthState.Value.IsLoading)">
                 @if (AuthState.Value.IsLoading)
                 {
                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -76,8 +76,7 @@
         </MudForm>
     </MudContainer>
 
-    <MudButton EndIcon="@Icons.Material.Filled.ArrowForward"
-               OnClick="GoToLogin"
+    <MudButton OnClick="GoToLogin"
                Color="Color.Tertiary"
                Variant="Variant.Text">
         Already have an account? Login
@@ -90,8 +89,8 @@
     [Parameter]
     public string? ReturnUrl { get; set; }
     
-    private RegisterViewModel? Model = new();
-    private MudForm? Form = new();
+    private RegisterViewModel _model = new();
+    private MudForm _form = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,16 +105,15 @@
 
     private void Submit()
     {
-        if (!Form!.IsValid)
+        if (!_form.IsValid)
             return;
 
-        if (Model is null)
-            return;
-
-        AuthFacade.LoginWithEmailAndPassword(Model.Email!, Model.Password!);
+        AuthFacade
+            .LoginWithEmailAndPassword(_model.Email!, _model.Password!);
     }
 
     private void GoToLogin()
-        => NavigationManager.NavigateTo($"/authentication/login?returnUrl=/{ReturnUrl}");
+        => NavigationManager
+            .NavigateTo($"/authentication/login?returnUrl=/{ReturnUrl}");
 
 }

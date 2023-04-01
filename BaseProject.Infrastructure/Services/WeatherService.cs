@@ -7,9 +7,10 @@ namespace BaseProject.Infrastructure.Services
     public sealed class WeatherService : IWeatherService
     {
         private readonly HttpClient _http;
-        public WeatherService(HttpClient http)
+        public WeatherService(IHttpClientFactory httpClientFactory)
         {
-            _http = http;
+            _http = httpClientFactory
+                .CreateClient("Base");
         }
 
         public async ValueTask<WeatherForecast[]?> GetWeathersAsync(CancellationToken cancellationToken = default)

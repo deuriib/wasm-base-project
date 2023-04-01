@@ -31,7 +31,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.4" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 		<PackageReference Include="MudBlazor" Version="6.2.0" />
-		<PackageReference Include="supabase-csharp" Version="0.8.5" />
+		<PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,7 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AdditionalFiles Include="Pages\Settings\SettingsMenu.razor" />
 	  <AdditionalFiles Include="Pages\Settings\ThemeSettings.razor" />
 	</ItemGroup>
 

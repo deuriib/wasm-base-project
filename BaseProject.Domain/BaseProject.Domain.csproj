@@ -11,7 +11,7 @@
 
     <ItemGroup>
       <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
-      <PackageReference Include="supabase-csharp" Version="0.8.5" />
+      <PackageReference Include="Ardalis.SmartEnum.SystemTextJson" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

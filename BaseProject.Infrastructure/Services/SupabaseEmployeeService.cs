@@ -1,101 +1,100 @@
-﻿using BaseProject.Domain.Enums;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using BaseProject.Domain.Models;
 using BaseProject.Domain.Services;
-using BaseProject.Infrastructure.Models;
-using Postgrest;
+using BaseProject.Infrastructure.Providers;
 
 namespace BaseProject.Infrastructure.Services;
 
 public sealed class SupabaseEmployeeService : IEmployeeService
 {
-    private readonly Supabase.Client _client;
+    private readonly HttpClient _httpClient;
+    private readonly SessionStorageProvider _sessionStorageProvider;
 
-    public SupabaseEmployeeService(Supabase.Client client)
+    public SupabaseEmployeeService(
+        IHttpClientFactory httpClientFactory,
+        SessionStorageProvider sessionStorageProvider)
     {
-        _client = client;
+        _httpClient = httpClientFactory
+            .CreateClient("Supabase");
+
+        _sessionStorageProvider = sessionStorageProvider;
     }
 
-    public async ValueTask<Employee[]?> GetAllAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<IReadOnlyList<Employee>?> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _client
-            .From<EmployeeModel>()
-            .Order("id", Constants.Ordering.Descending)
-            .Get(cancellationToken);
+        await SetAuthorizationHeaderAsync(cancellationToken);
 
-        return response
-            .Models
-            .Select(e => new Employee(e.Id, e.FirstName, e.LastName, e.Email, e.Birthdate)
-                .ChangeStatus(EmployeeStatus.FromValue(e.Status)))
-            .ToArray();
+        return await _httpClient
+            .GetFromJsonAsync<Employee[]>(
+                "rest/v1/employees?select=id,name,last_name,email,status",
+                cancellationToken);
     }
 
-    public async ValueTask<Employee?> GetOneAsync(int id, CancellationToken cancellationToken = default)
+    public async ValueTask<Employee?> GetOneAsync(long id, CancellationToken cancellationToken = default)
     {
-        var model = await _client
-            .From<EmployeeModel>()
-            .Where(e => e.Id.Equals(id))
-            .Single(cancellationToken);
+        await SetAuthorizationHeaderAsync(cancellationToken);
 
-        if (model is null)
-            throw new NullReferenceException($"Employee with id {id} not found");
+        var model = await _httpClient
+            .GetFromJsonAsync<Employee[]>(
+                $"rest/v1/employees?id=eq.{id}&select=*&limit=1",
+                cancellationToken);
 
-        return new(model.Id, model.FirstName, model.LastName, model.Email, model.Birthdate);
+        return model?.SingleOrDefault();
     }
 
-    public async ValueTask<Employee?> CreateAsync(Employee employee, CancellationToken cancellationToken = default)
+    public async ValueTask<Employee?> CreateAsync(
+        Employee employee,
+        CancellationToken cancellationToken = default)
     {
-        var model = new EmployeeModel
-        {
-            FirstName = employee.FirstName,
-            LastName = employee.LastName,
-            Email = employee.Email,
-            Birthdate = employee.Birthdate,
-            Status = employee.Status.Value
-        };
+        await SetAuthorizationHeaderAsync(cancellationToken);
+        
+        _httpClient
+            .DefaultRequestHeaders
+            .Add("Prefer", "return=representation");
 
-        var response = await _client.Postgrest
-            .Table<EmployeeModel>()
-            .Insert(model,
-                new QueryOptions
-                {
-                    Returning = QueryOptions.ReturnType.Representation
-                }, cancellationToken);
+        var response = await _httpClient
+            .PostAsJsonAsync<Employee>("rest/v1/employees", employee, cancellationToken);
 
-        return response.Models
-            .Select(e =>
-                new Employee(e.Id, e.FirstName, e.LastName, e.Email, e.Birthdate)
-                    .ChangeStatus(EmployeeStatus.FromValue(e.Status)))
-            .FirstOrDefault();
+        response
+            .EnsureSuccessStatusCode();
+        
+        return await response
+            .Content
+            .ReadFromJsonAsync<Employee>(cancellationToken: cancellationToken);
     }
 
-    public async Task UpdateAsync(int id, Employee employee, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(
+        long id,
+        Employee employee,
+        CancellationToken cancellationToken = default)
     {
-        await _client
-            .From<EmployeeModel>()
-            .Set(e => e.FirstName, employee.FirstName)
-            .Set(e => e.LastName, employee.LastName)
-            .Set(e => e.Email, employee.Email)
-            .Set(e => e.Birthdate, employee.Birthdate)
-            .Set(e => e.Address!, employee.Address)
-            .Set(e => e.Note!, employee.Note)
-            .Where(e => e.Id.Equals(id))
-            .Update(null, cancellationToken);
+        await SetAuthorizationHeaderAsync(cancellationToken);
+
+        var response = await _httpClient
+            .PatchAsJsonAsync($"rest/v1/employees?id=eq.{id}", employee, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
     }
 
-    public async Task UpdateStatusAsync(int id, Employee employee, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        await _client
-            .From<EmployeeModel>()
-            .Set(x => x.Status, employee.Status.Value)
-            .Where(e => e.Id.Equals(id))
-            .Update(null, cancellationToken);
+        await SetAuthorizationHeaderAsync(cancellationToken);
+
+        var response = await _httpClient
+            .DeleteAsync($"rest/v1/employees?id=eq.{id}", cancellationToken);
+
+        response.EnsureSuccessStatusCode();
     }
 
-    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    private async Task SetAuthorizationHeaderAsync(CancellationToken cancellationToken = default)
     {
-        await _client
-            .From<EmployeeModel>()
-            .Where(e => e.Id.Equals(id))
-            .Delete(null, cancellationToken);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            (await _sessionStorageProvider
+                .GetSessionAsync(cancellationToken))!
+            .TokenType!,
+            (await _sessionStorageProvider
+                .GetSessionAsync(cancellationToken))!
+            .AccessToken);
     }
 }

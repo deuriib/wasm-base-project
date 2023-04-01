@@ -1,11 +1,22 @@
-﻿namespace BaseProject.Domain.Dtos;
+﻿using BaseProject.Domain.Enums;
+
+namespace BaseProject.Domain.Dtos;
 
 public sealed record EmployeeDto
 {
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string? Email { get; set; }
+    public long Id { get; set; } = default!;
+    
+    public string FirstName { get; set; } = default!;
+    
+    public string LastName { get; set; } = default!;
+    
+    public string Email { get; set; } = default!;
+    
     public string? Address { get; set; }
+    
     public string? Note { get; set; }
+    
     public DateTime? Birthdate { get; set; }
+    
+    public EmployeeStatus? Status { get; set; }
 }

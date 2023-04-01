@@ -1,9 +1,10 @@
 ﻿using BaseProject.Domain.Dtos;
+using BaseProject.Domain.Models;
 
 namespace BaseProject.Infrastructure.Store.Employees;
 
-public record GetOneEmployeeAction(int Id);
+public sealed record GetOneEmployeeAction(long Id);
     
-public record GetOneEmployeeSuccessAction(EmployeeDto Employee);
+public sealed record GetOneEmployeeSuccessAction(EmployeeDto Employee);
     
-public record GetOneEmployeeFailedAction(string ErrorMessage);
+public sealed record GetOneEmployeeFailedAction(string ErrorMessage);

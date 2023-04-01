@@ -1,65 +1,21 @@
-﻿using BaseProject.Domain.Enums;
+﻿using System.Text.Json.Serialization;
+using Ardalis.SmartEnum.SystemTextJson;
+using BaseProject.Domain.Enums;
 
 namespace BaseProject.Domain.Models;
 
-public class Employee
+public sealed record Employee(
+    [property: JsonPropertyName("id")] long Id,
+    [property: JsonPropertyName("name")] string FirstName,
+    [property: JsonPropertyName("last_name")]
+    string LastName,
+    [property: JsonPropertyName("email")] string Email,
+    [property: JsonPropertyName("birth_date")]
+    DateTime Birthdate,
+    [property: JsonConverter(typeof(SmartEnumValueConverter<EmployeeStatus, bool>))]
+    EmployeeStatus Status)
 {
-    public int Id { get; private set; }
-    public string FirstName { get; private set; }
-    public string LastName { get; private set;}
-    public string Email { get; private set;}
-    public string? Address { get; private set; }
-    public string? Note { get; private set; }
-    public DateTime Birthdate { get; private set; }
-    public EmployeeStatus Status { get; private set; }
+    [JsonPropertyName("address")] public string? Address { get; init; }
 
-     public Employee(int id,string firstName, string lastName, string email, DateTime birthdate)
-     {
-         Id = id;
-         FirstName = firstName;
-         LastName = lastName;
-         Email = email;
-         Birthdate = birthdate;
-         Address = null;
-         Note = null;
-         Status = EmployeeStatus.Active;
-     }
-
-     public void ChangeName(string firstName, string lastName)
-     {
-         FirstName = firstName;
-         LastName = lastName;
-     }
-     
-     public Employee ChangeEmail(string email)
-     {
-         Email = email;
-         return this;
-     }
-
-     public void UpdateBirthDate(DateTime birthdate)
-     {
-         if (birthdate.Year > DateTime.Now.AddYears(-18).Year)
-             throw new ArgumentException($"{nameof(birthdate)} must be greater than 18 years old.");
-
-         Birthdate = birthdate;
-     }
-
-     public Employee AddOrUpdateAddress(string? address)
-     {
-         Address = address;
-         return this;
-     }
-
-     public Employee AddOrUpdateNote(string? note)
-     {
-         Note = note;
-         return this;
-     }
-
-     public Employee ChangeStatus(EmployeeStatus status)
-     {
-         Status = status;
-         return this;
-     }
+    [JsonPropertyName("note")] public string? Note { get; init; }
 }

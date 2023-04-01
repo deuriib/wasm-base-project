@@ -18,7 +18,7 @@ public class EmployeeFacade
         _dispatcher.Dispatch(new GetEmployeesAction());
     }
     
-    public void GetOneEmployee(int id)
+    public void GetOneEmployee(long id)
     {
         _dispatcher.Dispatch(new GetOneEmployeeAction(id));
     }
@@ -28,17 +28,17 @@ public class EmployeeFacade
         _dispatcher.Dispatch(new CreateEmployeeAction(employee));
     }
     
-    public void UpdateEmployee(int id, EmployeeDto employee)
+    public void UpdateEmployee(long id, EmployeeDto employee)
     {
         _dispatcher.Dispatch(new UpdateEmployeeAction(id, employee));
     }
     
-    public void UpdateEmployeeStatus(int id)
+    public void UpdateEmployeeStatus(long id)
     {
         _dispatcher.Dispatch(new UpdateEmployeeStatusAction(id));
     }
     
-    public void DeleteEmployee(int id)
+    public void DeleteEmployee(long id)
     {
         _dispatcher.Dispatch(new DeleteEmployeeAction(id));
     }
@@ -53,9 +53,32 @@ public class EmployeeFacade
         _dispatcher.Dispatch(new CloseCreateEmployeeAction());
     }
     
-    public void OpenDeleteEmployeeModal(int employeeId, string employeeName)
+    public void OpenDetailsEmployeeModal(long employeeId)
     {
-        _dispatcher.Dispatch(new OpenDeleteEmployeeModalAction(employeeId, employeeName));
+        _dispatcher.Dispatch(
+            new OpenDetailsEmployeeModal(employeeId));
+    }
+    
+    public void CloseDetailsEmployeeModal()
+    {
+        _dispatcher.Dispatch(new CloseDetailsEmployeeModal());
+    }
+    
+    public void OpenEditEmployeeModal(long employeeId)
+    {
+        _dispatcher.Dispatch(
+            new OpenEditEmployeeModal(employeeId));
+    }
+    
+    public void CloseEditEmployeeModal()
+    {
+        _dispatcher.Dispatch(new CloseEditEmployeeModal());
+    }
+    
+    public void OpenDeleteEmployeeModal(long employeeId, string employeeName)
+    {
+        _dispatcher.Dispatch(
+            new OpenDeleteEmployeeModalAction(employeeId, employeeName));
     }
     
     public void CloseDeleteEmployeeModal()

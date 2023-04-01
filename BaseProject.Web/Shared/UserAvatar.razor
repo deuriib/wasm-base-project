@@ -1,17 +1,17 @@
+@using System.Security.Claims
 @inherits FluxorComponent
 @inject NavigationManager NavigationManager
 @inject AuthFacade AuthFacade
 @inject IState<AuthState> AuthState
 
-<MudTooltip Text="@(AuthState.Value.Session?.User?.Email)" 
-            Placement="Placement.Start">
+<MudTooltip Text="@AuthState.Value.Session?.User.Email">
     <MudMenu Icon="@Icons.Material.Filled.PersonPin"
              Color="Color.Tertiary"
              Dense AnchorOrigin="Origin.TopRight">
         <ActivatorContent>
             <MudIconButton Icon="@Icons.Material.Filled.PersonPin"
-                           Title="@(AuthState.Value.Session?.User?.Email)" 
-                           aria-label="@(AuthState.Value.Session?.User?.Email)"
+                           Title="@AuthState.Value.Session?.User.Email"
+                           aria-label="@AuthState.Value.Session?.User.Email"
                            Color="Color.Inherit"/>
         </ActivatorContent>
         <ChildContent>
@@ -25,16 +25,6 @@
                         Logout
                     </MudMenuItem>
                 </Authorized>
-                <NotAuthorized>
-                    <MudMenuItem Icon="@Icons.Material.Filled.Person"
-                                 OnClick="GoToLogin">
-                        Sign in
-                    </MudMenuItem>
-                    <MudMenuItem Icon="@Icons.Material.Filled.PersonAdd"
-                                 OnClick="GoToRegister">
-                        Sign up
-                    </MudMenuItem>
-                </NotAuthorized>
             </AuthorizeView>
         </ChildContent>
     </MudMenu>
@@ -43,12 +33,6 @@
 @code {
 
     private void Logout()
-        => AuthFacade.Logout();
-
-    private void GoToLogin()
-        => NavigationManager.NavigateTo("/authentication/login");
-
-    private void GoToRegister()
-        => NavigationManager.NavigateTo("/authentication/register");
+        => AuthFacade.Logout(NavigationManager.Uri);
 
 }

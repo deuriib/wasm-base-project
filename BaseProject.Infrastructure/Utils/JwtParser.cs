@@ -5,8 +5,11 @@ namespace BaseProject.Infrastructure.Utils;
 
 public static class JwtParser
 {
-    public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+    public static IEnumerable<Claim> ParseClaimsFromJwt(string? jwt)
     {
+        if (jwt is null)
+            return Array.Empty<Claim>();
+
         var claims = new List<Claim>();
         var payload = jwt.Split('.')[1];
 
@@ -14,8 +17,8 @@ public static class JwtParser
         var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
         if (keyValuePairs is not null)
-            claims.AddRange(keyValuePairs.Select(kvp => 
-                new Claim(kvp.Key, kvp.Value.ToString())));
+            claims.AddRange(keyValuePairs.Select(kvp =>
+                new Claim(kvp.Key, kvp.Value.ToString()!)));
 
         return claims;
     }

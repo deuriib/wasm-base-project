@@ -11,71 +11,68 @@
 
 <MudDialog>
     <DialogContent>
-        <div class="pa-2 d-flex flex-column gap-4 align-center justify-space-evenly">
-            <MudContainer MaxWidth="MaxWidth.Large">
-                <MudForm Model="@Model"
-                         @ref="Form"
-                         Validation="@(Validator.ValidateValue())"
-                         ValidationDelay="0"
-                         class="d-flex flex-column align-stretch gap-2">
-                    
-                    <div class="d-flex flex-row justify-space-evenly gap-4">
-                        <MudTextField T="string"
-                                      @bind-Value="Model!.FirstName"
-                                      For="@(() => Model!.FirstName)"
-                                      Immediate="true"
-                                      Margin="Margin.Dense"
-                                      Variant="Variant.Outlined"
-                                      Label="First Name"/>
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <MudForm Model="@_model"
+                     @ref="_form"
+                     Validation="@(Validator.ValidateValue())"
+                     ValidationDelay="0"
+                     Class="d-flex flex-column align-stretch gap-2">
 
-                        <MudTextField T="string"
-                                      @bind-Value="Model!.LastName"
-                                      For="@(() => Model!.LastName)"
-                                      Immediate="true"
-                                      Margin="Margin.Dense"
-                                      Variant="Variant.Outlined"
-                                      Label="Last Name"/>
-                    </div>
-
+                <div class="d-flex flex-row justify-space-evenly gap-4 flex-wrap">
                     <MudTextField T="string"
-                                  @bind-Value="Model!.Email"
-                                  For="@(() => Model!.Email)"
+                                  @bind-Value="_model.FirstName"
+                                  For="@(() => _model.FirstName)"
                                   Immediate="true"
                                   Margin="Margin.Dense"
                                   Variant="Variant.Outlined"
-                                  Label="Email"/>
+                                  Label="First Name"/>
 
-                    <MudDatePicker For="@(() => Model!.Birthdate)"
-                                   @bind-Date="Model!.Birthdate"
-                                   DateFormat="dd/MM/yyyy"
-                                   Label="Birthdate"
-                                   OpenTo="OpenTo.Year"
-                                   Rounded="true"
-                                   Editable="false"
-                                   Variant="Variant.Outlined"
-                                   Margin="Margin.Dense"/>
+                    <MudTextField T="string"
+                                  @bind-Value="_model.LastName"
+                                  For="@(() => _model.LastName)"
+                                  Immediate="true"
+                                  Margin="Margin.Dense"
+                                  Variant="Variant.Outlined"
+                                  Label="Last Name"/>
+                </div>
 
-                </MudForm>
-            </MudContainer>
+                <MudTextField T="string"
+                              @bind-Value="_model.Email"
+                              For="@(() => _model.Email)"
+                              Immediate="true"
+                              Margin="Margin.Dense"
+                              Variant="Variant.Outlined"
+                              Label="Email"/>
 
-            <MudContainer Class="d-flex flex-row align-end justify-end gap-4">
-                <MudButton StartIcon="@Icons.Material.Filled.Cancel"
-                           OnClick="Cancel"
-                           Color="Color.Error"
-                           Variant="Variant.Outlined">
-                    Cancel
-                </MudButton>
+                <MudDatePicker For="@(() => _model.Birthdate)"
+                               @bind-Date="_model.Birthdate"
+                               DateFormat="dd/MM/yyyy"
+                               Label="Birthdate"
+                               OpenTo="OpenTo.Year"
+                               Rounded="true"
+                               Editable="false"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"/>
 
-                <MudButton StartIcon="@Icons.Material.Filled.Save"
-                           OnClick="Submit"
-                           Color="Color.Primary"
-                           Variant="Variant.Filled"
-                           Disabled="@(!Form!.IsValid)">
-                    Save
-                </MudButton>
-            </MudContainer>
-        </div>
+            </MudForm>
+        </MudContainer>
     </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel"
+                   OnClick="Cancel"
+                   Color="Color.Error"
+                   Variant="Variant.Outlined">
+            Cancel
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Save"
+                   OnClick="Submit"
+                   Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   Disabled="@(!_form.IsValid)">
+            Save
+        </MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
@@ -83,30 +80,25 @@
     [CascadingParameter]
     MudDialogInstance? MudDialog { get; set; }
 
-    private CreateEmployeeDto? Model = new();
-
-    private MudForm? Form = new();
+    private CreateEmployeeDto _model = new();
+    private MudForm _form = new();
 
     protected override async Task OnInitializedAsync()
     {
         SubscribeToAction<CloseCreateEmployeeAction>(_ =>
-        {
-            Snackbar.Add("Employee creation cancelled", Severity.Info);
-            
-            MudDialog?.Close(DialogResult.Ok(false));
-        });
+            MudDialog?.Close(DialogResult.Ok(false)));
 
         SubscribeToAction<CreateEmployeeSuccessAction>(_ =>
         {
             Snackbar.Add("Employee created successfully", Severity.Success);
-            
+
             MudDialog?.Close(DialogResult.Ok(true));
         });
 
         if (Environment.IsDevelopment())
         {
             var faker = new CreateEmployeeDtoFaker();
-           Model = faker.Generate();
+            _model = faker.Generate();
         }
 
         await base.OnInitializedAsync();
@@ -114,16 +106,15 @@
 
     private void Submit()
     {
-        if (!Form!.IsValid)
+        if (!_form.IsValid)
             return;
 
-        if (Model is null)
-            return;
-
-        EmployeeFacade.CreateEmployee(Model);
+        EmployeeFacade
+            .CreateEmployee(_model);
     }
 
     private void Cancel()
-        => EmployeeFacade.CloseCreateEmployeeModal();
+        => EmployeeFacade
+            .CloseCreateEmployeeModal();
 
 }

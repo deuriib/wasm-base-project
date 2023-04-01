@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
+using BaseProject.Domain.Models;
 using Fluxor;
 using Fluxor.Persist.Storage;
-using Supabase.Gotrue;
 
 namespace BaseProject.Infrastructure.Store.Auth;
 

@@ -49,32 +49,32 @@ public class AuthEffects
         }
     }
 
-    [EffectMethod]
-    public async Task HandleAsync(LoginWithGoogleAction action, IDispatcher dispatcher)
-    {
-        try
-        {
-            var session = await _authenticationService
-                .SignInWithGoogleAsync();
-
-            if (session is null)
-            {
-                dispatcher.Dispatch(new LoginFailedAction("Credentials are invalid"));
-                return;
-            }
-
-            await _authenticationStateProvider.GetAuthenticationStateAsync();
-
-            dispatcher.Dispatch(new LoginSuccessAction(session));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred trying to sign in with google");
-
-            dispatcher.Dispatch(
-                new LoginFailedAction($"An error occurred trying to sig in with google: {ex.Message}"));
-        }
-    }
+    // [EffectMethod]
+    // public async Task HandleAsync(LoginWithGoogleAction action, IDispatcher dispatcher)
+    // {
+    //     try
+    //     {
+    //         var session = await _authenticationService
+    //             .SignInWithGoogleAsync();
+    //
+    //         if (session is null)
+    //         {
+    //             dispatcher.Dispatch(new LoginFailedAction("Credentials are invalid"));
+    //             return;
+    //         }
+    //
+    //         await _authenticationStateProvider.GetAuthenticationStateAsync();
+    //
+    //         dispatcher.Dispatch(new LoginSuccessAction(session));
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An error occurred trying to sign in with google");
+    //
+    //         dispatcher.Dispatch(
+    //             new LoginFailedAction($"An error occurred trying to sig in with google: {ex.Message}"));
+    //     }
+    // }
 
     [EffectMethod]
     public async Task HandleAsync(RegisterAction action, IDispatcher dispatcher)
@@ -114,7 +114,7 @@ public class AuthEffects
 
             await _authenticationStateProvider.GetAuthenticationStateAsync();
 
-            dispatcher.Dispatch(new LogoutActionSuccess());
+            dispatcher.Dispatch(new LogoutActionSuccess(action.ReturnUrl));
         }
         catch (Exception ex)
         {

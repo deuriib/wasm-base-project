@@ -1,3 +1,6 @@
+@using BaseProject.Infrastructure.Providers
+@implements IDisposable
+
 <Fluxor.Blazor.Web.StoreInitializer/>
 
 <CascadingAuthenticationState>
@@ -9,10 +12,11 @@
                 </NotAuthorized>
                 <Authorizing>
                     <MudText Typo="Typo.h5" Color="Color.Surface">
-                        <MudIcon Icon="@Icons.Material.Filled.Info" 
-                                 Color="Color.Info" 
-                                 Size="Size.Small" 
-                                 Title="Verifying identity"></MudIcon>
+                        <MudIcon Icon="@Icons.Material.Filled.Info"
+                                 Color="Color.Info"
+                                 Size="Size.Small"
+                                 Title="Verifying identity">
+                        </MudIcon>
                         Please wait, we are verifying your identity...
                     </MudText>
                 </Authorizing>
@@ -26,3 +30,21 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code
+{
+    [Inject]
+    private HttpInterceptorService? HttpInterceptorService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpInterceptorService?.RegisterEvent();
+        
+        await base.OnInitializedAsync();
+    }
+    
+    public void Dispose()
+    {
+        HttpInterceptorService?.Dispose();
+    }
+}

@@ -15,6 +15,7 @@ using BaseProject.Infrastructure.Store.App;
 using BaseProject.Infrastructure.Validations.Auth;
 using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -23,11 +24,25 @@ var env = builder.HostEnvironment;
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => 
-    new HttpClient
-    {
-        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-    });
+builder.Services.AddHttpClientInterceptor();
+
+builder.Services.AddHttpClient("Base", client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+builder.Services.AddHttpClient("Supabase", (sp, client) =>
+{
+    var url = builder.Configuration["Supabase:Url"] 
+              ?? throw new NullReferenceException("Supabase url is null");
+    var key = builder.Configuration["Supabase:Key"];
+    
+    client.BaseAddress = new Uri(url);
+    client.DefaultRequestHeaders.Add("apikey", key);
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
+
+    client.EnableIntercept(sp);
+});
 
 // Authentication
 builder.Services.AddScoped<AuthenticationStateProvider, SupabaseAuthStateProvider>();
@@ -49,6 +64,8 @@ builder.Services.AddMudServices(config =>
 });
 
 // Services
+builder.Services.AddScoped<HttpInterceptorService>();
+builder.Services.AddScoped<SessionStorageProvider>();
 builder.Services.AddScoped<IEmployeeService, SupabaseEmployeeService>();
 builder.Services.AddScoped<IAuthenticationService, SupabaseAuthenticationService>();
 builder.Services.AddScoped<IWeatherService,WeatherService>();
@@ -67,7 +84,11 @@ builder.Services.AddFluxor(fluxorOptions =>
     });
 
     if (env.IsDevelopment())
-        fluxorOptions.UseReduxDevTools();
+        fluxorOptions.UseReduxDevTools(options =>
+        {
+            options.Name = "BaseProject";
+            options.EnableStackTrace();
+        });
 
     fluxorOptions.UseRouting();
     fluxorOptions.UsePersist(config 
@@ -79,18 +100,5 @@ builder.Services.AddScoped<AuthFacade>();
 builder.Services.AddScoped<CounterFacade>();
 builder.Services.AddScoped<EmployeeFacade>();
 builder.Services.AddScoped<ThemeFacade>();
-
-// Supabase config
-var url = builder.Configuration["Supabase:Url"] ?? "";
-var key = builder.Configuration["Supabase:Key"];
-builder.Services.AddScoped(provider => new Client(url, key, new SupabaseOptions
-{
-    AutoRefreshToken = true,
-    AutoConnectRealtime = true,
-    PersistSession = true,
-    SessionHandler = new SupabaseSessionHandler(
-        provider.GetRequiredService<ILocalStorageService>(),
-        provider.GetRequiredService<ILogger<SupabaseSessionHandler>>())
-}));
 
 await builder.Build().RunAsync();

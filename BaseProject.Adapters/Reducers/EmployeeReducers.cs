@@ -1,6 +1,5 @@
 ﻿using BaseProject.Domain.Dtos;
 using BaseProject.Infrastructure.Store.Employees;
-using BaseProject.Infrastructure.ViewModels;
 using Fluxor;
 
 namespace BaseProject.Adapters.Reducers;
@@ -8,15 +7,15 @@ namespace BaseProject.Adapters.Reducers;
 public static class EmployeeReducers
 {
     [ReducerMethod(typeof(GetEmployeesAction))]
-    public static EmployeesState Reduce(EmployeesState state)
+    public static EmployeesState OnGetEmployeesAction(EmployeesState state)
         => state with
         {
             IsLoading = true,
-            Employees = Array.Empty<ListEmployeeDto>()
+            Employees = Array.Empty<EmployeeDto>()
         };
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, GetEmployeesSuccessAction action)
+    public static EmployeesState OnGetEmployeesSuccessAction(EmployeesState state, GetEmployeesSuccessAction action)
         => state with
         {
             IsLoading = false,
@@ -28,12 +27,12 @@ public static class EmployeeReducers
         => state with
         {
             IsLoading = false,
-            Employees = Array.Empty<ListEmployeeDto>(),
+            Employees = Array.Empty<EmployeeDto>(),
             ErrorMessage = action.ErrorMessage
         };
 
-    [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, GetOneEmployeeAction action)
+    [ReducerMethod(typeof(GetOneEmployeeAction))]
+    public static EmployeesState OnGetOneEmployeeAction(EmployeesState state)
         => state with
         {
             IsLoadingEmployee = true,
@@ -41,7 +40,8 @@ public static class EmployeeReducers
         };
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, GetOneEmployeeSuccessAction action)
+    public static EmployeesState OnGetOneEmployeeSuccessAction(EmployeesState state, 
+        GetOneEmployeeSuccessAction action)
         => state with
         {
             IsLoadingEmployee = false,
@@ -49,7 +49,8 @@ public static class EmployeeReducers
         };
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, GetOneEmployeeFailedAction action)
+    public static EmployeesState OnGetOneEmployeeFailedAction(EmployeesState state, 
+        GetOneEmployeeFailedAction action)
         => state with
         {
             IsLoadingEmployee = false,
@@ -58,25 +59,21 @@ public static class EmployeeReducers
         };
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, CreateEmployeeSuccessAction action)
+    public static EmployeesState OnCreateEmployeeSuccessAction(EmployeesState state, 
+        CreateEmployeeSuccessAction action)
     {
-        var employee = new ListEmployeeDto(action.Id,
-            action.FullName,
-            action.Email,
-            action.Status
-        );
-
         return state with
         {
             Employees = state.Employees
-                .Append(employee)
+                .Append(action.Employee)
                 .OrderByDescending(c => c.Id)
                 .ToArray()
         };
     }
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, DeleteEmployeeSuccessAction action)
+    public static EmployeesState OnDeleteEmployeeSuccessAction(EmployeesState state, 
+        DeleteEmployeeSuccessAction action)
         => state with
         {
             Employees = state.Employees
@@ -85,7 +82,8 @@ public static class EmployeeReducers
         };
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeStatusSuccessAction action)
+    public static EmployeesState OnUpdateEmployeeStatusSuccessAction(EmployeesState state, 
+        UpdateEmployeeStatusSuccessAction action)
     {
         var employee = state
             .Employees
@@ -105,68 +103,91 @@ public static class EmployeeReducers
             .Employees
             .SetValue(employee, index);
 
-        return state with
-        {
-            Employees = state.Employees
-        };
+        return state;
     }
 
     [ReducerMethod]
-    public static EmployeesState Reduce(EmployeesState state, UpdateEmployeeSuccessAction action)
+    public static EmployeesState OnUpdateEmployeeSuccessAction(EmployeesState state, UpdateEmployeeSuccessAction action)
     {
         var employee = state
             .Employees
             .FirstOrDefault(e =>
-                e.Id.Equals(action.Id));
+                e.Id.Equals(action.EmployeeId));
 
         if (employee is null)
             return state;
 
         employee = employee with
         {
-            FullName = $"{action.Employee.FirstName} {action.Employee.LastName}",
+            FirstName = $"{action.Employee.FirstName}",
+            LastName = $"{action.Employee.LastName}",
             Email = action.Employee.Email!
         };
 
         var index = Array
             .FindIndex(state.Employees, e =>
-                e.Id.Equals(action.Id));
+                e.Id.Equals(action.EmployeeId));
 
         state
             .Employees
             .SetValue(employee, index);
 
-        return state with
-        {
-            Employees = state.Employees
-        };
+        return state;
     }
 
     [ReducerMethod(typeof(OpenCreateEmployeeModalAction))]
-    public static EmployeesState OpenCreateEmployeeModal(EmployeesState state)
+    public static EmployeesState OnOpenCreateEmployeeModalAction(EmployeesState state)
         => state with
         {
             IsCreateEmployeeModalOpen = true
         };
 
     [ReducerMethod(typeof(CloseCreateEmployeeAction))]
-    public static EmployeesState CloseCreateEmployeeModal(EmployeesState state)
+    public static EmployeesState OnCloseCreateEmployeeAction(EmployeesState state)
         => state with
         {
             IsCreateEmployeeModalOpen = false
         };
     
     [ReducerMethod(typeof(OpenDeleteEmployeeModalAction))]
-    public static EmployeesState OpenDeleteEmployeeModal(EmployeesState state)
+    public static EmployeesState OnOpenDeleteEmployeeModalAction(EmployeesState state)
         => state with
         {
             IsDeleteEmployeeModalOpen = true
         };
 
     [ReducerMethod(typeof(CloseDeleteEmployeeModelAction))]
-    public static EmployeesState CloseDeleteEmployeeModal(EmployeesState state)
+    public static EmployeesState OnCloseDeleteEmployeeModelAction(EmployeesState state)
         => state with
         {
             IsDeleteEmployeeModalOpen = false
+        };
+    
+    [ReducerMethod(typeof(OpenDetailsEmployeeModal))]
+    public static EmployeesState OnOpenDetailsEmployeeModalAction(EmployeesState state)
+        => state with
+        {
+            IsDetailsEmployeeModalOpen = true
+        };
+
+    [ReducerMethod(typeof(CloseDetailsEmployeeModal))]
+    public static EmployeesState OnCloseDetailsEmployeeModelAction(EmployeesState state)
+        => state with
+        {
+            IsDetailsEmployeeModalOpen = false
+        };
+    
+    [ReducerMethod(typeof(OpenEditEmployeeModal))]
+    public static EmployeesState OnOpenEditEmployeeModalAction(EmployeesState state)
+        => state with
+        {
+            IsEditEmployeeModalOpen = true
+        };
+
+    [ReducerMethod(typeof(CloseEditEmployeeModal))]
+    public static EmployeesState OnCloseEditEmployeeModelAction(EmployeesState state)
+        => state with
+        {
+            IsEditEmployeeModalOpen = false
         };
 }

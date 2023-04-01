@@ -34,7 +34,7 @@
                                Color="Color.Inherit"
                                OnClick="SettingsDrawerToggle"/>
             </MudTooltip>
-            
+
             <UserAvatar/>
 
         </MudContainer>
@@ -79,8 +79,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<LogoutActionSuccess>(_
-            => NavigationManager.NavigateTo("/authentication/login"));
+        SubscribeToAction<LogoutActionSuccess>(action =>
+            NavigationManager
+                .NavigateTo($"/authentication/login?returnUrl={action.ReturnUrl}"));
 
         await base.OnInitializedAsync();
     }

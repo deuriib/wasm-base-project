@@ -1,4 +1,3 @@
-using Supabase.Gotrue;
 
 namespace BaseProject.Infrastructure.Store.Auth;
 

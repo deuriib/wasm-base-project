@@ -7,7 +7,8 @@ namespace BaseProject.Infrastructure.Store.App;
 [FeatureState]
 public sealed record AppState(string AppName, string AppVersion)
 {
-    private AppState() : this("BaseProject", "1.5.4")
+    private AppState() 
+        : this("BaseProject", "1.5.4")
     {
     }
 }

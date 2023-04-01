@@ -23,11 +23,11 @@
         </MudGrid>
     </DialogContent>
     <DialogActions>
-        <MudButton StartIcon="@Icons.Material.Filled.Close"
-                   OnClick="Close"
-                   Color="Color.Primary"
-                   Variant="Variant.Filled">
-            Close
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel"
+                   OnClick="Cancel"
+                   Color="Color.Error"
+                   Variant="Variant.Outlined">
+            Cancel
         </MudButton>
     </DialogActions>
 </MudDialog>
@@ -38,11 +38,11 @@
     MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public int? EmployeeId { get; set; }
+    public long? EmployeeId { get; set; }
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
-        if (parameters.TryGetValue<int>(nameof(EmployeeId), out var employeeId))
+        if (parameters.TryGetValue<long>(nameof(EmployeeId), out var employeeId))
         {
             EmployeeFacade.GetOneEmployee(employeeId);
         }
@@ -52,14 +52,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        SubscribeToAction<CloseDetailsEmployeeModal>(_ =>
+            MudDialog?.Close(DialogResult.Ok(false)));
+        
         SubscribeToAction<GetOneEmployeeFailedAction>(action =>
         {
-            Snackbar.Add(action.ErrorMessage, Severity.Error);   
-            Close();
+            Snackbar.Add(action.ErrorMessage, Severity.Error);
+            Cancel();
         });
 
         await base.OnInitializedAsync();
     }
 
-    private void Close() => MudDialog?.Cancel();
+    private void Cancel() 
+        => EmployeeFacade.CloseDetailsEmployeeModal();
 }

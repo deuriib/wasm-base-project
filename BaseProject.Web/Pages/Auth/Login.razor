@@ -13,132 +13,153 @@
 
 <PageTitle>Login</PageTitle>
 
-<MudPaper Class="pa-8 d-flex flex-column gap-8 align-center justify-space-evenly">
-    <MudContainer Class="gap-2 d-flex flex-column align-center">
-        <MudText Typo="Typo.h3" Color="Color.Primary">@AppState.Value.AppName</MudText>
-        <MudText Typo="Typo.h5">Sign In</MudText>
-    </MudContainer>
+<MudPaper Class="pa-8">
+    <MudStack Row="false"
+              Spacing="10"
+              AlignItems="AlignItems.Center"
+              Justify="Justify.SpaceEvenly">
 
-    <MudContainer MaxWidth="MaxWidth.Large">
-        <MudForm Model="@Model"
-                 @ref="@Form"
-                 Validation="@Validator.ValidateValue()"
-                 ValidationDelay="0"
-                 class="d-flex flex-column align-stretch gap-2">
+        <MudStack Row="false"
+                  Spacing="2"
+                  AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h3" Color="Color.Primary">@AppState.Value.AppName</MudText>
+            <MudText Typo="Typo.h5">Sign In</MudText>
+        </MudStack>
 
-            <MudTextField T="string" @bind-Value="Model!.Email"
-                          InputType="InputType.Email"
-                          For="() => Model!.Email"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Email"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense"
-                          Immediate="true"
-                          Label="Email"/>
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <MudForm Model="@_model"
+                     @ref="@_form"
+                     Validation="@Validator.ValidateValue()"
+                     ValidationDelay="0">
+                <MudStack Row="false"
+                          AlignItems="AlignItems.Stretch"
+                          Spacing="2">
 
-            <MudTextField T="string" @bind-Value="Model!.Password"
-                          InputType="InputType.Password"
-                          For="() => Model!.Password"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Lock"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense"
-                          Immediate="true"
-                          Label="Password"/>
 
-            <div class="d-flex align-center flex-row justify-space-between">
-                <MudCheckBox @bind-Checked="@Model!.RememberMe"
-                             For="() => Model!.RememberMe"
-                             StopClickPropagation="true"
-                             Label="Remember me"
-                             Color="Color.Primary"/>
+                    <MudTextField T="string" @bind-Value="_model!.Email"
+                                  InputType="InputType.Email"
+                                  For="() => _model!.Email"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Email"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Immediate="true"
+                                  Label="Email"/>
 
-                <MudLink Color="Color.Secondary"
-                         OnClick="GoToForgotPassword">
-                    Forgot password?
-                </MudLink>
-            </div>
+                    <MudTextField T="string" @bind-Value="_model!.Password"
+                                  InputType="InputType.Password"
+                                  For="() => _model!.Password"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Lock"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Immediate="true"
+                                  Label="Password"/>
 
-            <MudButton OnClick="Submit"
-                       Class="mt-2"
-                       Color="Color.Primary"
-                       Variant="Variant.Filled"
-                       Disabled="@(Form?.IsValid == false || AuthState.Value.IsLoading)">
-                @if (AuthState.Value.IsLoading)
-                {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                    <MudText Class="ms-2">Processing</MudText>
-                }
-                else
-                {
-                    <MudText>Login</MudText>
-                }
-            </MudButton>
-        </MudForm>
-    </MudContainer>
+                    <MudStack Row="true"
+                              AlignItems="AlignItems.Center"
+                              Justify="Justify.SpaceBetween">
+                        <MudCheckBox @bind-Checked="@_model!.RememberMe"
+                                     For="() => _model!.RememberMe"
+                                     StopClickPropagation="true"
+                                     Label="Remember me"
+                                     Color="Color.Primary"/>
 
-    <MudContainer Class="d-flex flex-column align-center gap-2">
-        <MudText Typo="Typo.caption">Or login with</MudText>
+                        <MudLink Color="Color.Secondary"
+                                 OnClick="GoToForgotPassword">
+                            Forgot password?
+                        </MudLink>
+                    </MudStack>
 
-        <MudContainer Class="d-flex flex-row justify-space-evenly">
-            <MudButton StartIcon="@Icons.Custom.Brands.Facebook"
-                       Color="Color.Secondary"
-                       Disabled="true"
-                       Variant="Variant.Outlined">
-                Facebook
-            </MudButton>
-
-            <MudButton StartIcon="@Icons.Custom.Brands.Google"
-                       Color="Color.Secondary"
-                       Disabled="true"
-                       Variant="Variant.Outlined">
-                Google
-            </MudButton>
+                    <MudButton OnClick="Submit"
+                               Class="mt-2"
+                               Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               Disabled="@(_form?.IsValid == false || AuthState.Value.IsLoading)">
+                        @if (AuthState.Value.IsLoading)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                            <MudText Class="ms-2">Processing</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Login</MudText>
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudForm>
         </MudContainer>
-    </MudContainer>
+
+        <MudStack Row="false"
+                  AlignItems="AlignItems.Center"
+                  Spacing="2">
+            <MudText Typo="Typo.caption">Or login with</MudText>
+
+            <MudStack Row="true"
+                      Spacing="2"
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.SpaceEvenly">
+                <MudButton StartIcon="@Icons.Custom.Brands.Facebook"
+                           Color="Color.Secondary"
+                           Disabled="true"
+                           Variant="Variant.Outlined">
+                    Facebook
+                </MudButton>
+
+                <MudButton StartIcon="@Icons.Custom.Brands.Google"
+                           Color="Color.Secondary"
+                           Disabled="true"
+                           Variant="Variant.Outlined">
+                    Google
+                </MudButton>
+            </MudStack>
+        </MudStack>
 
 
-    <MudButton EndIcon="@Icons.Material.Filled.ArrowForward"
-               OnClick="GoToRegister"
-               Color="Color.Tertiary"
-               Variant="Variant.Text">
-        Create new account
-    </MudButton>
+        <MudButton EndIcon="@Icons.Material.Filled.ArrowForward"
+                   OnClick="GoToRegister"
+                   Color="Color.Tertiary"
+                   Variant="Variant.Text">
+            Create new account
+        </MudButton>
+
+    </MudStack>
 </MudPaper>
 
 @code {
 
     [Parameter]
-    public string? ReturnUrl { get; set; }
+    public required string? ReturnUrl { get; set; }
 
-    private LoginWithEmailViewModel? Model = new();
-    private MudForm? Form = new();
+    private LoginWithEmailViewModel _model = new();
+    private MudForm _form = new();
 
     protected override async Task OnInitializedAsync()
     {
         SubscribeToAction<LoginFailedAction>(action =>
             Snackbar.Add(action.ErrorMessage, MudBlazor.Severity.Error));
 
-        SubscribeToAction<LoginSuccessAction>(_ => NavigationManager.NavigateTo(ReturnUrl ?? "/"));
+        SubscribeToAction<LoginSuccessAction>(action =>
+            NavigationManager.NavigateTo(action.ReturnUrl, false, true));
 
         await base.OnInitializedAsync();
     }
 
     private void Submit()
     {
-        if (!Form!.IsValid)
+        if (!_form.IsValid)
             return;
 
-        if (Model is null)
-            return;
-
-        AuthFacade.LoginWithEmailAndPassword(Model.Email!, Model.Password!);
+        AuthFacade
+            .LoginWithEmailAndPassword(_model.Email!, _model.Password!, _model.RememberMe, ReturnUrl ?? "/");
     }
 
     private void GoToForgotPassword()
-        => NavigationManager.NavigateTo($"/authentication/forgot-password");
+        => NavigationManager
+            .NavigateTo($"/authentication/forgot-password");
 
     private void GoToRegister()
-        => NavigationManager.NavigateTo($"/authentication/register?returnUrl={ReturnUrl}");
+        => NavigationManager
+            .NavigateTo($"/authentication/register");
 
 }

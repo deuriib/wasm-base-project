@@ -3,6 +3,6 @@ using BaseProject.Infrastructure.ViewModels;
 
 namespace BaseProject.Infrastructure.Store.Employees;
 
-public record UpdateEmployeeAction(int Id, EmployeeDto Employee);
+public sealed record UpdateEmployeeAction(long EmployeeId, EmployeeDto Employee);
 
-public record UpdateEmployeeSuccessAction(int Id, EmployeeDto Employee);
+public sealed record UpdateEmployeeSuccessAction(long EmployeeId, EmployeeDto Employee);

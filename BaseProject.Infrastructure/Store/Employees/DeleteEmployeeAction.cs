@@ -1,5 +1,5 @@
 ﻿namespace BaseProject.Infrastructure.Store.Employees;
 
-public record DeleteEmployeeAction(int? Id);
+public sealed record DeleteEmployeeAction(long Id);
 
-public record DeleteEmployeeSuccessAction(int? Id);
+public sealed record DeleteEmployeeSuccessAction(long Id);

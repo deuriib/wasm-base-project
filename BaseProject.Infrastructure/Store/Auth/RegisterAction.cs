@@ -1,4 +1,5 @@
-using Supabase.Gotrue;
+
+using BaseProject.Domain.Models;
 
 namespace BaseProject.Infrastructure.Store.Auth;
 

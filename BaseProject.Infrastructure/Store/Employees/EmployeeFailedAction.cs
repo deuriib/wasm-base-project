@@ -1,3 +1,3 @@
 ﻿namespace BaseProject.Infrastructure.Store.Employees;
 
-public record EmployeeFailedAction(string? ErrorMessage);
+public sealed record EmployeeFailedAction(string? ErrorMessage);
