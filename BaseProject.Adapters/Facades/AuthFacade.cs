@@ -43,4 +43,9 @@ public class AuthFacade
     {
         _dispatcher.Dispatch(new ForgotPasswordResetAction());
     }
+    
+    public void TogglePasswordInputVisibility()
+    {
+        _dispatcher.Dispatch(new TogglePasswordInputVisibilityAction());
+    }
 }

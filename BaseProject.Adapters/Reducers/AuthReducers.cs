@@ -79,4 +79,12 @@ public static class AuthReducers
             IsEmailForgotPasswordSent = false,
             ErrorMessage = action.ErrorMessage
         };
+    
+    [ReducerMethod(typeof(TogglePasswordInputVisibilityAction))]
+    public static AuthState OnTogglePasswordInputVisibilityAction(
+        AuthState state) =>
+        state with
+        {
+            IsPasswordVisible = !state.IsPasswordVisible
+        };
 }
