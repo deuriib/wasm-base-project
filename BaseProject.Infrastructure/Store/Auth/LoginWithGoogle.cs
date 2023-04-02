@@ -1,4 +1,4 @@
 
 namespace BaseProject.Infrastructure.Store.Auth;
 
-public record LoginWithGoogleAction;
+public sealed record LoginWithGoogleAction;

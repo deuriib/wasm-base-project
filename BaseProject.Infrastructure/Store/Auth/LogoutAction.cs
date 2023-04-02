@@ -1,7 +1,7 @@
 namespace BaseProject.Infrastructure.Store.Auth;
 
-public record LogoutAction(string ReturnUrl);
+public sealed record LogoutAction(string ReturnUrl);
 
-public record LogoutActionSuccess(string ReturnUrl);
+public sealed record LogoutActionSuccess(string ReturnUrl);
 
-public record LogoutActionFailed(string ErrorMessage);
+public sealed record LogoutActionFailed(string ErrorMessage);

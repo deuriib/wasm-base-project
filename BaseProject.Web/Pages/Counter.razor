@@ -10,46 +10,61 @@
 
 <MudText Typo="Typo.h3" GutterBottom="true">Counter</MudText>
 
-<MudGrid>
-    <MudItem xs="12" sm="12" md="12">
-        <MudPaper Class="pa-8" Elevation="3">
-            
-            <MudText Typo="Typo.body2" Color="Color.Info">Increment By: (@IncrementBy)</MudText>
+<MudPaper Class="pa-4" Elevation="3" MinWidth="220px">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudStack Row="false"
+                  Spacing="4"
+                  Justify="Justify.FlexStart"
+                  AlignItems="AlignItems.Start">
 
-            <MudText Class="mb-4">Current count: @State.Value.CurrentCount</MudText>
+            <MudStack Row="false"
+                      Spacing="2">
+                <MudText Typo="Typo.body1" Color="Color.Info">Increment By: (@IncrementBy)</MudText>
 
-            <MudButton StartIcon="@Icons.Material.Filled.Add"
-                       Color="Color.Primary"
-                       Class="mr-2"
-                       Variant="Variant.Filled"
-                       OnClick="IncrementCount">Increment</MudButton>
+                <MudText Typo="Typo.body2">Current count: @State.Value.CurrentCount</MudText>
+            </MudStack>
 
-            <MudButton StartIcon="@Icons.Material.Filled.Delete"
-                       Color="Color.Secondary"
-                       Variant="Variant.Outlined"
-                       OnClick="ResetCounter">Reset Counter</MudButton>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+            <MudStack Row="true"
+                      Spacing="2"
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.FlexStart"
+                      Class="flex-wrap">
+                <MudButton StartIcon="@Icons.Material.Filled.AddCircle"
+                           Color="Color.Primary"
+                           Variant="Variant.Filled"
+                           OnClick="IncrementCount">
+                    Increment
+                </MudButton>
+
+                <MudButton StartIcon="@Icons.Material.Filled.ChangeCircle"
+                           Color="Color.Secondary"
+                           Variant="Variant.Outlined"
+                           OnClick="ResetCounter">
+                    Reset Count
+                </MudButton>
+            </MudStack>
+        </MudStack>
+    </MudContainer>
+</MudPaper>
 
 
 @code {
 
     [Parameter]
-    public int IncrementBy { get; set; } = 1;
+    public required int IncrementBy { get; set; } = 1;
 
     protected override async Task OnInitializedAsync()
     {
         SubscribeToAction<ResetCounterAction>(result =>
             Snackbar
-                .Add(message: "Counter was reset to initial value", 
+                .Add(message: "Counter was reset to initial value",
                     severity: Severity.Info));
-        
+
         await base.OnInitializedAsync();
     }
 
     private void IncrementCount()
-    => CounterFacade.IncrementCounter(IncrementBy);
+        => CounterFacade.IncrementCounter(IncrementBy);
 
     private void ResetCounter()
         => CounterFacade.ResetCounter();

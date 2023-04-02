@@ -2,27 +2,19 @@ using System.Text.Json.Serialization;
 using BaseProject.Domain.Models;
 using Fluxor;
 using Fluxor.Persist.Storage;
+using MudBlazor;
 
 namespace BaseProject.Infrastructure.Store.Auth;
 
 [PersistState]
 [FeatureState]
-public class AuthState
+public sealed record AuthState(bool IsLoading, 
+    Session? Session, 
+    bool IsEmailForgotPasswordSent,
+    string ErrorMessage = "")
 {
-    public AuthState(bool isLoading, Session? session)
-    {
-        IsLoading = isLoading;
-        Session = session;
-    }
-
     private AuthState()
+    : this(false, null, false)
     {
-        Session = null;
-        IsLoading = false;
     }
-
-    public Session? Session { get; }
-
-    [property: JsonIgnore]
-    public bool IsLoading { get; }
 }

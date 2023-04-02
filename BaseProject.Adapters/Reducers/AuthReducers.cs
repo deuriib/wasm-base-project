@@ -6,26 +6,77 @@ namespace BaseProject.Adapters.Reducers;
 public static class AuthReducers
 {
     [ReducerMethod(typeof(LoginWithEmailAndPasswordAction))]
-    public static AuthState LoginWithEmailAndPassword(AuthState state) 
-        => new (isLoading: true, session: null);
+    public static AuthState OnLoginWithEmailAndPasswordAction(AuthState state)
+        => state with
+        {
+            IsLoading = true,
+            Session = null
+        };
 
     [ReducerMethod]
-    public static AuthState LoginSuccess(
+    public static AuthState OnLoginSuccessAction(
         AuthState state,
         LoginSuccessAction action) =>
-        new (isLoading: false, session: action.Session);
+        state with
+        {
+            IsLoading = false,
+            Session = action.Session
+        };
 
     [ReducerMethod]
-    public static AuthState LoginFailed(
+    public static AuthState OnLoginFailAction(
         AuthState state,
         LoginFailedAction action)
-    {
-        return new AuthState(isLoading: false, session: null);
-    }
+        => state with
+        {
+            IsLoading = false,
+            Session = null,
+            ErrorMessage = action.ErrorMessage
+        };
 
     [ReducerMethod(typeof(LoginWithGoogleAction))]
     public static AuthState LoginWithGoogle(AuthState state)
-    {
-        return new AuthState(isLoading: true, session: null);
-    }
+        => state with
+        {
+            IsLoading = true,
+            Session = null
+        };
+    
+    [ReducerMethod(typeof(ForgotPasswordAction))]
+    public static AuthState OnForgotPasswordAction(
+        AuthState state) =>
+        state with
+        {
+            IsLoading = true,
+            IsEmailForgotPasswordSent = false
+        };
+    
+    [ReducerMethod(typeof(ForgotPasswordResetAction))]
+    public static AuthState OnForgotPasswordResetAction(
+        AuthState state) =>
+        state with
+        {
+            IsLoading = false,
+            IsEmailForgotPasswordSent = false
+        };
+    
+    [ReducerMethod(typeof(ForgotPasswordSuccessAction))]
+    public static AuthState OnForgotPasswordSuccessAction(
+        AuthState state) =>
+        state with
+        {
+            IsLoading = false,
+            IsEmailForgotPasswordSent = true
+        };
+    
+    [ReducerMethod]
+    public static AuthState OnForgotPasswordFailAction(
+        AuthState state,
+        ForgotPasswordFailAction action) =>
+        state with
+        {
+            IsLoading = false,
+            IsEmailForgotPasswordSent = false,
+            ErrorMessage = action.ErrorMessage
+        };
 }

@@ -33,4 +33,14 @@ public class AuthFacade
     {
         _dispatcher.Dispatch(new RegisterAction(email, password));
     }
+    
+    public void ForgotPassword(string email)
+    {
+        _dispatcher.Dispatch(new ForgotPasswordAction(email));
+    }
+    
+    public void ResetForgotPassword()
+    {
+        _dispatcher.Dispatch(new ForgotPasswordResetAction());
+    }
 }

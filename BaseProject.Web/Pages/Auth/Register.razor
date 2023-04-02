@@ -62,7 +62,7 @@
                        Class="mt-2"
                        Color="Color.Primary"
                        Variant="Variant.Filled"
-                       Disabled="@(_form?.IsValid == false || AuthState.Value.IsLoading)">
+                       Disabled="@(!_form.IsValid || AuthState.Value.IsLoading)">
                 @if (AuthState.Value.IsLoading)
                 {
                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>

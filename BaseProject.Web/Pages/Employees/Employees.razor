@@ -88,13 +88,14 @@
                     </MudButton>
                     <MudButton Color="Color.Primary"
                                StartIcon="@Icons.Material.Filled.Edit"
-                               OnClick="() => ShowEditDialog(context.Id)">
+                               OnClick="() => ShowEditDialog(context.Id)"
+                               Disabled="@(context.Status!.Value == false)">
                         Edit
                     </MudButton>
                     <MudButton StartIcon="@Icons.Material.Filled.Delete"
                                Color="Color.Error"
                                OnClick="() => ShowDeleteDialog(context)">
-                        Remove
+                        Delete
                     </MudButton>
                 </MudButtonGroup>
             </MudTd>

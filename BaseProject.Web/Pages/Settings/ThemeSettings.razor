@@ -16,7 +16,8 @@
                  Text="@(ThemeState.Value.IsDarkMode 
                            ? "Switch to Light Mode" 
                            : "Switch to Dark Mode")"
-                 OnClick="ChangeTheme" />
+                 OnClick="ChangeTheme" 
+                 Disabled="true"/>
 </MudList>
 
 @code {

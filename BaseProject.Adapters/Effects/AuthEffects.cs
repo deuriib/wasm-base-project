@@ -42,7 +42,7 @@ public class AuthEffects
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred trying to sign in");
+            _logger.LogError(ex, "LoginWithEmailAndPasswordAction");
 
             dispatcher.Dispatch(
                 new LoginFailedAction($"An error occurred trying to login in"));
@@ -97,7 +97,7 @@ public class AuthEffects
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred trying to register");
+            _logger.LogError(ex, "RegisterAction");
 
             dispatcher.Dispatch(
                 new RegisterActionFailed("An error occurred trying to register"));
@@ -118,10 +118,30 @@ public class AuthEffects
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred trying to register");
+            _logger.LogError(ex, "LogoutAction");
 
             dispatcher.Dispatch(
                 new LogoutActionFailed("An error occurred trying to register"));
+        }
+    }
+    
+    [EffectMethod]
+    public async Task HandleAsync(ForgotPasswordAction action, IDispatcher dispatcher)
+    {
+        try
+        {
+            await _authenticationService
+                .SendPasswordResetEmailAsync(action.Email);
+
+            dispatcher.Dispatch(new ForgotPasswordSuccessAction());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ForgotPasswordAction");
+
+            dispatcher.Dispatch(
+                new ForgotPasswordFailAction(
+                    "An error occurred trying to sending password reset email"));
         }
     }
 }
