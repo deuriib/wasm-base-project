@@ -36,9 +36,9 @@
                           Spacing="2">
 
 
-                    <MudTextField T="string" @bind-Value="_model!.Email"
+                    <MudTextField T="string" @bind-Value="_model.Email"
                                   InputType="InputType.Email"
-                                  For="() => _model!.Email"
+                                  For="() => _model.Email"
                                   Adornment="Adornment.Start"
                                   AdornmentIcon="@Icons.Material.Filled.Email"
                                   Variant="Variant.Outlined"
@@ -46,11 +46,12 @@
                                   Immediate="true"
                                   Label="Email"/>
 
-                    <MudTextField T="string" @bind-Value="_model!.Password"
-                                  InputType="InputType.Password"
-                                  For="() => _model!.Password"
+                    <MudTextField T="string" @bind-Value="_model.Password"
+                                  InputType="@(AuthState.Value.IsPasswordVisible ? InputType.Text : InputType.Password)"
+                                  For="() => _model.Password"
                                   Adornment="Adornment.Start"
-                                  AdornmentIcon="@Icons.Material.Filled.Lock"
+                                  AdornmentIcon="@(AuthState.Value.IsPasswordVisible ? Icons.Material.Filled.LockOpen : Icons.Material.Filled.Lock)"
+                                  OnAdornmentClick="TogglePasswordVisibility"
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   Immediate="true"
@@ -72,6 +73,7 @@
                     </MudStack>
 
                     <MudButton OnClick="Submit"
+                               ButtonType="ButtonType.Submit"
                                Class="mt-2"
                                Color="Color.Primary"
                                Variant="Variant.Filled"
@@ -151,8 +153,14 @@
             return;
 
         AuthFacade
-            .LoginWithEmailAndPassword(_model.Email!, _model.Password!, _model.RememberMe, ReturnUrl ?? "/");
+            .LoginWithEmailAndPassword(_model.Email!,
+                _model.Password!, 
+                _model.RememberMe, 
+                ReturnUrl ?? "/");
     }
+
+    private void TogglePasswordVisibility()
+        => AuthFacade.TogglePasswordInputVisibility();
 
     private void GoToForgotPassword()
         => NavigationManager

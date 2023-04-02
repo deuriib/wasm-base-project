@@ -11,10 +11,15 @@ namespace BaseProject.Infrastructure.Store.Auth;
 public sealed record AuthState(bool IsLoading, 
     Session? Session, 
     bool IsEmailForgotPasswordSent,
-    string ErrorMessage = "")
+    bool IsPasswordVisible,
+    string ErrorMessage)
 {
     private AuthState()
-    : this(false, null, false)
+    : this(false, 
+        null, 
+        false, 
+        false, 
+        "")
     {
     }
 }
