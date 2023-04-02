@@ -1,8 +1,10 @@
 ﻿using BaseProject.Domain.Dtos;
+using BaseProject.Domain.Enums;
+using BaseProject.Domain.Models;
 
 namespace BaseProject.Infrastructure.Store.Employees
 {
-    public record CreateEmployeeAction(CreateEmployeeDto Dto);
+    public sealed record CreateEmployeeAction(CreateEmployeeDto Dto);
 
-    public record CreateEmployeeSuccessAction;
+    public sealed record CreateEmployeeSuccessAction(EmployeeDto Employee);
 }

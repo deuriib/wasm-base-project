@@ -1,24 +1,28 @@
-﻿
-@using BaseProject.Infrastructure.Store.Theme
+﻿@using BaseProject.Infrastructure.Store.Theme
 @inherits FluxorComponent
 @inject IState<ThemeState> ThemeState
+@inject ThemeFacade ThemeFacade
 
 <MudList Clickable>
     <MudListSubheader>
         Theme
     </MudListSubheader>
-    <MudListItem Icon="@(ThemeState.Value.IsDarkMode ? Icons.Material.Rounded.LightMode : Icons.Material.Rounded.DarkMode)"
-                 IconColor="@(ThemeState.Value.IsDarkMode ? Color.Warning : Color.Dark )"
-                 Text="@(ThemeState.Value.IsDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode")"
-                 OnClick="ChangeTheme" />
+    <MudListItem Icon="@(ThemeState.Value.IsDarkMode 
+                           ? Icons.Material.Rounded.LightMode 
+                           : Icons.Material.Rounded.DarkMode)"
+                 IconColor="@(ThemeState.Value.IsDarkMode 
+                                ? Color.Warning 
+                                : Color.Dark )"
+                 Text="@(ThemeState.Value.IsDarkMode 
+                           ? "Switch to Light Mode" 
+                           : "Switch to Dark Mode")"
+                 OnClick="ChangeTheme" 
+                 Disabled="true"/>
 </MudList>
 
 @code {
-    [Inject]
-    private IDispatcher? Dispatcher { get; set; }
-
     private void ChangeTheme()
     {
-        Dispatcher?.Dispatch(new ToggleThemeAction());
+        ThemeFacade.ToggleTheme();
     }
 }

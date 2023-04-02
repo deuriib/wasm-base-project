@@ -5,20 +5,10 @@ namespace BaseProject.Infrastructure.Store.App;
 
 [PersistState]
 [FeatureState]
-public class AppState
+public sealed record AppState(string AppName, string AppVersion)
 {
-    public AppState(string name, string version)
+    private AppState() 
+        : this("BaseProject", "1.5.4")
     {
-        AppName = name;
-        AppVersion = version;
-    }
-
-    public string AppName { get;  }
-    public string AppVersion { get; }
-
-    private AppState()
-    {
-        AppName = "BaseProject";
-        AppVersion = "1.5.4";
     }
 }

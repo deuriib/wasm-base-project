@@ -5,47 +5,78 @@ namespace BaseProject.Adapters.Reducers;
 
 public static class AuthReducers
 {
-    [ReducerMethod(typeof(LoginWithEmailAndPasswordActionSuccess))]
-    public static AuthState LoginWithEmailAndPasswordAction(AuthState state)
-    {
-        return new AuthState(isLoading: true, session: null);
-    }
+    [ReducerMethod(typeof(LoginWithEmailAndPasswordAction))]
+    public static AuthState OnLoginWithEmailAndPasswordAction(AuthState state)
+        => state with
+        {
+            IsLoading = true,
+            Session = null
+        };
 
     [ReducerMethod]
-    public static AuthState LoginWithEmailAndPasswordActionSuccess(
+    public static AuthState OnLoginSuccessAction(
         AuthState state,
-        LoginWithEmailAndPasswordActionSuccess action)
-    {
-        return new AuthState(isLoading: false, session: action.Session);
-    }
+        LoginSuccessAction action) =>
+        state with
+        {
+            IsLoading = false,
+            Session = action.Session
+        };
 
     [ReducerMethod]
-    public static AuthState LoginWithEmailAndPasswordActionFailed(
+    public static AuthState OnLoginFailAction(
         AuthState state,
-        LoginWithEmailAndPasswordActionFailed action)
-    {
-        return new AuthState(isLoading: false, session: null);
-    }
+        LoginFailedAction action)
+        => state with
+        {
+            IsLoading = false,
+            Session = null,
+            ErrorMessage = action.ErrorMessage
+        };
 
     [ReducerMethod(typeof(LoginWithGoogleAction))]
-    public static AuthState LoginWithGoogleAction(AuthState state)
-    {
-        return new AuthState(isLoading: true, session: null);
-    }
-
+    public static AuthState LoginWithGoogle(AuthState state)
+        => state with
+        {
+            IsLoading = true,
+            Session = null
+        };
+    
+    [ReducerMethod(typeof(ForgotPasswordAction))]
+    public static AuthState OnForgotPasswordAction(
+        AuthState state) =>
+        state with
+        {
+            IsLoading = true,
+            IsEmailForgotPasswordSent = false
+        };
+    
+    [ReducerMethod(typeof(ForgotPasswordResetAction))]
+    public static AuthState OnForgotPasswordResetAction(
+        AuthState state) =>
+        state with
+        {
+            IsLoading = false,
+            IsEmailForgotPasswordSent = false
+        };
+    
+    [ReducerMethod(typeof(ForgotPasswordSuccessAction))]
+    public static AuthState OnForgotPasswordSuccessAction(
+        AuthState state) =>
+        state with
+        {
+            IsLoading = false,
+            IsEmailForgotPasswordSent = true
+        };
+    
     [ReducerMethod]
-    public static AuthState LoginWithGoogleActionSuccess(
+    public static AuthState OnForgotPasswordFailAction(
         AuthState state,
-        LoginWithGoogleActionSuccess action)
-    {
-        return new AuthState(isLoading: false, session: action.Session);
-    }
-
-    [ReducerMethod]
-    public static AuthState LoginWithGoogleActionFailed(
-        AuthState state,
-        LoginWithGoogleActionFailed action)
-    {
-        return new AuthState(isLoading: false, session: null);
-    }
+        ForgotPasswordFailAction action) =>
+        state with
+        {
+            IsLoading = false,
+            IsEmailForgotPasswordSent = false,
+            ErrorMessage = action.ErrorMessage
+        };
 }

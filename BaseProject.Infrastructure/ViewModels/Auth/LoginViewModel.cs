@@ -1,12 +1,14 @@
 namespace BaseProject.Infrastructure.ViewModels.Auth;
 
-public class LoginWithEmailViewModel
+public record LoginWithEmailViewModel
 {
     public string? Email { get; set; }
     public string? Password { get; set; }
+    
+    public bool RememberMe { get; set; }
 }
 
-public class LoginWithPhoneNumberViewModel
+public record LoginWithPhoneNumberViewModel
 {
     public string? PhoneNumber { get; set; }
     public string? Password { get; set; }

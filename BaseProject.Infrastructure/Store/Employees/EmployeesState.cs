@@ -1,4 +1,5 @@
-﻿using BaseProject.Infrastructure.ViewModels;
+﻿using BaseProject.Domain.Dtos;
+using BaseProject.Domain.Models;
 using Fluxor;
 using Fluxor.Persist.Storage;
 
@@ -6,29 +7,28 @@ namespace BaseProject.Infrastructure.Store.Employees;
 
 [SkipPersistState]
 [FeatureState]
-public class EmployeesState
+public sealed record EmployeesState(
+    bool IsLoading,
+    EmployeeDto[] Employees,
+    EmployeeDto? SelectedEmployee,
+    bool IsLoadingEmployee,
+    bool IsCreateEmployeeModalOpen,
+    bool IsDeleteEmployeeModalOpen,
+    bool IsDetailsEmployeeModalOpen,
+    bool IsEditEmployeeModalOpen,
+    string ErrorMessage)
 {
-    public EmployeesState(bool isLoading, 
-        EmployeeListViewModel[] employees, 
-        EmployeeEditViewModel? selectedEmployee,
-        bool isLoadingEmployee)
-    {
-        IsLoading = isLoading;
-        Employees = employees;
-        SelectedEmployee = SelectedEmployee;
-        IsLoadingEmployee = isLoadingEmployee;
-    }
-
-    public bool IsLoading { get;  }
-    public EmployeeListViewModel[] Employees { get;  }
-    public EmployeeEditViewModel? SelectedEmployee { get;  }
-    public bool IsLoadingEmployee { get;  }
-
     private EmployeesState()
+        : this(
+            false,
+            Array.Empty<EmployeeDto>(),
+            null,
+            false,
+            false,
+            false,
+            false,
+            false,
+            string.Empty)
     {
-        IsLoading = false;
-        Employees = Array.Empty<EmployeeListViewModel>();
-        SelectedEmployee = null;
-        IsLoadingEmployee = false;
     }
 }

@@ -9,50 +9,64 @@
 <MudText Typo="Typo.h3" GutterBottom="true">Weather forecast</MudText>
 <MudText Class="mb-8">This component demonstrates fetching data from the server.</MudText>
 
-<MudGrid>
-    <MudItem xs="12" sm="12" md="12" Class="d-flex">
-        <MudPaper Class="pa-8 d-flex align-center justify-center flex-grow-1" MinHeight="420px">
-            <MudContainer Class="flex-grow-1">
-                <MudTable Items="State.Value.Forecasts" Hover="true" SortLabel="Sort By" Elevation="0" Loading="@State.Value.IsLoading" TotalItems="@State.Value.Forecasts.Length">
-                    <HeaderContent>
-                        <MudTh>
-                            <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x => x.Date)">Date</MudTableSortLabel>
-                        </MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x => x.TemperatureC)">Temp. (C)</MudTableSortLabel>
-                        </MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x => x.TemperatureF)">Temp. (F)</MudTableSortLabel>
-                        </MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x => x.Summary!)">Summary</MudTableSortLabel>
-                        </MudTh>
-                    </HeaderContent>
-                    <LoadingContent>
-                        <Loading/>
-                    </LoadingContent>
-                    <NoRecordsContent>
-                        <div class="d-flex align-center justify-center flex-column ">
-                            <MudContainer Class="flex-grow-1">
-                                <MudIcon Style="@($"color:{Colors.Grey.Lighten1}")" Icon="@Icons.Material.Filled.List" Size="Size.Large"></MudIcon>
-                                <MudText Typo="Typo.subtitle1" GutterBottom Style="@($"color:{Colors.Grey.Lighten1}")">There is no data, click ↺ button to refresh</MudText>
-                            </MudContainer>
-                        </div>
-                    </NoRecordsContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Date">@context.Date</MudTd>
-                        <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
-                        <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
-                        <MudTd DataLabel="Summary">@context.Summary</MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 50, 100 }"/>
-                    </PagerContent>
-                </MudTable>
-            </MudContainer>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+<MudPaper MinHeight="420px">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudTable Items="State.Value.Forecasts" 
+                  Hover="true" 
+                  SortLabel="Sort By" 
+                  Elevation="0" 
+                  Loading="@State.Value.IsLoading" 
+                  TotalItems="@State.Value.Forecasts.Length">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel
+                        InitialDirection="SortDirection.Ascending"
+                        SortBy="new Func<WeatherForecast, object>(x => x.Date)">
+                        Date
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel
+                        SortBy="new Func<WeatherForecast, object>(x => x.TemperatureC)">
+                        Temp. (C)
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel
+                        SortBy="new Func<WeatherForecast, object>(x => x.TemperatureF)">
+                        Temp. (F)
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel
+                        SortBy="new Func<WeatherForecast, object>(x => x.Summary!)">
+                        Summary
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <LoadingContent>
+                <Loading/>
+            </LoadingContent>
+            <NoRecordsContent>
+                <div class="d-flex align-center justify-center flex-column ">
+                    <MudContainer Class="flex-grow-1">
+                        <MudIcon Style="@($"color:{Colors.Grey.Lighten1}")" Icon="@Icons.Material.Filled.List" Size="Size.Large"></MudIcon>
+                        <MudText Typo="Typo.subtitle1" GutterBottom Style="@($"color:{Colors.Grey.Lighten1}")">There is no data, click ↺ button to refresh</MudText>
+                    </MudContainer>
+                </div>
+            </NoRecordsContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date">@context.Date</MudTd>
+                <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
+                <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
+                <MudTd DataLabel="Summary">@context.Summary</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 5, 10, 15, 20 }"/>
+            </PagerContent>
+        </MudTable>
+    </MudContainer>
+</MudPaper>
 
 
 @code {

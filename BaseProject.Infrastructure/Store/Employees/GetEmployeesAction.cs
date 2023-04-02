@@ -1,11 +1,9 @@
-﻿using BaseProject.Infrastructure.ViewModels;
+﻿using BaseProject.Domain.Dtos;
 
-namespace BaseProject.Infrastructure.Store.Employees
-{
-    public record GetEmployeesAction;
+namespace BaseProject.Infrastructure.Store.Employees;
 
-    public record GetEmployeesSuccessAction(EmployeeListViewModel[] Employees);
+public sealed record GetEmployeesAction;
 
-    public record GetEmployeesFailedAction(string ErrorMessage) : EmployeeFailedAction(ErrorMessage);
+public sealed record GetEmployeesSuccessAction(EmployeeDto[] Employees);
 
-}
+public sealed record GetEmployeesFailedAction(string ErrorMessage);

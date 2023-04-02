@@ -1,16 +1,29 @@
 ﻿@using BaseProject.Infrastructure.Store.Employees
-@using BaseProject.Infrastructure.ViewModels
+
 @inherits FluxorLayout
-@inject IDispatcher Dispatcher
+@inject EmployeeFacade EmployeeFacade
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.h5">Are you sure you want to delete @Employee?.FullName employee?</MudText>
+        <MudText Typo="Typo.h5">Are you sure you want to delete @EmployeeName ?</MudText>
+
         <MudText Typo="Typo.body2">This will remove the employee data permanently</MudText>
     </DialogContent>
     <DialogActions>
-        <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled">Delete</MudButton>
-        <MudButton StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel" Color="Color.Error" Variant="Variant.Outlined">Cancel</MudButton>
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel"
+                   OnClick="Cancel"
+                   Color="Color.Secondary"
+                   Variant="Variant.Outlined">
+            Cancel
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Delete"
+                   OnClick="Submit"
+                   Color="Color.Error"
+                   Variant="Variant.Filled">
+            Delete
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -20,24 +33,28 @@
     MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public EmployeeListViewModel? Employee { get; set; }
+    public string? EmployeeName { get; set; }
+
+    [Parameter]
+    public long? EmployeeId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        MudDialog?.SetOptions(new DialogOptions()
+        SubscribeToAction<DeleteEmployeeSuccessAction>(action =>
         {
-            DisableBackdropClick = true,
-            CloseButton = false,
-            CloseOnEscapeKey = false,
-            NoHeader = true,
-            FullWidth = true
+            Snackbar.Add($"Employee Id:{action.Id} deleted", Severity.Success);
+            MudDialog?.Close(DialogResult.Ok(true));
         });
-        SubscribeToAction<DeleteEmployeeSuccessAction>(_ =>
-            MudDialog?.Close(DialogResult.Ok(true))
-            );
+        
+        SubscribeToAction<CloseDeleteEmployeeModelAction>(_ => 
+            MudDialog?.Close(DialogResult.Ok(false)));
+
         await base.OnInitializedAsync();
     }
 
-    private void Submit() => Dispatcher.Dispatch(new DeleteEmployeeAction(Employee!.Id));
-    private void Cancel() => MudDialog?.Cancel();
+    private void Submit() 
+        => EmployeeFacade.DeleteEmployee(EmployeeId!.Value);
+    
+    private void Cancel()
+    => EmployeeFacade.CloseDeleteEmployeeModal();
 }

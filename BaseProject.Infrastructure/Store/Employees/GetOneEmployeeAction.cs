@@ -1,8 +1,10 @@
-﻿using BaseProject.Infrastructure.ViewModels;
+﻿using BaseProject.Domain.Dtos;
+using BaseProject.Domain.Models;
 
-namespace BaseProject.Infrastructure.Store.Employees
-{
-    public record GetOneEmployeeAction(int? Id);
-    public record GetOneEmployeeSuccessAction(EmployeeEditViewModel? Employee);
-    public record GetOneEmployeeFailedAction(string? ErrorMessage): EmployeeFailedAction(ErrorMessage);
-}
+namespace BaseProject.Infrastructure.Store.Employees;
+
+public sealed record GetOneEmployeeAction(long Id);
+    
+public sealed record GetOneEmployeeSuccessAction(EmployeeDto Employee);
+    
+public sealed record GetOneEmployeeFailedAction(string ErrorMessage);

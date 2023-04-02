@@ -1,9 +1,10 @@
-using Supabase.Gotrue;
+
+using BaseProject.Domain.Models;
 
 namespace BaseProject.Infrastructure.Store.Auth;
 
-public record RegisterAction(string Email, string Password);
+public sealed record RegisterAction(string Email, string Password);
 
-public record RegisterActionSuccess(Session Session);
+public sealed record RegisterActionSuccess(Session Session);
 
-public record RegisterActionFailed(string ErrorMessage);
+public sealed record RegisterActionFailed(string ErrorMessage);

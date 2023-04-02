@@ -1,8 +1,8 @@
 ﻿@using BaseProject.Infrastructure.Store.Employees
 @inherits FluxorComponent
-@inject ISnackbar Snackbar
-@inject IDispatcher Dispatcher
 @inject IState<EmployeesState> State
+@inject EmployeeFacade EmployeeFacade
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
@@ -10,53 +10,60 @@
             <MudItem xs="12" sm="10" md="12">
                 @if (State.Value.IsLoadingEmployee)
                 {
-                    <Loading />
-                }
-                
-                @if (State.Value.SelectedEmployee is not null)
-                {
-                    <MudText Typo="Typo.h1" GutterBottom>@State.Value.SelectedEmployee?.FirstName @State.Value.SelectedEmployee?.LastName</MudText>
+                    <Loading/>
                 }
 
+                @if (State.Value.SelectedEmployee is not null)
+                {
+                    <MudText Typo="Typo.h1" GutterBottom>
+                        @State.Value.SelectedEmployee?.FirstName @State.Value.SelectedEmployee?.LastName
+                    </MudText>
+                }
             </MudItem>
         </MudGrid>
     </DialogContent>
-     <DialogActions>
-            <MudButton StartIcon="@Icons.Material.Filled.Close" OnClick="Close" Color="Color.Primary" Variant="Variant.Filled">Close</MudButton>
-        </DialogActions>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel"
+                   OnClick="Cancel"
+                   Color="Color.Error"
+                   Variant="Variant.Outlined">
+            Cancel
+        </MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
+
     [CascadingParameter]
     MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public int? EmployeeId { get; set; }
-    
+    public long? EmployeeId { get; set; }
+
     public override async Task SetParametersAsync(ParameterView parameters)
     {
-        if (parameters.TryGetValue<int>(nameof(EmployeeId), out var employeeId))
+        if (parameters.TryGetValue<long>(nameof(EmployeeId), out var employeeId))
         {
-            Dispatcher.Dispatch(new GetOneEmployeeAction(employeeId));
+            EmployeeFacade.GetOneEmployee(employeeId);
         }
 
         await base.SetParametersAsync(parameters);
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
-        SubscribeToAction<EmployeeFailedAction>(_=> MudDialog?.Close(DialogResult.Ok(false)));
+        SubscribeToAction<CloseDetailsEmployeeModal>(_ =>
+            MudDialog?.Close(DialogResult.Ok(false)));
         
-        MudDialog?.SetOptions(new DialogOptions()
+        SubscribeToAction<GetOneEmployeeFailedAction>(action =>
         {
-            DisableBackdropClick = true,
-            CloseButton = false,
-            CloseOnEscapeKey = false,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true
+            Snackbar.Add(action.ErrorMessage, Severity.Error);
+            Cancel();
         });
+
         await base.OnInitializedAsync();
     }
-    
-    private void Close() => MudDialog?.Cancel();
+
+    private void Cancel() 
+        => EmployeeFacade.CloseDetailsEmployeeModal();
 }
