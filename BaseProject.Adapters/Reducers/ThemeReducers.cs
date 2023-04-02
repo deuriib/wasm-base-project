@@ -5,8 +5,8 @@ namespace BaseProject.Adapters.Reducers
 {
     public static class ThemeReducers
     {
-        [ReducerMethod]
-        public static ThemeState Reduce(ThemeState state, ToggleThemeAction action) =>
-            new ThemeState(isDarkMode: !state.IsDarkMode);
+        [ReducerMethod(typeof(ToggleThemeAction))]
+        public static ThemeState OnToggleThemeAction(ThemeState state) =>
+            new (!state.IsDarkMode);
     }
 }

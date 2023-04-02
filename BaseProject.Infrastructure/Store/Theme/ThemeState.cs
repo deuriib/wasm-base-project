@@ -7,19 +7,12 @@ namespace BaseProject.Infrastructure.Store.Theme;
 
 [PersistState]
 [FeatureState]
-public class ThemeState
+public sealed record ThemeState(bool IsDarkMode)
 {
-    public ThemeState(bool isDarkMode)
-    {
-        IsDarkMode = isDarkMode;
-    }
-    
-    private ThemeState()
-    {
-        IsDarkMode = false;;
-    }
 
-    public bool IsDarkMode { get; }
+    private ThemeState(): this(false)
+    {
+    }
 
     [property: JsonIgnore]
     public MudTheme CurrentTheme => new MudTheme()
@@ -32,54 +25,38 @@ public class ThemeState
         Palette = GetLightPalette(),
         PaletteDark = GetDarkPalette()
     };
-    
+
     private Palette GetLightPalette()
     {
         return new Palette
         {
-            Primary = "#009688",
-            PrimaryContrastText = "#fff",
-            PrimaryDarken = "#00695C",
-            PrimaryLighten = "#4DB6AC",
-            Secondary = "#E91E63",
-            SecondaryContrastText = "#fff",
-            SecondaryDarken = "#AD1457",
-            SecondaryLighten = "#F06292",
-            Tertiary = "#673AB7",
-            TertiaryContrastText = "#fff",
-            TertiaryDarken = "#4527A0",
-            TertiaryLighten = "#9575CD",
-            TextPrimary = "#212121",
-            TextSecondary = "#757575",
-            TextDisabled = "#BDBDBD",
-            AppbarText = "#FAFAFA",
-            AppbarBackground = "#009688",
-            DrawerText = "#212121",
-            Background = "#F5F5F5",
+            Primary = Colors.Teal.Default,
+            PrimaryDarken = Colors.Teal.Darken1,
+            PrimaryLighten = Colors.Teal.Lighten1,
+            AppbarBackground = Colors.Teal.Default,
+            Background = Colors.Grey.Lighten4,
         };
     }
-    
+
     private Palette GetDarkPalette()
     {
         return new Palette
         {
-            Primary = "#009688",
-            PrimaryContrastText = "#fff",
-            PrimaryDarken = "#00695C",
-            PrimaryLighten = "#4DB6AC",
-            Secondary = "#E91E63",
-            SecondaryContrastText = "#fff",
-            SecondaryDarken = "#AD1457",
-            SecondaryLighten = "#F06292",
-            Tertiary = "#673AB7",
-            TertiaryContrastText = "#fff",
-            TertiaryDarken = "#4527A0",
-            TertiaryLighten = "#9575CD",
-            TextPrimary = "#9E9E9E",
-            TextSecondary = "#BDBDBD",
-            TextDisabled = "#E0E0E0",
-            AppbarText = "#FAFAFA",
-            AppbarBackground = "#009688",
+            Primary = Colors.Teal.Default,
+            PrimaryDarken = Colors.Teal.Darken1,
+            PrimaryLighten = Colors.Teal.Lighten1,
+            AppbarBackground = Colors.Teal.Default,
+            Background = Colors.Grey.Darken4,
+            BackgroundGrey = Colors.Grey.Darken1,
+            TextPrimary = Colors.Grey.Lighten4,
+            TextSecondary = Colors.Grey.Lighten3,
+            TextDisabled = Colors.Grey.Lighten1,
+            ActionDisabled = Colors.Grey.Darken2,
+            ActionDisabledBackground = Colors.Grey.Darken4,
+            DrawerBackground = Colors.Grey.Darken2,
+            DrawerText = Colors.Grey.Lighten2,
+            DrawerIcon = Colors.Grey.Lighten2,
+            Surface = Colors.Grey.Darken3,
         };
     }
 }
