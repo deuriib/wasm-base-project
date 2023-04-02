@@ -9,6 +9,7 @@
 		<PackageLicenseFile>D:\Documents\Projects\wasm-base-project\LICENSE.txt</PackageLicenseFile>
 		<RootNamespace>BaseProject.App</RootNamespace>
 		<LangVersion>11</LangVersion>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -36,6 +37,9 @@
 
 	<ItemGroup>
 	  <Content Remove="appsettings.json" />
+	  <Content Include="..\.dockerignore">
+	    <Link>.dockerignore</Link>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
