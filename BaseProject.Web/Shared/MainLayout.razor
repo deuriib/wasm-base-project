@@ -87,7 +87,7 @@
     {
         SubscribeToAction<LogoutActionSuccess>(action =>
             NavigationManager
-                .NavigateTo($"/authentication/login?returnUrl={action.ReturnUrl}"));
+                .NavigateToUri($"/authentication/login?returnUrl={action.ReturnUrl}"));
 
         await base.OnInitializedAsync();
     }
