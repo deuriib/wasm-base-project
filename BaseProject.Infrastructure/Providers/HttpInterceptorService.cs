@@ -1,4 +1,5 @@
 using System.Net;
+using BaseProject.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
@@ -61,7 +62,7 @@ public class HttpInterceptorService : IDisposable
             if (result is not null)
             {
                 await _sessionStorageProvider.RemoveSessionAsync();
-                _navigationManager.NavigateTo("/authentication/login"); 
+                _navigationManager.NavigateToUri("/authentication/login"); 
             }
         }
     }
