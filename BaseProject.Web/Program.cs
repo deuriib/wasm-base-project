@@ -1,10 +1,10 @@
-using BaseProject.Adapters.Facades;
 using BaseProject.Adapters.Reducers;
 using BaseProject.Domain.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using BaseProject.App;
+using BaseProject.App.Extensions;
 using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
@@ -64,16 +64,15 @@ builder.Services.AddMudServices(config =>
 });
 
 // Services
-builder.Services.AddScoped<HttpInterceptorService>();
-builder.Services.AddScoped<SessionStorageProvider>();
-builder.Services.AddScoped<IEmployeeService, SupabaseEmployeeService>();
-builder.Services.AddScoped<IAuthenticationService, SupabaseAuthenticationService>();
-builder.Services.AddScoped<IWeatherService,WeatherService>();
+builder.Services.RegisterServices();
 
 builder.Services.AddBlazoredLocalStorage(config 
     => config.JsonSerializerOptions.WriteIndented = false);
 builder.Services.AddScoped<IStringStateStorage, LocalStateStorage>();
 builder.Services.AddScoped<IStoreHandler, JsonStoreHandler>();
+
+// Facades
+builder.Services.RegisterFacades();
 
 builder.Services.AddFluxor(fluxorOptions =>
 {
@@ -94,11 +93,5 @@ builder.Services.AddFluxor(fluxorOptions =>
     fluxorOptions.UsePersist(config 
         => config.UseInclusionApproach());
 });
-
-// Facades
-builder.Services.AddScoped<AuthFacade>();
-builder.Services.AddScoped<CounterFacade>();
-builder.Services.AddScoped<EmployeeFacade>();
-builder.Services.AddScoped<ThemeFacade>();
 
 await builder.Build().RunAsync();

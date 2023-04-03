@@ -19,12 +19,21 @@
 </MudAlert>
 
 
-<MudGrid>
-    <MudItem xs="12" sm="6" md="6">
-        <Counter IncrementBy="5"/>
-    </MudItem>
+<MudContainer
+    MaxWidth="MaxWidth.Large">
+    <MudStack Row="true"
+              Spacing="4"
+              AlignItems="AlignItems.Start"
+              Justify="Justify.SpaceEvenly"
+              Class="flex-wrap">
 
-    <MudItem xs="12" sm="6" md="6">
-        <Counter IncrementBy="10"/>
-    </MudItem>
-</MudGrid>
+        <div>
+            <Counter IncrementBy="5"/>
+        </div>
+
+        <div>
+            <Counter IncrementBy="10"/>
+        </div>
+
+    </MudStack>
+</MudContainer>

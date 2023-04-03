@@ -10,18 +10,18 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
 {
     private readonly ILogger<SupabaseAuthenticationService> _logger;
     private readonly HttpClient _client;
-    private readonly SessionStorageProvider _sessionStorageProvider;
+    private readonly ISessionStorageService _sessionStorageService;
 
     public SupabaseAuthenticationService(
         IHttpClientFactory httpClientFactory,
         ILogger<SupabaseAuthenticationService> logger,
-        SessionStorageProvider sessionStorageProvider)
+        ISessionStorageService sessionStorageService)
     {
         _client = httpClientFactory
             .CreateClient("Supabase");
         
         _logger = logger;
-        _sessionStorageProvider = sessionStorageProvider;
+        _sessionStorageService = sessionStorageService;
     }
 
     public async ValueTask<Session?> SignInWithEmailAndPasswordAsync(string email, string password,
@@ -44,7 +44,7 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
             .Content
             .ReadFromJsonAsync<Session>(cancellationToken: cancellationToken);
 
-        await _sessionStorageProvider
+        await _sessionStorageService
             .SetSessionAsync(session, cancellationToken);
 
         return session;
@@ -59,7 +59,7 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
         await _client
             .PostAsync("auth/v1/logout", null, cancellationToken);
         
-        await _sessionStorageProvider.RemoveSessionAsync(cancellationToken);
+        await _sessionStorageService.RemoveSessionAsync(cancellationToken);
     }
 
     public async Task SignInWithPhoneAsync(
@@ -99,7 +99,7 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
             .Content
             .ReadFromJsonAsync<Session>(cancellationToken: cancellationToken);
 
-        await _sessionStorageProvider.SetSessionAsync(session, cancellationToken);
+        await _sessionStorageService.SetSessionAsync(session, cancellationToken);
         
         return session;
     }
@@ -123,7 +123,7 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
             .Content
             .ReadFromJsonAsync<Session>(cancellationToken: cancellationToken);
 
-        await _sessionStorageProvider.SetSessionAsync(session, cancellationToken);
+        await _sessionStorageService.SetSessionAsync(session, cancellationToken);
 
         return session;
     }
@@ -146,9 +146,9 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
     private async Task SetAuthorizationHeaderAsync(CancellationToken cancellationToken = default)
     {
         _client.DefaultRequestHeaders.Authorization =
-            new((await _sessionStorageProvider
+            new((await _sessionStorageService
                     .GetSessionAsync(cancellationToken))?.TokenType!,
-                (await _sessionStorageProvider
+                (await _sessionStorageService
                     .GetSessionAsync(cancellationToken))?.AccessToken);
     }
 }

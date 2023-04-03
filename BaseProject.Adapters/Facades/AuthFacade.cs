@@ -3,7 +3,7 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class AuthFacade
+public class AuthFacade : IFacade
 {
     private readonly IDispatcher _dispatcher;
     public AuthFacade(IDispatcher dispatcher)

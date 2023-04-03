@@ -9,16 +9,16 @@ namespace BaseProject.Infrastructure.Services;
 public sealed class SupabaseEmployeeService : IEmployeeService
 {
     private readonly HttpClient _httpClient;
-    private readonly SessionStorageProvider _sessionStorageProvider;
+    private readonly ISessionStorageService _sessionStorageService;
 
     public SupabaseEmployeeService(
         IHttpClientFactory httpClientFactory,
-        SessionStorageProvider sessionStorageProvider)
+        ISessionStorageService sessionStorageService)
     {
         _httpClient = httpClientFactory
             .CreateClient("Supabase");
 
-        _sessionStorageProvider = sessionStorageProvider;
+        _sessionStorageService = sessionStorageService;
     }
 
     public async ValueTask<IReadOnlyList<Employee>?> GetAllAsync(CancellationToken cancellationToken = default)
@@ -90,10 +90,10 @@ public sealed class SupabaseEmployeeService : IEmployeeService
     private async Task SetAuthorizationHeaderAsync(CancellationToken cancellationToken = default)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-            (await _sessionStorageProvider
+            (await _sessionStorageService
                 .GetSessionAsync(cancellationToken))!
             .TokenType!,
-            (await _sessionStorageProvider
+            (await _sessionStorageService
                 .GetSessionAsync(cancellationToken))!
             .AccessToken);
     }

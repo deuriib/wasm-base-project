@@ -1,4 +1,4 @@
-@using BaseProject.Infrastructure.Providers
+@using BaseProject.Infrastructure.Services
 @implements IDisposable
 
 <Fluxor.Blazor.Web.StoreInitializer/>
@@ -34,7 +34,7 @@
 @code
 {
     [Inject]
-    private HttpInterceptorService? HttpInterceptorService { get; set; }
+    private IHttpInterceptorService? HttpInterceptorService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +45,6 @@
     
     public void Dispose()
     {
-        HttpInterceptorService?.Dispose();
+        HttpInterceptorService?.UnregisterEvent();
     }
 }

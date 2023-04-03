@@ -3,7 +3,7 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class CounterFacade
+public class CounterFacade : IFacade
 {
     private readonly IDispatcher _dispatcher;
 

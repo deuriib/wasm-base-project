@@ -2,6 +2,7 @@
 @inject IState<AppState> AppState
 @inject IState<ThemeState> ThemeState
 @inject NavigationManager NavigationManager
+@inject AppFacade AppFacade
 
 <MudThemeProvider IsDarkMode="ThemeState.Value.IsDarkMode" Theme="ThemeState.Value.CurrentTheme"/>
 <MudDialogProvider/>
@@ -14,21 +15,23 @@
                        Edge="Edge.Start"
                        OnClick="@DrawerToggle"/>
 
-        @if (!_isOpenDrawer)
+        @if (!AppState.Value.IsLeftMenuOpen)
         {
             <MudText Typo="Typo.h6">@AppState.Value.AppName</MudText>
         }
         <MudSpacer/>
         <MudContainer Class="gap-2 d-flex flex-row justify-end">
-            <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor"
-                           Color="Color.Inherit"
-                           Link="https://mudblazor.com/"
-                           Target="_blank"/>
+            <MudHidden Breakpoint="Breakpoint.Xs">
+                <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor"
+                               Color="Color.Inherit"
+                               Link="https://mudblazor.com/"
+                               Target="_blank"/>
 
-            <MudIconButton Icon="@Icons.Custom.Brands.GitHub"
-                           Color="Color.Inherit"
-                           Link="https://github.com/MudBlazor/MudBlazor/"
-                           Target="_blank"/>
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub"
+                               Color="Color.Inherit"
+                               Link="https://github.com/MudBlazor/MudBlazor/"
+                               Target="_blank"/>
+            </MudHidden>
 
             <MudTooltip Text="Settings">
                 <MudIconButton Icon="@Icons.Material.Filled.Settings"
@@ -42,12 +45,13 @@
         </MudContainer>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_isOpenDrawer"
-               ClipMode="DrawerClipMode.Never"
-               Anchor="Anchor.Left"
-               PreserveOpenState="true"
-               Elevation="3"
-               Variant="@DrawerVariant.Persistent">
+    <MudDrawer
+        @bind-Open="AppState.Value.IsLeftMenuOpen"
+        ClipMode="DrawerClipMode.Never"
+        Anchor="Anchor.Left"
+        PreserveOpenState="true"
+        Elevation="3"
+        Variant="@DrawerVariant.Responsive">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">@AppState.Value.AppName</MudText>
         </MudDrawerHeader>
@@ -89,7 +93,7 @@
     }
 
     private void DrawerToggle()
-        => _isOpenDrawer = !_isOpenDrawer;
+        => AppFacade.ToggleLeftMenu();
 
     private void SettingsDrawerToggle()
         => _isOpenSettingsDrawer = !_isOpenSettingsDrawer;

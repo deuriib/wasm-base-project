@@ -1,29 +1,29 @@
 using System.Net;
-using BaseProject.Infrastructure.Extensions;
+using BaseProject.Domain.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using Toolbelt.Blazor;
 
-namespace BaseProject.Infrastructure.Providers;
+namespace BaseProject.Infrastructure.Services;
 
-public class HttpInterceptorService : IDisposable
+public class HttpInterceptorService : IHttpInterceptorService, IService
 {
     private readonly IHttpClientInterceptor _interceptor;
     private readonly ILogger<HttpInterceptorService> _logger;
-    private readonly SessionStorageProvider _sessionStorageProvider;
+    private readonly ISessionStorageService _sessionStorageService;
     private readonly NavigationManager _navigationManager;
     private readonly IDialogService _dialogService;
     private readonly ISnackbar _snackbar;
     public HttpInterceptorService(
         IHttpClientInterceptor interceptor,
         ILogger<HttpInterceptorService> logger, 
-        SessionStorageProvider sessionStorageProvider, 
+        ISessionStorageService sessionStorageService, 
         NavigationManager navigationManager, IDialogService dialogService, ISnackbar snackbar)
     {
         _interceptor = interceptor;
         _logger = logger;
-        _sessionStorageProvider = sessionStorageProvider;
+        _sessionStorageService = sessionStorageService;
         _navigationManager = navigationManager;
         _dialogService = dialogService;
         _snackbar = snackbar;
@@ -61,13 +61,13 @@ public class HttpInterceptorService : IDisposable
 
             if (result is not null)
             {
-                await _sessionStorageProvider.RemoveSessionAsync();
-                _navigationManager.NavigateToUri("/authentication/login"); 
+                await _sessionStorageService.RemoveSessionAsync();
+                _navigationManager.NavigateTo("/authentication/login"); 
             }
         }
     }
 
-    public void Dispose()
+    public void UnregisterEvent()
     {
         _interceptor.AfterSendAsync -= OnAfterSendAsync;
     }

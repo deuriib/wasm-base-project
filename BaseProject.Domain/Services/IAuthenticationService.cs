@@ -2,7 +2,7 @@ using BaseProject.Domain.Models;
 
 namespace BaseProject.Domain.Services;
 
-public interface IAuthenticationService
+public interface IAuthenticationService : IService
 {
     ValueTask<Session?> SignInWithEmailAndPasswordAsync(
         string email, 
