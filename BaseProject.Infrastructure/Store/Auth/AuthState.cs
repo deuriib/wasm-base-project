@@ -19,7 +19,7 @@ public sealed record AuthState(bool IsLoading,
         null, 
         false, 
         false, 
-        "")
+        string.Empty)
     {
     }
 }

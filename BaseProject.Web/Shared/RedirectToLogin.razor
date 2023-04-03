@@ -9,7 +9,7 @@
         if (authenticationState.User.Identity is null || authenticationState.User.Identity?.IsAuthenticated == false)
         {
             var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-            NavigationManager.NavigateTo($"authentication/login?returnUrl={returnUrl}");
+            NavigationManager.NavigateToUri($"authentication/login?returnUrl={returnUrl}");
         }
         
         await base.OnInitializedAsync();

@@ -114,6 +114,6 @@
 
     private void GoToLogin()
         => NavigationManager
-            .NavigateTo($"/authentication/login?returnUrl=/{ReturnUrl}");
+            .NavigateToUri($"/authentication/login?returnUrl=/{ReturnUrl}");
 
 }
