@@ -4,7 +4,7 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class EmployeeFacade
+public class EmployeeFacade : IFacade
 {
     private readonly IDispatcher _dispatcher;
 

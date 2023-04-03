@@ -3,7 +3,7 @@ using BaseProject.Domain.Models;
 
 namespace BaseProject.Domain.Services;
 
-public interface IEmployeeService
+public interface IEmployeeService : IService
 {
     ValueTask<IReadOnlyList<Employee>?> GetAllAsync(CancellationToken cancellationToken = default);
     ValueTask<Employee?> GetOneAsync(long id, CancellationToken cancellationToken = default);

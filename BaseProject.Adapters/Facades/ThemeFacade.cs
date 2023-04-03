@@ -3,7 +3,7 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class ThemeFacade
+public class ThemeFacade : IFacade
 {
     private readonly IDispatcher _dispatcher;
 

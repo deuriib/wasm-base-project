@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using BaseProject.Domain.Services;
 using BaseProject.Infrastructure.Extensions;
+using BaseProject.Infrastructure.Services;
 using BaseProject.Infrastructure.Utils;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
@@ -9,22 +11,22 @@ namespace BaseProject.Infrastructure.Providers;
 public class SupabaseAuthStateProvider : AuthenticationStateProvider
 {
     private readonly ILogger<SupabaseAuthStateProvider> _logger;
-    private readonly SessionStorageProvider _sessionStorageProvider;
+    private readonly ISessionStorageService _sessionStorageService;
     private readonly AuthenticationState _anonymousState = new(new ClaimsPrincipal(new ClaimsIdentity()));
 
     public SupabaseAuthStateProvider(
         ILogger<SupabaseAuthStateProvider> logger,
-        SessionStorageProvider sessionStorageProvider)
+        ISessionStorageService sessionStorageService)
     {
         _logger = logger;
-        _sessionStorageProvider = sessionStorageProvider;
+        _sessionStorageService = sessionStorageService;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         _logger.LogDebug("GetAuthenticationStateAsync");
 
-        var session = await _sessionStorageProvider
+        var session = await _sessionStorageService
             .GetSessionAsync();
 
         _logger.LogDebug("Session: {session}", session);
