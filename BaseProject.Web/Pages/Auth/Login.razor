@@ -13,7 +13,7 @@
 
 <PageTitle>Login</PageTitle>
 
-<MudPaper Class="pa-8">
+<MudPaper Class="pa-8" MinWidth="375px">
     <MudStack Row="false"
               Spacing="10"
               AlignItems="AlignItems.Center"
@@ -26,7 +26,7 @@
             <MudText Typo="Typo.h5">Sign In</MudText>
         </MudStack>
 
-        <MudContainer MaxWidth="MaxWidth.Large">
+        <MudContainer MaxWidth="MaxWidth.Medium">
             <MudForm Model="@_model"
                      @ref="@_form"
                      Validation="@Validator.ValidateValue()"
@@ -57,12 +57,11 @@
                                   Immediate="true"
                                   Label="Password"/>
 
-                    <MudStack Row="true"
-                              AlignItems="AlignItems.Center"
-                              Justify="Justify.SpaceBetween">
-                        <MudCheckBox @bind-Checked="@_model!.RememberMe"
-                                     For="() => _model!.RememberMe"
+                    <div class="d-flex align-center justify-space-between flex-wrap gap-2">
+                        <MudCheckBox @bind-Checked="@_model.RememberMe"
+                                     For="() => _model.RememberMe"
                                      StopClickPropagation="true"
+                                     Dense="true"
                                      Label="Remember me"
                                      Color="Color.Primary"/>
 
@@ -70,7 +69,7 @@
                                  OnClick="GoToForgotPassword">
                             Forgot password?
                         </MudLink>
-                    </MudStack>
+                    </div>
 
                     <MudButton OnClick="Submit"
                                ButtonType="ButtonType.Submit"

@@ -9,7 +9,7 @@
 <PageTitle>Employees</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom>Employees</MudText>
 
-<MudPaper Class="pa-4" Elevation="3">
+<MudPaper Class="pa-4" Elevation="3" MinWidth="375px" MaxWidth="100:vh">
     <MudTable HeaderClass="mt-4"
               Items="State.Value.Employees"
               Dense="true"
@@ -21,23 +21,47 @@
               SortLabel="Sort By"
               Elevation="0">
         <ToolBarContent>
-            <MudText Typo="Typo.h6" GutterBottom>List of employees</MudText>
-            <MudSpacer/>
-            <MudTextField @bind-Value="_filterString"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense"
-                          Immediate Placeholder="Search"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
-                          IconSize="Size.Medium"
-                          Class="mt-0 mx-2">
-            </MudTextField>
-            <MudIconButton
-                Icon="@Icons.Material.Filled.PersonAdd"
-                Title="Add Employee"
-                Color="Color.Primary"
-                aria-label="Add Employee"
-                OnClick="ShowCreateNewDialog"/>
+            <MudHidden Breakpoint="Breakpoint.Xs">
+                <MudText Typo="Typo.h6" GutterBottom>List of employees</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_filterString"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Immediate
+                              Placeholder="Search"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Medium">
+                </MudTextField>
+                <MudIconButton
+                    Icon="@Icons.Material.Filled.PersonAdd"
+                    Title="Add Employee"
+                    Color="Color.Primary"
+                    aria-label="Add Employee"
+                    OnClick="ShowCreateNewDialog"/>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.SmAndUp"
+                       Class="d-flex flex-column align-stretch gap-2">
+                
+                <MudText Typo="Typo.h6" GutterBottom>List of employees</MudText>
+                
+                <MudTextField @bind-Value="_filterString"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Immediate
+                              Placeholder="Search"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Medium">
+                </MudTextField>
+                
+                <MudIconButton
+                    Icon="@Icons.Material.Filled.PersonAdd"
+                    Title="Add Employee"
+                    Color="Color.Primary"
+                    aria-label="Add Employee"
+                    OnClick="ShowCreateNewDialog"/>
+            </MudHidden>
         </ToolBarContent>
         <HeaderContent>
             <MudTh>Name</MudTh>
@@ -139,7 +163,7 @@
                     { "EmployeeId", action.EmployeeId }
                 });
         });
-        
+
         SubscribeToAction<OpenEditEmployeeModal>(action =>
         {
             ShowDialog(typeof(EditEmployeeDialog),
