@@ -14,8 +14,10 @@
                        Edge="Edge.Start"
                        OnClick="@DrawerToggle"/>
 
-        <MudText Typo="Typo.h6">@AppState.Value.AppName</MudText>
-
+        @if (!_isOpenDrawer)
+        {
+            <MudText Typo="Typo.h6">@AppState.Value.AppName</MudText>
+        }
         <MudSpacer/>
         <MudContainer Class="gap-2 d-flex flex-row justify-end">
             <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor"
@@ -40,19 +42,19 @@
         </MudContainer>
     </MudAppBar>
 
-    <AuthorizeView>
-        <Authorized>
-            <MudDrawer @bind-Open="_isOpenDrawer"
-                       ClipMode="DrawerClipMode.Always"
-                       Anchor="Anchor.Left"
-                       PreserveOpenState
-                       Breakpoint="Breakpoint.Md"
-                       Elevation="1"
-                       Variant="@DrawerVariant.Mini">
-                <NavMenu/>
-            </MudDrawer>
-        </Authorized>
-    </AuthorizeView>
+    <MudDrawer @bind-Open="_isOpenDrawer"
+               ClipMode="DrawerClipMode.Never"
+               Anchor="Anchor.Left"
+               PreserveOpenState="true"
+               Elevation="3"
+               Variant="@DrawerVariant.Persistent">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">@AppState.Value.AppName</MudText>
+        </MudDrawerHeader>
+        <NavMenu/>
+        <MudSpacer/>
+        <MudText Align="Align.Center">Version: @AppState.Value.AppVersion</MudText>
+    </MudDrawer>
 
     <MudDrawer @bind-Open="@_isOpenSettingsDrawer"
                Anchor="Anchor.Right"
