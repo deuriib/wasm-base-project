@@ -1,16 +1,14 @@
-version: "3.8"
-
 services:
   wasm:
     build:
-        context: .
-        dockerfile: BaseProject.Web/Dockerfile
+      context: .
+      dockerfile: BaseProject.Web/Dockerfile
     ports:
-        - "4000:80"
-        - "4001:443"
+      - "4000:80"
+      - "4001:443"
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - ASPNETCORE_URLS=http://+:80
-        - ASPNETCORE_HTTPS_PORT=443
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_HTTPS_PORT=443
     volumes:
       - ~/.vsdbg:/remote_debugger:rw

@@ -54,7 +54,7 @@ public class HttpInterceptorService : IHttpInterceptorService, IService
                 {
                     CloseButton = false,
                     MaxWidth = MaxWidth.Medium,
-                    DisableBackdropClick = true,
+                    BackdropClick = false,
                     NoHeader = true,
                     CloseOnEscapeKey = false
                 });

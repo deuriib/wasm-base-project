@@ -10,7 +10,7 @@ namespace BaseProject.Infrastructure.Store.Theme;
 public sealed record ThemeState(bool IsDarkMode)
 {
 
-    private ThemeState(): this(false)
+    private ThemeState() : this(false)
     {
     }
 
@@ -22,41 +22,31 @@ public sealed record ThemeState(bool IsDarkMode)
             DrawerWidthRight = "300px",
             DrawerWidthLeft = "250px"
         },
-        Palette = GetLightPalette(),
-        PaletteDark = GetDarkPalette()
+        PaletteLight = new()
+        {
+            Primary = Colors.Teal.Default,
+            PrimaryDarken = Colors.Teal.Darken1,
+            PrimaryLighten = Colors.Teal.Lighten1,
+            AppbarBackground = Colors.Teal.Default,
+            Background = Colors.Gray.Lighten4,
+        },
+        PaletteDark = new()
+        {
+            Primary = Colors.Teal.Default,
+            PrimaryDarken = Colors.Teal.Darken1,
+            PrimaryLighten = Colors.Teal.Lighten1,
+            AppbarBackground = Colors.Teal.Default,
+            Background = Colors.Gray.Darken4,
+            BackgroundGray = Colors.Gray.Darken1,
+            TextPrimary = Colors.Gray.Lighten4,
+            TextSecondary = Colors.Gray.Lighten3,
+            TextDisabled = Colors.Gray.Lighten1,
+            ActionDisabled = Colors.Gray.Darken2,
+            ActionDisabledBackground = Colors.Gray.Darken4,
+            DrawerBackground = Colors.Gray.Darken2,
+            DrawerText = Colors.Gray.Lighten2,
+            DrawerIcon = Colors.Gray.Lighten2,
+            Surface = Colors.Gray.Darken3,
+        }
     };
-
-    private Palette GetLightPalette()
-    {
-        return new Palette
-        {
-            Primary = Colors.Teal.Default,
-            PrimaryDarken = Colors.Teal.Darken1,
-            PrimaryLighten = Colors.Teal.Lighten1,
-            AppbarBackground = Colors.Teal.Default,
-            Background = Colors.Grey.Lighten4,
-        };
-    }
-
-    private Palette GetDarkPalette()
-    {
-        return new Palette
-        {
-            Primary = Colors.Teal.Default,
-            PrimaryDarken = Colors.Teal.Darken1,
-            PrimaryLighten = Colors.Teal.Lighten1,
-            AppbarBackground = Colors.Teal.Default,
-            Background = Colors.Grey.Darken4,
-            BackgroundGrey = Colors.Grey.Darken1,
-            TextPrimary = Colors.Grey.Lighten4,
-            TextSecondary = Colors.Grey.Lighten3,
-            TextDisabled = Colors.Grey.Lighten1,
-            ActionDisabled = Colors.Grey.Darken2,
-            ActionDisabledBackground = Colors.Grey.Darken4,
-            DrawerBackground = Colors.Grey.Darken2,
-            DrawerText = Colors.Grey.Lighten2,
-            DrawerIcon = Colors.Grey.Lighten2,
-            Surface = Colors.Grey.Darken3,
-        };
-    }
 }

@@ -9,13 +9,13 @@ using Fluxor.Persist.Storage;
 using Fluxor.Persist.Middleware;
 using Blazored.LocalStorage;
 using BaseProject.Infrastructure.Providers;
-using BaseProject.Infrastructure.Services;
 using BaseProject.Infrastructure.Store;
 using BaseProject.Infrastructure.Store.App;
 using BaseProject.Infrastructure.Validations.Auth;
 using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Fluxor.Blazor.Web.ReduxDevTools;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -33,10 +33,10 @@ builder.Services.AddHttpClient("Base", client =>
 
 builder.Services.AddHttpClient("Supabase", (sp, client) =>
 {
-    var url = builder.Configuration["Supabase:Url"] 
+    var url = builder.Configuration["Supabase:Url"]
               ?? throw new NullReferenceException("Supabase url is null");
     var key = builder.Configuration["Supabase:Key"];
-    
+
     client.BaseAddress = new Uri(url);
     client.DefaultRequestHeaders.Add("apikey", key);
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
@@ -66,7 +66,7 @@ builder.Services.AddMudServices(config =>
 // Services
 builder.Services.RegisterServices();
 
-builder.Services.AddBlazoredLocalStorage(config 
+builder.Services.AddBlazoredLocalStorage(config
     => config.JsonSerializerOptions.WriteIndented = false);
 builder.Services.AddScoped<IStringStateStorage, LocalStateStorage>();
 builder.Services.AddScoped<IStoreHandler, JsonStoreHandler>();
@@ -74,23 +74,23 @@ builder.Services.AddScoped<IStoreHandler, JsonStoreHandler>();
 // Facades
 builder.Services.RegisterFacades();
 
-builder.Services.AddFluxor(fluxorOptions =>
+builder.Services.AddFluxor(options =>
 {
-    fluxorOptions.ScanAssemblies(typeof(AppState).Assembly, 
+    options.ScanAssemblies(typeof(AppState).Assembly,
         additionalAssembliesToScan: new[]
     {
         typeof(EmployeeReducers).Assembly
     });
 
     if (env.IsDevelopment())
-        fluxorOptions.UseReduxDevTools(options =>
+        options.UseReduxDevTools(config =>
         {
-            options.Name = "BaseProject";
-            options.EnableStackTrace();
+            config.Name = "BaseProject";
+            config.EnableStackTrace();
         });
 
-    fluxorOptions.UseRouting();
-    fluxorOptions.UsePersist(config 
+    options.UseRouting();
+    options.UsePersist(config
         => config.UseInclusionApproach());
 });
 

@@ -1,11 +1,10 @@
 @inherits FluxorLayout
 @inject IState<ThemeState> ThemeState
 
-<MudThemeProvider
-    IsDarkMode="ThemeState.Value.IsDarkMode"
-    Theme="ThemeState.Value.CurrentTheme"/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider IsDarkMode="ThemeState.Value.IsDarkMode" Theme="ThemeState.Value.CurrentTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
 
 <MudLayout>
     <MudMainContent>

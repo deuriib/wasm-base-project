@@ -3,20 +3,17 @@
 @inject IState<ThemeState> ThemeState
 @inject ThemeFacade ThemeFacade
 
-<MudList Clickable>
+<MudList T="string" Clickable>
     <MudListSubheader>
         Theme
     </MudListSubheader>
     <MudListItem Icon="@(ThemeState.Value.IsDarkMode 
                            ? Icons.Material.Rounded.LightMode 
-                           : Icons.Material.Rounded.DarkMode)"
-                 IconColor="@(ThemeState.Value.IsDarkMode 
+                           : Icons.Material.Rounded.DarkMode)" IconColor="@(ThemeState.Value.IsDarkMode 
                                 ? Color.Warning 
-                                : Color.Dark )"
-                 Text="@(ThemeState.Value.IsDarkMode 
+                                : Color.Dark )" Text="@(ThemeState.Value.IsDarkMode 
                            ? "Switch to Light Mode" 
-                           : "Switch to Dark Mode")"
-                 OnClick="ChangeTheme"/>
+                           : "Switch to Dark Mode")" OnClick="ChangeTheme" />
 </MudList>
 
 @code {
