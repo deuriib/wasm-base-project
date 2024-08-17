@@ -6,4 +6,4 @@ public sealed record ForgotPasswordResetAction;
 
 public sealed record ForgotPasswordSuccessAction;
 
-public sealed record ForgotPasswordFailAction(string ErrorMessage);
+public sealed record ForgotPasswordFailAction(string? ErrorMessage);

@@ -1,107 +1,43 @@
 using System.Net.Http.Json;
-using BaseProject.Domain.Models;
 using BaseProject.Domain.Services;
-using BaseProject.Infrastructure.Providers;
 using Microsoft.Extensions.Logging;
+using Supabase.Gotrue;
 
 namespace BaseProject.Infrastructure.Services;
 
-public sealed class SupabaseAuthenticationService : IAuthenticationService
+public sealed class SupabaseAuthenticationService(ILogger<SupabaseAuthenticationService> logger, Client supabase) : IAuthenticationService
 {
-    private readonly ILogger<SupabaseAuthenticationService> _logger;
-    private readonly HttpClient _client;
-    private readonly ISessionStorageService _sessionStorageService;
-
-    public SupabaseAuthenticationService(
-        IHttpClientFactory httpClientFactory,
-        ILogger<SupabaseAuthenticationService> logger,
-        ISessionStorageService sessionStorageService)
-    {
-        _client = httpClientFactory
-            .CreateClient("Supabase");
-        
-        _logger = logger;
-        _sessionStorageService = sessionStorageService;
-    }
-
     public async ValueTask<Session?> SignInWithEmailAndPasswordAsync(string email, string password,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Signing in with email and password");
+        logger.LogDebug("Signing with email and password");
 
-        var response = await _client
-            .PostAsJsonAsync("auth/v1/token?grant_type=password",
-                new
-                {
-                    email,
-                    password
-                },
-                cancellationToken: cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var session = await response
-            .Content
-            .ReadFromJsonAsync<Session>(cancellationToken: cancellationToken);
-
-        await _sessionStorageService
-            .SetSessionAsync(session, cancellationToken);
-
-        return session;
+        return await supabase.SignIn(email, password);
     }
 
     public async Task SignOutAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Signing out");
+        logger.LogDebug("Signing out");
 
-        await SetAuthorizationHeaderAsync(cancellationToken);
-
-        await _client
-            .PostAsync("auth/v1/logout", null, cancellationToken);
-        
-        await _sessionStorageService.RemoveSessionAsync(cancellationToken);
+        await supabase.SignOut();
     }
 
-    public async Task SignInWithPhoneAsync(
+    public async ValueTask<Session?> SignInWithPhoneAsync(
         string phoneNumber,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Signing in with phone and password");
+        logger.LogDebug("Signing in with phone");
 
-        var response = await _client
-            .PostAsJsonAsync("auth/v1/otp",
-                new
-                {
-                    phone = phoneNumber,
-                },
-                cancellationToken: cancellationToken);
-        
-        response.EnsureSuccessStatusCode();
+        return await supabase.SignIn(Constants.SignInType.Phone, phoneNumber);
     }
 
     public async ValueTask<Session?> VerifyPhoneAsync(
         string phoneNumber,
-        string code,
+        string opt,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Verifying phone");
-        var response = await _client
-            .PostAsJsonAsync("auth/v1/verify", new
-            {
-                type = "sms",
-                phone = phoneNumber,
-                token = code
-            }, cancellationToken: cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var session = await response
-            .Content
-            .ReadFromJsonAsync<Session>(cancellationToken: cancellationToken);
-
-        await _sessionStorageService.SetSessionAsync(session, cancellationToken);
-        
-        return session;
+        logger.LogDebug("Verifying phone");
+        return await supabase.VerifyOTP(phoneNumber, opt, Constants.MobileOtpType.SMS);
     }
 
     public async ValueTask<Session?> SignUpAsync(
@@ -109,46 +45,16 @@ public sealed class SupabaseAuthenticationService : IAuthenticationService
         string password,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Signing up");
-        var response = await _client
-            .PostAsJsonAsync("auth/v1/signup", new
-            {
-                email,
-                password
-            }, cancellationToken: cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var session = await response
-            .Content
-            .ReadFromJsonAsync<Session>(cancellationToken: cancellationToken);
-
-        await _sessionStorageService.SetSessionAsync(session, cancellationToken);
-
-        return session;
+        logger.LogDebug("Signing up");
+        return await supabase.SignUp(email, password);
     }
 
-    public async Task SendPasswordResetEmailAsync(
-        string email, 
+    public async ValueTask<bool> SendPasswordResetEmailAsync(
+        string email,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Sending password reset email");
-        
-        var response = await _client
-            .PostAsJsonAsync("auth/v1/recover", new
-            {
-                email
-            }, cancellationToken: cancellationToken);
+        logger.LogDebug("Sending password reset email");
 
-        response.EnsureSuccessStatusCode();
-    }
-    
-    private async Task SetAuthorizationHeaderAsync(CancellationToken cancellationToken = default)
-    {
-        _client.DefaultRequestHeaders.Authorization =
-            new((await _sessionStorageService
-                    .GetSessionAsync(cancellationToken))?.TokenType!,
-                (await _sessionStorageService
-                    .GetSessionAsync(cancellationToken))?.AccessToken);
+        return await supabase.ResetPasswordForEmail(email);
     }
 }

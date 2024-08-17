@@ -4,18 +4,11 @@ using BaseProject.Domain.Services;
 
 namespace BaseProject.Infrastructure.Services
 {
-    public sealed class WeatherService : IWeatherService
+    public sealed class WeatherService(HttpClient httpClient) : IWeatherService
     {
-        private readonly HttpClient _http;
-        public WeatherService(IHttpClientFactory httpClientFactory)
-        {
-            _http = httpClientFactory
-                .CreateClient("Base");
-        }
-
         public async ValueTask<WeatherForecast[]?> GetWeathersAsync(CancellationToken cancellationToken = default)
         {
-            return await _http
+            return await httpClient
                 .GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json",
                 cancellationToken: cancellationToken);
         }

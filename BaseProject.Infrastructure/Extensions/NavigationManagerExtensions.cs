@@ -10,7 +10,7 @@ public static class NavigationManagerExtensions
         bool replaceHistoryEntry = false)
     {
         navigationManager
-            .NavigateTo($"{navigationManager.BaseUri}{url}",
+            .NavigateTo($"{navigationManager.BaseUri}{Uri.EscapeDataString(url)}",
                 forceLoad,
                 replaceHistoryEntry);
     }

@@ -8,28 +8,20 @@ using Microsoft.Extensions.Logging;
 
 namespace BaseProject.Infrastructure.Providers;
 
-public class SupabaseAuthStateProvider : AuthenticationStateProvider
+public sealed class SupabaseAuthStateProvider(
+    ILogger<SupabaseAuthStateProvider> logger,
+    ISessionStorageService sessionStorageService) : AuthenticationStateProvider
 {
-    private readonly ILogger<SupabaseAuthStateProvider> _logger;
-    private readonly ISessionStorageService _sessionStorageService;
     private readonly AuthenticationState _anonymousState = new(new ClaimsPrincipal(new ClaimsIdentity()));
-
-    public SupabaseAuthStateProvider(
-        ILogger<SupabaseAuthStateProvider> logger,
-        ISessionStorageService sessionStorageService)
-    {
-        _logger = logger;
-        _sessionStorageService = sessionStorageService;
-    }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        _logger.LogDebug("GetAuthenticationStateAsync");
+        logger.LogDebug("GetAuthenticationStateAsync");
 
-        var session = await _sessionStorageService
+        var session = await sessionStorageService
             .GetSessionAsync();
 
-        _logger.LogDebug("Session: {session}", session);
+        logger.LogDebug("Session: {session}", session);
 
         var identity = session is not null
             ? new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(session.AccessToken),
@@ -42,11 +34,11 @@ public class SupabaseAuthStateProvider : AuthenticationStateProvider
             return _anonymousState;
         }
 
-        _logger.LogDebug("Identity: {identity}", identity);
+        logger.LogDebug("Identity: {identity}", identity);
 
         var state = new AuthenticationState(new ClaimsPrincipal(identity));
 
-        _logger.LogDebug("AuthenticationState: {state}", state);
+        logger.LogDebug("AuthenticationState: {state}", state);
 
         NotifyAuthenticationStateChanged(Task.FromResult(state));
 

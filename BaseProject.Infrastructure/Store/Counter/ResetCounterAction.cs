@@ -1,6 +1,3 @@
-﻿namespace BaseProject.Infrastructure.Store.Counter
-{
-    public class ResetCounterAction
-    {
-    }
-}
+﻿namespace BaseProject.Infrastructure.Store.Counter;
+
+public sealed record ResetCounterAction;

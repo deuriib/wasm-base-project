@@ -1,59 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<RepositoryUrl>https://github.com/deuriib/wasm-base-project</RepositoryUrl>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageLicenseFile>D:\Documents\Projects\wasm-base-project\LICENSE.txt</PackageLicenseFile>
-		<RootNamespace>BaseProject.App</RootNamespace>
-		<LangVersion>12</LangVersion>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RepositoryUrl>https://github.com/deuriib/wasm-base-project</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="..\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
+  <ItemGroup>
+    <Content Include="..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
+    <Content Include="..\README.md">
+      <Link>README.md</Link>
+    </Content>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="AutoBogus" Version="2.13.1" />
-		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
-		<PackageReference Include="Fluxor" Version="6.0.0" />
-		<PackageReference Include="Fluxor.Blazor.Web" Version="6.0.0" />
-		<PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.0.0" />
-		<PackageReference Include="Fluxor.Persist" Version="2.5.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.7" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-		<PackageReference Include="MudBlazor" Version="7.5.0" />
-		<PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fluxor.Blazor.Web" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.*" />
+    <PackageReference Include="supabase" Version="1.1.1" />
+    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.0.0" />
+    <PackageReference Include="Fluxor.Persist" Version="2.5.4" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+    <PackageReference Include="MudBlazor" Version="7.*" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Content Remove="appsettings.json" />
-		<Content Include="..\.dockerignore">
-			<Link>.dockerignore</Link>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\BaseProject.Adapters\BaseProject.Adapters.csproj" />
-		<ProjectReference Include="..\BaseProject.Infrastructure\BaseProject.Infrastructure.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<AdditionalFiles Include="Pages\Settings\ThemeSettings.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<_ContentIncludedByDefault Remove="Pages\Settings\Dialogs\ClearCacheDialog.razor" />
-	</ItemGroup>
-
-
+  <ItemGroup>
+    <ProjectReference Include="..\BaseProject.Web.Client\BaseProject.Web.Client.csproj" />
+    <ProjectReference Include="..\BaseProject.Web.Common\BaseProject.Web.Common.csproj" />
+  </ItemGroup>
 </Project>

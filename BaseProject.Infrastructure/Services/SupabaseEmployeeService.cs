@@ -1,100 +1,66 @@
-﻿using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using BaseProject.Domain.Models;
 using BaseProject.Domain.Services;
-using BaseProject.Infrastructure.Providers;
+using Supabase;
 
 namespace BaseProject.Infrastructure.Services;
 
-public sealed class SupabaseEmployeeService : IEmployeeService
+public sealed class SupabaseEmployeeService(Client supabase) : IEmployeeService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ISessionStorageService _sessionStorageService;
-
-    public SupabaseEmployeeService(
-        IHttpClientFactory httpClientFactory,
-        ISessionStorageService sessionStorageService)
-    {
-        _httpClient = httpClientFactory
-            .CreateClient("Supabase");
-
-        _sessionStorageService = sessionStorageService;
-    }
 
     public async ValueTask<IReadOnlyList<Employee>?> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        await SetAuthorizationHeaderAsync(cancellationToken);
+        var result = await supabase.From<Employee>().Get(cancellationToken);
 
-        return await _httpClient
-            .GetFromJsonAsync<Employee[]>(
-                "rest/v1/employees?select=id,name,last_name,email,status",
-                cancellationToken);
+        return result.Models;
     }
 
     public async ValueTask<Employee?> GetOneAsync(long id, CancellationToken cancellationToken = default)
     {
-        await SetAuthorizationHeaderAsync(cancellationToken);
-
-        var model = await _httpClient
-            .GetFromJsonAsync<Employee[]>(
-                $"rest/v1/employees?id=eq.{id}&select=*&limit=1",
-                cancellationToken);
-
-        return model?.SingleOrDefault();
+        return await supabase.From<Employee>()
+        .Where(e => e.Id.Equals(id))
+        .Single(cancellationToken);
     }
 
     public async ValueTask<Employee?> CreateAsync(
         Employee employee,
         CancellationToken cancellationToken = default)
     {
-        await SetAuthorizationHeaderAsync(cancellationToken);
-        
-        _httpClient
-            .DefaultRequestHeaders
-            .Add("Prefer", "return=representation");
+        var result = await supabase.From<Employee>()
+        .Insert(employee, null, cancellationToken);
 
-        var response = await _httpClient
-            .PostAsJsonAsync<Employee>("rest/v1/employees", employee, cancellationToken);
-
-        response
-            .EnsureSuccessStatusCode();
-        
-        return await response
-            .Content
-            .ReadFromJsonAsync<Employee>(cancellationToken: cancellationToken);
+        return result.Model;
     }
 
-    public async Task UpdateAsync(
+    public async ValueTask<Employee?> UpdateAsync(
         long id,
         Employee employee,
         CancellationToken cancellationToken = default)
     {
-        await SetAuthorizationHeaderAsync(cancellationToken);
+        var result = await supabase.From<Employee>()
+        .Where(e => e.Equals(id))
+        .Set(e => e.FirstName, employee.FirstName)
+        .Set(e => e.LastName, employee.LastName)
+        .Set(e => e.Email, employee.Email)
+        .Set(e => e.Birthdate, employee.Birthdate)
+        .Set(e => e.Address, employee.Address)
+        .Set(e => e.Note, employee.Note)
+        .Update(null, cancellationToken);
 
-        var response = await _httpClient
-            .PatchAsJsonAsync($"rest/v1/employees?id=eq.{id}", employee, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
+        return result.Model;
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        await SetAuthorizationHeaderAsync(cancellationToken);
-
-        var response = await _httpClient
-            .DeleteAsync($"rest/v1/employees?id=eq.{id}", cancellationToken);
-
-        response.EnsureSuccessStatusCode();
+        await supabase.From<Employee>().Delete(null, cancellationToken);
     }
 
-    private async Task SetAuthorizationHeaderAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<Employee?> UpdateStatusAsync(long id, bool status, CancellationToken cancellationToken = default)
     {
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-            (await _sessionStorageService
-                .GetSessionAsync(cancellationToken))!
-            .TokenType!,
-            (await _sessionStorageService
-                .GetSessionAsync(cancellationToken))!
-            .AccessToken);
+        var result = await supabase.From<Employee>()
+        .Where(e => e.Equals(id))
+        .Set(e => e.Status, status)
+        .Update(null, cancellationToken);
+
+        return result.Model;
     }
 }

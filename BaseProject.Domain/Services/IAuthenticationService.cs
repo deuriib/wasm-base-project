@@ -1,31 +1,31 @@
-using BaseProject.Domain.Models;
+using Supabase.Gotrue;
 
 namespace BaseProject.Domain.Services;
 
 public interface IAuthenticationService : IService
 {
     ValueTask<Session?> SignInWithEmailAndPasswordAsync(
-        string email, 
-        string password, 
+        string email,
+        string password,
         CancellationToken cancellationToken = default);
-    
+
     Task SignOutAsync(CancellationToken cancellationToken = default);
-    
-    Task SignInWithPhoneAsync(
+
+    ValueTask<Session?> SignInWithPhoneAsync(
         string phoneNumber,
         CancellationToken cancellationToken = default);
-    
+
     ValueTask<Session?> VerifyPhoneAsync(
-        string phoneNumber, 
-        string code,
+        string phoneNumber,
+        string opt,
         CancellationToken cancellationToken = default);
 
     ValueTask<Session?> SignUpAsync(
-        string email, 
+        string email,
         string password,
         CancellationToken cancellationToken = default);
-    
-    Task SendPasswordResetEmailAsync(
+
+    ValueTask<bool> SendPasswordResetEmailAsync(
         string email,
         CancellationToken cancellationToken = default);
 }

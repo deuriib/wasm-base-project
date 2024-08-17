@@ -6,4 +6,4 @@ public record FetchDataAction;
 
 public record FetchDataSuccessAction(WeatherForecast[] Forecasts);
 
-public record FetchDataFailAction(string ErrorMessage);
+public record FetchDataFailAction(string? ErrorMessage = null);

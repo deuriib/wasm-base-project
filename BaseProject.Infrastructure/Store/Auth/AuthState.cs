@@ -1,25 +1,21 @@
 using System.Text.Json.Serialization;
-using BaseProject.Domain.Models;
 using Fluxor;
 using Fluxor.Persist.Storage;
 using MudBlazor;
+using Supabase.Gotrue;
 
 namespace BaseProject.Infrastructure.Store.Auth;
 
 [PersistState]
 [FeatureState]
-public sealed record AuthState(bool IsLoading, 
-    Session? Session, 
+public sealed record AuthState(
+    bool IsLoading,
     bool IsEmailForgotPasswordSent,
     bool IsPasswordVisible,
-    string ErrorMessage)
+    Session? Session,
+    string? ErrorMessage)
 {
-    private AuthState()
-    : this(false, 
-        null, 
-        false, 
-        false, 
-        string.Empty)
+    public AuthState() : this(false, false, false, null, null)
     {
     }
 }

@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseProject.Web", "BaseProject.Web\BaseProject.Web.csproj", "{29940C80-E8E9-47A3-8DCF-F278B4C2CC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseProject.Web.Client", "BaseProject.Web.Client\BaseProject.Web.Client.csproj", "{29940C80-E8E9-47A3-8DCF-F278B4C2CC44}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseProject.Infrastructure", "BaseProject.Infrastructure\BaseProject.Infrastructure.csproj", "{DDCC56EF-0275-4039-AD0F-D5DC916703BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseProject.Domain", "BaseProject.Domain\BaseProject.Domain.csproj", "{106D4DF0-B05D-45FB-BE07-0A9646209084}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseProject.Adapters", "BaseProject.Adapters\BaseProject.Adapters.csproj", "{5CCA5611-1EE1-49B2-8F45-340013A0663E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseProject.Web", "BaseProject.Web\BaseProject.Web.csproj", "{FCB93C09-60C6-4FD3-8C09-C290A010C8D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseProject.Web.Common", "BaseProject.Web.Common\BaseProject.Web.Common.csproj", "{E8ED54B8-50B8-44E1-8704-92B21F6504F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{5CCA5611-1EE1-49B2-8F45-340013A0663E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CCA5611-1EE1-49B2-8F45-340013A0663E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CCA5611-1EE1-49B2-8F45-340013A0663E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCB93C09-60C6-4FD3-8C09-C290A010C8D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCB93C09-60C6-4FD3-8C09-C290A010C8D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCB93C09-60C6-4FD3-8C09-C290A010C8D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCB93C09-60C6-4FD3-8C09-C290A010C8D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8ED54B8-50B8-44E1-8704-92B21F6504F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8ED54B8-50B8-44E1-8704-92B21F6504F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8ED54B8-50B8-44E1-8704-92B21F6504F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8ED54B8-50B8-44E1-8704-92B21F6504F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

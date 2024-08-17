@@ -1,21 +1,17 @@
-﻿using Blazored.LocalStorage;
 using Fluxor.Persist.Storage;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
-namespace BaseProject.Infrastructure.Store
+namespace BaseProject.Infrastructure.Store;
+
+public sealed class LocalStateStorage(ProtectedBrowserStorage localStorage) : IStringStateStorage
 {
-    public class LocalStateStorage : IStringStateStorage
+    public async ValueTask<string> GetStateJsonAsync(string statename)
     {
-        private readonly ILocalStorageService _localStorage;
+        var result = await localStorage.GetAsync<string>(statename);
 
-        public LocalStateStorage(ILocalStorageService localStorage)
-        {
-            _localStorage = localStorage;
-        }
-
-        public async ValueTask<string> GetStateJsonAsync(string statename)
-            => await _localStorage.GetItemAsStringAsync(statename);
-
-        public async ValueTask StoreStateJsonAsync(string statename, string json)
-            => await _localStorage.SetItemAsStringAsync(statename, json);
+        return result.Value ?? string.Empty;
     }
+
+    public async ValueTask StoreStateJsonAsync(string statename, string json)
+        => await localStorage.SetAsync(statename, json);
 }

@@ -5,6 +5,8 @@ EXPOSE 80 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["BaseProject.Web/BaseProject.Web.csproj", "BaseProject.Web/"]
+COPY ["BaseProject.Web.Client/BaseProject.Web.Client.csproj", "BaseProject.Web.Client/"]
+COPY ["BaseProject.Web.Common/BaseProject.Web.Common.csproj", "BaseProject.Web.Common/"]
 COPY ["BaseProject.Adapters/BaseProject.Adapters.csproj", "BaseProject.Adapters/"]
 COPY ["BaseProject.Domain/BaseProject.Domain.csproj", "BaseProject.Domain/"]
 COPY ["BaseProject.Infrastructure/BaseProject.Infrastructure.csproj", "BaseProject.Infrastructure/"]

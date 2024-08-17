@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Fluxor;
 using Fluxor.Persist.Storage;
 using MudBlazor;
@@ -9,8 +9,7 @@ namespace BaseProject.Infrastructure.Store.Theme;
 [FeatureState]
 public sealed record ThemeState(bool IsDarkMode)
 {
-
-    private ThemeState() : this(false)
+    public ThemeState() : this(false)
     {
     }
 

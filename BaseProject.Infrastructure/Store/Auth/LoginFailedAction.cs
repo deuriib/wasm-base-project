@@ -1,3 +1,3 @@
 namespace BaseProject.Infrastructure.Store.Auth;
 
-public sealed record LoginFailedAction(string ErrorMessage);
+public sealed record LoginFailedAction(string? ErrorMessage = null);

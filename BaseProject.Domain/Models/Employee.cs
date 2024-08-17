@@ -1,21 +1,31 @@
-﻿using System.Text.Json.Serialization;
-using Ardalis.SmartEnum.SystemTextJson;
-using BaseProject.Domain.Enums;
+﻿using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
 
 namespace BaseProject.Domain.Models;
 
-public sealed record Employee(
-    [property: JsonPropertyName("id")] long Id,
-    [property: JsonPropertyName("name")] string FirstName,
-    [property: JsonPropertyName("last_name")]
-    string LastName,
-    [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("birth_date")]
-    DateTime Birthdate,
-    [property: JsonConverter(typeof(SmartEnumValueConverter<EmployeeStatus, bool>))]
-    EmployeeStatus Status)
+[Table("employees")]
+public sealed class Employee : BaseModel
 {
-    [JsonPropertyName("address")] public string? Address { get; init; }
+    [PrimaryKey("id", false)]
+    public long Id { get; set; }
 
-    [JsonPropertyName("note")] public string? Note { get; init; }
+    [Column("first_name")]
+    public string FirstName { get; init; } = default!;
+
+    [Column("last_name")]
+    public string LastName { get; init; } = default!;
+    [Column("email")]
+    public string Email { get; init; } = default!;
+
+    [Column("birth_date")]
+    public DateTime Birthdate { get; init; }
+
+    [Column("status")]
+    public bool Status { get; set; }
+
+    [Column("address")]
+    public string? Address { get; init; } = default!;
+
+    [Column("note")]
+    public string? Note { get; init; } = default!;
 }

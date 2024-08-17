@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Fluxor;
 using Fluxor.Persist.Storage;
 
@@ -10,14 +10,10 @@ public sealed record AppState(
     string AppName,
     string AppVersion)
 {
-    private AppState()
-        : this(
-            "BaseProject",
-            "1.5.5")
+    public AppState() : this("BaseProject", "1.6.5")
     {
-        IsLeftMenuOpen = true;
     }
 
-    [property:JsonIgnore]
-    public bool IsLeftMenuOpen { get; set; }
+    [property: JsonIgnore]
+    public bool IsLeftMenuOpen { get; set; } = true;
 }
