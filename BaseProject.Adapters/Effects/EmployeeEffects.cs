@@ -8,30 +8,22 @@ using Microsoft.Extensions.Logging;
 
 namespace BaseProject.Adapters.Effects;
 
-public class EmployeeEffects
+public sealed class EmployeeEffects(IEmployeeService employeeService, ILogger<EmployeeEffects> logger)
 {
-    private readonly IEmployeeService _employeeService;
-    private readonly ILogger<EmployeeEffects> _logger;
-
-    public EmployeeEffects(IEmployeeService employeeService, ILogger<EmployeeEffects> logger)
-    {
-        _employeeService = employeeService;
-        _logger = logger;
-    }
 
     [EffectMethod(typeof(GetEmployeesAction))]
     public async Task HandleAsync(IDispatcher dispatcher)
     {
         try
         {
-            var employees = await _employeeService.GetAllAsync();
+            var employees = await employeeService.GetAllAsync();
 
             if (employees is null)
             {
                 dispatcher.Dispatch(new GetEmployeesFailedAction("There are no employees in the system"));
                 return;
             }
-    
+
             dispatcher.Dispatch(new GetEmployeesSuccessAction(employees.Select(e => new EmployeeDto
             {
                 Id = e.Id,
@@ -41,12 +33,12 @@ public class EmployeeEffects
                 Birthdate = e.Birthdate,
                 Address = e.Address,
                 Note = e.Note,
-                Status = e.Status
+                Status = EmployeeStatus.FromValue(e.Status)
             }).ToArray()));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "GetEmployeesFailedAction");
+            logger.LogError(ex, "GetEmployeesFailedAction");
 
             dispatcher.Dispatch(new GetEmployeesFailedAction("Failed loading employees"));
         }
@@ -57,7 +49,7 @@ public class EmployeeEffects
     {
         try
         {
-            var employee = await _employeeService.GetOneAsync(action.Id);
+            var employee = await employeeService.GetOneAsync(action.Id);
 
             if (employee is null)
             {
@@ -75,12 +67,12 @@ public class EmployeeEffects
                 Address = employee.Address,
                 Note = employee.Note
             };
-            
+
             dispatcher.Dispatch(new GetOneEmployeeSuccessAction(employeeDto));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "GetOneEmployeeFailedAction");
+            logger.LogError(ex, "GetOneEmployeeFailedAction");
 
             dispatcher.Dispatch(new GetOneEmployeeFailedAction("Failed loading employee with id {action.Id}"));
         }
@@ -91,17 +83,22 @@ public class EmployeeEffects
     {
         try
         {
-            var employee = new Employee(0, action.Dto.FirstName, action.Dto.LastName, action.Dto.Email,
-                action.Dto.Birthdate!.Value, EmployeeStatus.Active);
-            
-            var newEmployee = await _employeeService.CreateAsync(employee);
+            var employee = new Employee
+            {
+                FirstName = action.Dto.FirstName,
+                LastName = action.Dto.LastName,
+                Email = action.Dto.Email,
+                Birthdate = action.Dto.Birthdate!.Value
+            };
+
+            var newEmployee = await employeeService.CreateAsync(employee);
 
             if (newEmployee is null)
             {
                 dispatcher.Dispatch(new EmployeeFailedAction("Could not create employee"));
                 return;
             }
-            
+
             var employeeDto = new EmployeeDto
             {
                 Id = newEmployee.Id,
@@ -111,14 +108,14 @@ public class EmployeeEffects
                 Birthdate = newEmployee.Birthdate,
                 Address = newEmployee.Address,
                 Note = newEmployee.Note,
-                Status = newEmployee.Status
-            };  
-            
+                Status = EmployeeStatus.FromValue(newEmployee.Status)
+            };
+
             dispatcher.Dispatch(new CreateEmployeeSuccessAction(employeeDto));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "CreateEmployeeFailAction");
+            logger.LogError(ex, "CreateEmployeeFailAction");
 
             dispatcher.Dispatch(new EmployeeFailedAction("Failed creating employee"));
         }
@@ -129,32 +126,42 @@ public class EmployeeEffects
     {
         try
         {
-            var employee = await _employeeService.GetOneAsync(action.EmployeeId);
-            
-            if(employee is null)
+            var employee = new Employee
+            {
+                FirstName = action.Employee.FirstName,
+                LastName = action.Employee.LastName,
+                Email = action.Employee.Email,
+                Birthdate = action.Employee.Birthdate!.Value,
+                Address = action.Employee.Address,
+                Note = action.Employee.Note,
+            };
+
+            var updatedEmployee = await employeeService.UpdateAsync(action.EmployeeId, employee);
+
+            if (updatedEmployee is null)
             {
                 dispatcher.Dispatch(
                     new EmployeeFailedAction($"Employee with id {action.EmployeeId} not found"));
                 return;
             }
-            
-            employee = employee with
-            {
-                FirstName = action.Employee.FirstName,
-                LastName = action.Employee.LastName,
-                Email = action.Employee.Email,
-                Address = action.Employee.Address,
-                Note = action.Employee.Note,
-                Birthdate = action.Employee.Birthdate!.Value
-            };
-            
-            await _employeeService.UpdateAsync(action.EmployeeId, employee);
 
-            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.EmployeeId, action.Employee));
+            var employeeDto = new EmployeeDto
+            {
+                Id = updatedEmployee.Id,
+                FirstName = updatedEmployee.FirstName,
+                LastName = updatedEmployee.LastName,
+                Email = updatedEmployee.Email,
+                Birthdate = updatedEmployee.Birthdate,
+                Address = updatedEmployee.Address,
+                Note = updatedEmployee.Note,
+                Status = EmployeeStatus.FromValue(updatedEmployee.Status)
+            };
+
+            dispatcher.Dispatch(new UpdateEmployeeSuccessAction(action.EmployeeId, employeeDto));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed updating employee");
+            logger.LogError(ex, "Failed updating employee");
 
             dispatcher.Dispatch(new EmployeeFailedAction("Failed updating employee"));
         }
@@ -165,27 +172,21 @@ public class EmployeeEffects
     {
         try
         {
-            var employee = await _employeeService.GetOneAsync(action.Id);
-            
-            if (employee is null)
+            var status = action.Status == EmployeeStatus.Active ? false : true;
+
+            var updatedEmployee = await employeeService.UpdateStatusAsync(action.Id, status);
+
+            if (updatedEmployee is null)
             {
-                dispatcher.Dispatch(new EmployeeFailedAction("Employee not found null"));
+                dispatcher.Dispatch(new EmployeeFailedAction($"Employee with Id:{action.Id} not found"));
                 return;
             }
 
-            var status = employee.Status == EmployeeStatus.Active
-                ? EmployeeStatus.Inactive
-                : EmployeeStatus.Active;
-            
-            employee = employee with { Status = status };
-
-            await _employeeService.UpdateAsync(action.Id, employee);
-
-            dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id, employee.Status));
+            dispatcher.Dispatch(new UpdateEmployeeStatusSuccessAction(action.Id, EmployeeStatus.FromValue(updatedEmployee.Status)));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed updating employee status");
+            logger.LogError(ex, "Failed updating employee status");
 
             dispatcher.Dispatch(new EmployeeFailedAction("Failed updating employee status"));
         }
@@ -196,13 +197,13 @@ public class EmployeeEffects
     {
         try
         {
-            await _employeeService.DeleteAsync(action.Id);
+            await employeeService.DeleteAsync(action.Id);
 
             dispatcher.Dispatch(new DeleteEmployeeSuccessAction(action.Id));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed deleting employee");
+            logger.LogError(ex, "Failed deleting employee");
 
             dispatcher.Dispatch(new EmployeeFailedAction("Failed deleting employee"));
         }

@@ -3,17 +3,10 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class ThemeFacade : IFacade
+public sealed class ThemeFacade(IDispatcher dispatcher) : IFacade
 {
-    private readonly IDispatcher _dispatcher;
-
-    public ThemeFacade(IDispatcher dispatcher)
-    {
-        _dispatcher = dispatcher;
-    }
-    
     public void ToggleTheme()
     {
-        _dispatcher.Dispatch(new ToggleThemeAction());
+        dispatcher.Dispatch(new ToggleThemeAction());
     }
 }

@@ -4,9 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>BaseProject.Adapters</AssemblyName>
-    <RootNamespace>BaseProject.Adapters</RootNamespace>
-    <LangVersion>11</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

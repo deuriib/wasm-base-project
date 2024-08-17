@@ -3,49 +3,43 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class AuthFacade : IFacade
+public sealed class AuthFacade(IDispatcher dispatcher) : IFacade
 {
-    private readonly IDispatcher _dispatcher;
-    public AuthFacade(IDispatcher dispatcher)
+    public void LoginWithEmailAndPassword(string email,
+        string password,
+        bool rememberMe = false,
+        string returnUrl = "")
     {
-        _dispatcher = dispatcher;
+        dispatcher.Dispatch(new LoginWithEmailAndPasswordAction(email, password, rememberMe, returnUrl));
     }
-    
-    public void LoginWithEmailAndPassword(string email, 
-        string password, 
-        bool rememberMe = false, 
-        string returnUrl = "/")
-    {
-        _dispatcher.Dispatch(new LoginWithEmailAndPasswordAction(email, password, rememberMe, returnUrl));
-    }
-    
+
     public void LoginWithGoogle()
     {
-        _dispatcher.Dispatch(new LoginWithGoogleAction());
+        dispatcher.Dispatch(new LoginWithGoogleAction());
     }
-    
+
     public void Logout(string returnUrl)
     {
-        _dispatcher.Dispatch(new LogoutAction(returnUrl));
+        dispatcher.Dispatch(new LogoutAction(returnUrl));
     }
-    
+
     public void RegisterWithEmailAndPassword(string email, string password)
     {
-        _dispatcher.Dispatch(new RegisterAction(email, password));
+        dispatcher.Dispatch(new RegisterAction(email, password));
     }
-    
+
     public void ForgotPassword(string email)
     {
-        _dispatcher.Dispatch(new ForgotPasswordAction(email));
+        dispatcher.Dispatch(new ForgotPasswordAction(email));
     }
-    
+
     public void ResetForgotPassword()
     {
-        _dispatcher.Dispatch(new ForgotPasswordResetAction());
+        dispatcher.Dispatch(new ForgotPasswordResetAction());
     }
-    
+
     public void TogglePasswordInputVisibility()
     {
-        _dispatcher.Dispatch(new TogglePasswordInputVisibilityAction());
+        dispatcher.Dispatch(new TogglePasswordInputVisibilityAction());
     }
 }

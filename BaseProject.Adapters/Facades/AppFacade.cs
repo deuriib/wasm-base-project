@@ -3,17 +3,10 @@ using Fluxor;
 
 namespace BaseProject.Adapters.Facades;
 
-public class AppFacade : IFacade
+public sealed class AppFacade(IDispatcher dispatcher) : IFacade
 {
-    private readonly IDispatcher _dispatcher;
-
-    public AppFacade(IDispatcher dispatcher)
-    {
-        _dispatcher = dispatcher;
-    }
-    
     public void ToggleLeftMenu()
     {
-        _dispatcher.Dispatch(new ToggleLeftMenuAction());
+        dispatcher.Dispatch(new ToggleLeftMenuAction());
     }
 }
